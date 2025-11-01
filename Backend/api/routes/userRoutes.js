@@ -6,7 +6,7 @@ const userController = require("../controllers/userController");
 
 const authMiddleware = require("../middlewares/authMiddleware");
 
-router.get("/", [ authMiddleware.userIsLoggedIn, authMiddleware.isAdmin ], userController.getUsers);
+router.get("/", [ authMiddleware.userIsLoggedIn], userController.getUsers);
 
 router.post("/", userController.createUser);
 
