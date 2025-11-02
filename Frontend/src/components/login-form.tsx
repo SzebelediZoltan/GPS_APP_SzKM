@@ -35,12 +35,12 @@ import { Navigate, useNavigate } from "@tanstack/react-router"
 type User = z.infer<typeof UserSchema>
 
 const UserSchema = z.object({
-  username: z.string().min(8).nonempty(),
+  userID: z.string().min(8).nonempty(),
   password: z.string().min(8).nonempty(),
 })
 
 const loginUser = (userData: User) => {
-  return axios.post("http://localhost:4000/api/auth/login", userData)
+  return axios.post("http://localhost:4000/api/auth/login", userData, {withCredentials:true})
 }
 
 
@@ -54,12 +54,13 @@ export function LoginForm({
   const form = useForm<User>({
     resolver: zodResolver(UserSchema),
     defaultValues: {
-      username: "",
+      userID: "",
       password: "",
     },
   })
 
   function onSubmit(values: User) {
+    console.log(values)
     login(values)
   }
 
@@ -83,7 +84,7 @@ export function LoginForm({
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField
                 control={form.control}
-                name="username"
+                name="userID"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Username</FormLabel>

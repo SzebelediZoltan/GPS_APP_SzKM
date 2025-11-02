@@ -80,7 +80,7 @@ module.exports = (sequelize) =>
             {
                 public:
                 {
-                    attributes: [ "name", "email", "registeredAt", "isAdmin" ],
+                    attributes: [ "name", "email", "password",  "registeredAt", "isAdmin" ],
 
                     include:
                     {

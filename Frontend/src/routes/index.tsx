@@ -8,16 +8,16 @@ export const Route = createFileRoute('/')({
 })
 
 type User = {
-  name: string,
+  username: string,
   email: string,
 }
 
 const getUser = ()=> {
-  return axios.get<User>("http://localhost:4000/api/auth/status")
+  return axios.get<User>("http://localhost:4000/api/auth/status",{withCredentials:true})
 }
 
 const logOut = () => {
-  return axios.delete("http://localhost:4000/api/auth/logout")
+  return axios.delete("http://localhost:4000/api/auth/logout", {withCredentials:true})
 }
 
 function RouteComponent() {
@@ -40,7 +40,8 @@ function RouteComponent() {
 
   if(isLoading) return <p>Töltés</p>
   if(!user) return nav({to: "/auth/register"})
-  console.log(user)
+  
+  
 
-  return <div>Hello {user.data.name} <Button onClick={() => {logout}}>Log Out</Button></div>
+  return <div>Hello {user.data.username} <Button onClick={()=>{logout()}}>Log Out</Button></div>
 }
