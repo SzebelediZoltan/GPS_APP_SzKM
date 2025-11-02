@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { zodResolver } from "@hookform/resolvers/zod"
-import {  useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { email, z } from "zod"
 import {
   Form,
@@ -31,10 +31,9 @@ import axios from "axios"
 import { useMutation } from "@tanstack/react-query"
 import { User } from "lucide-react"
 import { Navigate, useNavigate } from "@tanstack/react-router"
+import { LoginForm } from "./login-form"
 
 type User = z.infer<typeof UserSchema>
-
-
 
 const UserSchema = z.object({
   username: z.string().min(8).nonempty(),
@@ -45,7 +44,6 @@ const UserSchema = z.object({
 const registerUser = (userData: User) => {
   return axios.post("http://localhost:4000/api/users", userData)
 }
-
 
 export function RegisterForm({
   className,
@@ -67,10 +65,14 @@ export function RegisterForm({
     create(values)
   }
 
-  const {mutate: create}= useMutation({
+  const { mutate: create } = useMutation({
     mutationFn: (userData: User) => registerUser(userData),
     mutationKey: ["user"],
-    onSuccess: () => nav({to: "/"})
+    onSuccess: () => {
+      nav({
+        to: "/auth/login"
+      })
+    }
   })
 
   return (
@@ -94,7 +96,7 @@ export function RegisterForm({
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
-                    <FormMessage/>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -107,7 +109,7 @@ export function RegisterForm({
                     <FormControl>
                       <Input type="email" {...field} />
                     </FormControl>
-                    <FormMessage/>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -120,11 +122,16 @@ export function RegisterForm({
                     <FormControl>
                       <Input type="password" {...field} />
                     </FormControl>
-                    <FormMessage/>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
               <Button type="submit">Register</Button>
+              <p>Already have an account? <Button className="px-0" variant={"link"} onClick={() => {
+                nav({
+                  to: "/auth/login"
+                })
+              }}>Log In</Button></p>
             </form>
           </Form>
         </CardContent>
