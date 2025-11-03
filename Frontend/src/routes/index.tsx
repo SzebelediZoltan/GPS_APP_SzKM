@@ -39,7 +39,7 @@ function RouteComponent() {
   })
 
   if(isLoading) return <p>Töltés</p>
-  if(!user) return nav({to: "/auth/register"})
+  if(!user) return <p>Nincs felhasználó</p>
   
   
 
