@@ -2,18 +2,18 @@ module.exports = (sequelize) =>
 {
     const User = require("./User")(sequelize);
 
-    const Order = require("./Order")(sequelize);
+    const Location = require("./Location")(sequelize);
 
-    User.hasMany(Order, 
+    User.hasMany(Location, 
     {
         foreignKey: "userID",
 
-        as: "orders",
+        as: "locations",
 
         constraints: false,
     });
 
-    Order.belongsTo(User, 
+    Location.belongsTo(User, 
     {
         foreignKey: "userID",
 
@@ -22,5 +22,5 @@ module.exports = (sequelize) =>
         constraints: false,
     });
 
-    return { User, Order };
+    return { User, Location };
 }

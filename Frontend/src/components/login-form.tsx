@@ -74,7 +74,7 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Welcome back</CardTitle>
+          <CardTitle className="text-xl">Log In</CardTitle>
           <CardDescription>
             Log in to your profile
           </CardDescription>
@@ -87,7 +87,7 @@ export function LoginForm({
                 name="userID"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Username</FormLabel>
+                    <FormLabel>Username or Email</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>

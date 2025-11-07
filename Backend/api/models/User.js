@@ -17,11 +17,28 @@ module.exports = (sequelize) =>
                 allowNull: false,
             },
 
-            name:
+            username:
             {
                 type: DataTypes.STRING,
                 allowNull: false,
                 unique: "username"
+            },
+
+            lastName:
+            {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+
+            firstName:
+            {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+
+            dateOfBirth: {
+                type: DataTypes.DATEONLY,
+                allowNull: false,
             },
 
             email:
@@ -52,16 +69,6 @@ module.exports = (sequelize) =>
                 }
             },
 
-            /* partialPasswordHash:
-            {
-                type: DataTypes.VIRTUAL,
-
-                get()
-                {
-                    return this.getDataValue("password").substring(0, this.getDataValue("password").length / 2);
-                },
-            }, */
-
             isAdmin:
             {
                 type: DataTypes.BOOLEAN,
@@ -75,29 +82,6 @@ module.exports = (sequelize) =>
             modelName: "User",
             createdAt: "registeredAt",
             updatedAt: false,
-
-            scopes:
-            {
-                public:
-                {
-                    attributes: [ "name", "email", "password",  "registeredAt", "isAdmin" ],
-
-                    include:
-                    {
-                        association: "orders",
-
-                        attributes: ["product_name", "price", "orderedAt"],
-                    }
-                },
-
-                admin:
-                {
-                    where:
-                    {
-                        isAdmin: true,
-                    },
-                }
-            }
         },
     );
 
