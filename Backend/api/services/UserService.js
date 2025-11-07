@@ -33,7 +33,7 @@ class UserService
             data: userData,
         });
 
-        if(!userData.name) throw new BadRequestError("Missing username from payload",
+        if(!userData.username) throw new BadRequestError("Missing username from payload",
         {
             data: userData,
         });

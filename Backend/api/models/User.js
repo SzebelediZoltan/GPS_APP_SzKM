@@ -24,22 +24,22 @@ module.exports = (sequelize) =>
                 unique: "username"
             },
 
-            lastName:
-            {
-                type: DataTypes.STRING,
-                allowNull: false,
-            },
+            // lastName:
+            // {
+            //     type: DataTypes.STRING,
+            //     allowNull: false,
+            // },
 
-            firstName:
-            {
-                type: DataTypes.STRING,
-                allowNull: false,
-            },
+            // firstName:
+            // {
+            //     type: DataTypes.STRING,
+            //     allowNull: false,
+            // },
 
-            dateOfBirth: {
-                type: DataTypes.DATEONLY,
-                allowNull: false,
-            },
+            // dateOfBirth: {
+            //     type: DataTypes.DATEONLY,
+            //     allowNull: false,
+            // },
 
             email:
             {
@@ -82,6 +82,9 @@ module.exports = (sequelize) =>
             modelName: "User",
             createdAt: "registeredAt",
             updatedAt: false,
+            scopes: {
+                public: {attributes: {include: ["username", "email"]}}
+            }
         },
     );
 

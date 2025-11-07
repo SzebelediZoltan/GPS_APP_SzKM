@@ -30,11 +30,11 @@ class UserRepository
     {
         try
         {
-            return await this.User.scope(["public"]).findOne(
+            return await this.User.scope("public").findOne(
             {
                 where:
                 {
-                    [Op.or]: [ { ID: userID }, { name: userID }, { email: userID } ],
+                    [Op.or]: [ { ID: userID }, { username: userID }, { email: userID } ],
                 }
             });
         }

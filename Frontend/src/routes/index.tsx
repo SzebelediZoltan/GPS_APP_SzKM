@@ -1,3 +1,4 @@
+import Header from '@/components/header'
 import { Button } from '@/components/ui/button'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
@@ -43,5 +44,7 @@ function RouteComponent() {
   
   
 
-  return <div>Hello {user.data.username} <Button onClick={()=>{logout()}}>Log Out</Button></div>
+  return <div><Header></Header>
+    Hello {user.data.username} <Button onClick={()=>{logout()}}>Log Out</Button>
+    </div>
 }

@@ -35,7 +35,7 @@ exports.createUser = async (req, res, next) =>
 
     try
     {
-        res.status(201).json(await userService.createUser({ name: username, email, password }));
+        res.status(201).json(await userService.createUser({ username, email, password }));
     }
     catch(error)
     {
