@@ -1,4 +1,5 @@
 // src/routes/map/index.tsx
+import Header from '@/components/header'
 import { createFileRoute } from '@tanstack/react-router'
 import { lazy, Suspense } from 'react'
 
@@ -12,9 +13,12 @@ const MapView = lazy(async () => {
 
 function MapRoute() {
   return (
+    <div className='h-dvh overflow-hidden'>
     <Suspense fallback={<div>Térkép betöltése…</div>}>
-      <MapView />
+      <Header/>
+      <MapView/>
     </Suspense>
+    </div>
   )
 }
 

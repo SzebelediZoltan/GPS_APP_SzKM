@@ -1,26 +1,43 @@
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
-// import { useGeolocation } from "@uidotdev/usehooks";
-import { Geolocation } from '@capacitor/geolocation';
+import { MapContainer, TileLayer, Marker, Popup, ZoomControl } from 'react-leaflet'
+import { useGeolocation } from "@uidotdev/usehooks";
+import { Circle } from 'react-leaflet';
 
-
-const useGeoLocation = async () =>
-  {
-    return await Geolocation.getCurrentPosition()
-  }
+const fillBlueOptions = { fillColor: 'blue' }
 
 
 export default function MapView() {
 
   // const state = useGeolocation();
   // console.log(state);
-  console.log(useGeoLocation())
+
+
+  const state = useGeolocation();
+
+  console.log(state)
+
+  if (state.loading) {
+    return <p>loading... (you may need to enable permissions)</p>;
+  }
+
+  if (state.error) {
+    return <p>Enable permissions to access your location data</p>;
+  }
+
+  if (!state.latitude || !state.longitude || !state.accuracy) {
+    return <p>Nincs elérhetö helyadat</p>
+  }
+
+  
 
   return (
-    <MapContainer center={[47.4979, 19.0402]} zoom={13} style={{ height: '100vh' }}>
+    <>
+    <MapContainer center={[state.latitude, state.longitude]} zoom={13} style={{ height: '100vh' }} zoomControl={false}>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      <Marker position={[47.4979, 19.0402]}>
-        <Popup>Helló Budapest!</Popup>
+      <Circle center={[state.latitude, state.longitude]} pathOptions={fillBlueOptions} radius={state.accuracy} />
+      <Marker position={[state.latitude, state.longitude]}>
+        <Popup>Helló</Popup>
       </Marker>
     </MapContainer>
+    </>
   )
 }

@@ -12,28 +12,30 @@ import {
   NavigationMenuLink,
 } from "@/components/ui/navigation-menu"
 import { Menu } from "lucide-react"
+import { useNavigate } from "@tanstack/react-router"
 
 export default function Header() {
   const [open, setOpen] = useState(false)
 
+  const nav = useNavigate()
   return (
-    <header className="border-b bg-background sticky top-0 z-50">
+    <header className="border-b bg-background sticky w-full top-0 z-1000">
       <div className="container mx-auto flex items-center justify-between py-3 px-4">
         {/* Logo */}
         <h1 className="text-xl font-bold tracking-wide">
-          GPS<span className="text-primary">App</span>
+          GP ASS<span className="text-primary"> App</span>
         </h1>
 
         {/* Desktop Navigation */}
         <NavigationMenu className="hidden md:flex">
           <NavigationMenuList>
             <NavigationMenuItem>
-              <NavigationMenuLink className="px-4 py-2 hover:text-primary cursor-pointer">
+              <NavigationMenuLink className="px-4 py-2 hover:text-primary cursor-pointer" onClick={()=>{nav({to:"/"})}}>
                 Főoldal
               </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuLink className="px-4 py-2 hover:text-primary cursor-pointer">
+              <NavigationMenuLink className="px-4 py-2 hover:text-primary cursor-pointer" onClick={()=>{nav({to:"/map"})}}>
                 Térkép
               </NavigationMenuLink>
             </NavigationMenuItem>
