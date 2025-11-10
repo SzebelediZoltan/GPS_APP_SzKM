@@ -63,7 +63,7 @@ export default function Header() {
 
   const nav = useNavigate()
   return (
-    <header className="border-b bg-background sticky w-full top-0 z-30">
+    <header className="border-b bg-background sticky w-full top-0 z-1000">
       <div className="container mx-auto flex items-center justify-between py-3 px-4">
         {/* Logo */}
         <h1 className="text-xl font-bold tracking-wide">
@@ -75,22 +75,22 @@ export default function Header() {
           <NavigationMenuList>
             <NavigationMenuItem>
               <NavigationMenuLink className="px-4 py-2 hover:text-primary cursor-pointer" onClick={() => { nav({ to: "/" }) }}>
-                Mainpage
+                Mainpage_
               </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
               <NavigationMenuLink className="px-4 py-2 hover:text-primary cursor-pointer" onClick={() => { nav({ to: "/map" }) }}>
-                Map
+                Map_
               </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
               <NavigationMenuLink className="px-4 py-2 hover:text-primary cursor-pointer">
-                About Us
+                About Us_
               </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
               <NavigationMenuLink className="px-4 py-2 hover:text-primary cursor-pointer">
-                Contact
+                Contact_
               </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
@@ -98,7 +98,7 @@ export default function Header() {
                 <DropdownMenuTrigger className="cursor-pointer" asChild>
                   <Button variant="outline">{user?.data.username}</Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-max" align="start">
+                <DropdownMenuContent className="w-max z-1001" align="start">
                   <DropdownMenuGroup>
                     <DropdownMenuItem>
                       Profile
@@ -110,7 +110,9 @@ export default function Header() {
                       Friends
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
                     <Button className="m-2 cursor-pointer" onClick={() => logout()} >Log Out</Button>
+                    </DropdownMenuItem>
                   </DropdownMenuGroup>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -126,7 +128,7 @@ export default function Header() {
                 <Menu className="w-5 h-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-64">
+            <SheetContent side="right" className="w-64 z-1001">
               <nav className="flex flex-col space-y-4 mt-8 text-lg">
                 <button onClick={() => setOpen(false)} className="text-left hover:text-primary">
                   Főoldal

@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProfileIndexRouteImport } from './routes/profile/index'
 import { Route as MapIndexRouteImport } from './routes/map/index'
 import { Route as DemoTrpcTodoRouteImport } from './routes/demo/trpc-todo'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
@@ -31,6 +32,11 @@ import { Route as DemoStartSsrDataOnlyRouteImport } from './routes/demo/start.ss
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileIndexRoute = ProfileIndexRouteImport.update({
+  id: '/profile/',
+  path: '/profile/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MapIndexRoute = MapIndexRouteImport.update({
@@ -129,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/demo/trpc-todo': typeof DemoTrpcTodoRoute
   '/map': typeof MapIndexRoute
+  '/profile': typeof ProfileIndexRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
@@ -149,6 +156,7 @@ export interface FileRoutesByTo {
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/demo/trpc-todo': typeof DemoTrpcTodoRoute
   '/map': typeof MapIndexRoute
+  '/profile': typeof ProfileIndexRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
@@ -170,6 +178,7 @@ export interface FileRoutesById {
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/demo/trpc-todo': typeof DemoTrpcTodoRoute
   '/map/': typeof MapIndexRoute
+  '/profile/': typeof ProfileIndexRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
@@ -192,6 +201,7 @@ export interface FileRouteTypes {
     | '/demo/tanstack-query'
     | '/demo/trpc-todo'
     | '/map'
+    | '/profile'
     | '/api/trpc/$'
     | '/demo/api/names'
     | '/demo/api/tq-todos'
@@ -212,6 +222,7 @@ export interface FileRouteTypes {
     | '/demo/tanstack-query'
     | '/demo/trpc-todo'
     | '/map'
+    | '/profile'
     | '/api/trpc/$'
     | '/demo/api/names'
     | '/demo/api/tq-todos'
@@ -232,6 +243,7 @@ export interface FileRouteTypes {
     | '/demo/tanstack-query'
     | '/demo/trpc-todo'
     | '/map/'
+    | '/profile/'
     | '/api/trpc/$'
     | '/demo/api/names'
     | '/demo/api/tq-todos'
@@ -253,6 +265,7 @@ export interface RootRouteChildren {
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
   DemoTrpcTodoRoute: typeof DemoTrpcTodoRoute
   MapIndexRoute: typeof MapIndexRoute
+  ProfileIndexRoute: typeof ProfileIndexRoute
   ApiTrpcSplatRoute: typeof ApiTrpcSplatRoute
   DemoApiNamesRoute: typeof DemoApiNamesRoute
   DemoApiTqTodosRoute: typeof DemoApiTqTodosRoute
@@ -271,6 +284,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile/': {
+      id: '/profile/'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/map/': {
@@ -405,6 +425,7 @@ const rootRouteChildren: RootRouteChildren = {
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,
   DemoTrpcTodoRoute: DemoTrpcTodoRoute,
   MapIndexRoute: MapIndexRoute,
+  ProfileIndexRoute: ProfileIndexRoute,
   ApiTrpcSplatRoute: ApiTrpcSplatRoute,
   DemoApiNamesRoute: DemoApiNamesRoute,
   DemoApiTqTodosRoute: DemoApiTqTodosRoute,

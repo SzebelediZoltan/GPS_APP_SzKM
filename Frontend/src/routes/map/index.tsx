@@ -2,6 +2,7 @@
 import Header from '@/components/header'
 import { createFileRoute } from '@tanstack/react-router'
 import { lazy, Suspense } from 'react'
+import { Riple } from 'react-loading-indicators'
 
 // csak kliensen húzzuk be a Leaflet CSS-t
 const MapView = lazy(async () => {
@@ -14,7 +15,13 @@ const MapView = lazy(async () => {
 function MapRoute() {
   return (
     <div className='h-dvh overflow-hidden'>
-    <Suspense fallback={<div>Térkép betöltése…</div>}>
+    <Suspense fallback={
+      <div className='h-dwh'>
+      <div className='h-dvh w-dvw flex justify-center items-center'>
+        <Riple color="#000000" size="large" />
+      </div>
+    </div>
+    }>
       <Header/>
       <MapView/>
     </Suspense>
