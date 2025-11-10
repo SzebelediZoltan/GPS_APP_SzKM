@@ -31,8 +31,8 @@ export default function MapView() {
 
   return (
     <>
-    <MapContainer center={[state.latitude, state.longitude]} zoom={13} style={{ height: '100vh' }} zoomControl={false}>
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+    <MapContainer center={[state.latitude, state.longitude]} zoom={7} style={{ height: '100vh' }} zoomControl={false}>
+      <TileLayer url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png" />
       <Circle center={[state.latitude, state.longitude]} pathOptions={fillBlueOptions} radius={state.accuracy} />
       <Marker position={[state.latitude, state.longitude]}>
         <Popup>Helló</Popup>

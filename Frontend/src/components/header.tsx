@@ -13,13 +13,57 @@ import {
 } from "@/components/ui/navigation-menu"
 import { Menu } from "lucide-react"
 import { useNavigate } from "@tanstack/react-router"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { useMutation, useQuery } from "@tanstack/react-query"
+import axios from "axios"
+
+type User = {
+  username: string,
+  email: string,
+}
+
+
+const getUser = () => {
+  return axios.get<User>("http://localhost:4000/api/auth/status", { withCredentials: true })
+}
+
+const logOut = () => {
+  return axios.delete("http://localhost:4000/api/auth/logout", { withCredentials: true })
+}
 
 export default function Header() {
   const [open, setOpen] = useState(false)
 
+  const { mutate: logout } = useMutation({
+    mutationFn: logOut,
+    onSuccess: () => {
+      nav({
+        to: "/auth/login"
+      })
+    }
+  })
+
+  const { data: user } = useQuery({
+    queryKey: ["user"],
+    queryFn: getUser
+  })
+
   const nav = useNavigate()
   return (
-    <header className="border-b bg-background sticky w-full top-0 z-1000">
+    <header className="border-b bg-background sticky w-full top-0 z-30">
       <div className="container mx-auto flex items-center justify-between py-3 px-4">
         {/* Logo */}
         <h1 className="text-xl font-bold tracking-wide">
@@ -27,27 +71,49 @@ export default function Header() {
         </h1>
 
         {/* Desktop Navigation */}
-        <NavigationMenu className="hidden md:flex">
+        <NavigationMenu className="hidden md:flex select-none">
           <NavigationMenuList>
             <NavigationMenuItem>
-              <NavigationMenuLink className="px-4 py-2 hover:text-primary cursor-pointer" onClick={()=>{nav({to:"/"})}}>
-                Főoldal
+              <NavigationMenuLink className="px-4 py-2 hover:text-primary cursor-pointer" onClick={() => { nav({ to: "/" }) }}>
+                Mainpage
               </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuLink className="px-4 py-2 hover:text-primary cursor-pointer" onClick={()=>{nav({to:"/map"})}}>
-                Térkép
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <NavigationMenuLink className="px-4 py-2 hover:text-primary cursor-pointer">
-                Rólunk
+              <NavigationMenuLink className="px-4 py-2 hover:text-primary cursor-pointer" onClick={() => { nav({ to: "/map" }) }}>
+                Map
               </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
               <NavigationMenuLink className="px-4 py-2 hover:text-primary cursor-pointer">
-                Kapcsolat
+                About Us
               </NavigationMenuLink>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuLink className="px-4 py-2 hover:text-primary cursor-pointer">
+                Contact
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <DropdownMenu>
+                <DropdownMenuTrigger className="cursor-pointer" asChild>
+                  <Button variant="outline">{user?.data.username}</Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-max" align="start">
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem>
+                      Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      Settings
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      Friends
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <Button className="m-2 cursor-pointer" onClick={() => logout()} >Log Out</Button>
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>

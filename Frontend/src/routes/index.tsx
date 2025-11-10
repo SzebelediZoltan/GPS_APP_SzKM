@@ -11,6 +11,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import axios from 'axios'
 import { ArrowRight, Car, Download, MapPin, Shield, Sparkles, Star, Table, TrafficCone, Users } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { Spinner } from '@/components/ui/spinner'
 
 export const Route = createFileRoute('/')({
   component: RouteComponent,
@@ -25,34 +26,25 @@ const getUser = ()=> {
   return axios.get<User>("http://localhost:4000/api/auth/status",{withCredentials:true})
 }
 
-const logOut = () => {
-  return axios.delete("http://localhost:4000/api/auth/logout", {withCredentials:true})
-}
-
 function RouteComponent() {
 
   const nav = useNavigate()
-
-  const {mutate: logout} = useMutation({
-    mutationFn: logOut,
-    onSuccess: () => {
-      nav({
-        to: "/auth/login"
-      })
-    }
-  })
 
   const {data: user,isLoading} = useQuery({
     queryKey: ["user"],
     queryFn: getUser
   })
 
-  if(isLoading) return <p>Töltés</p>
-  if(!user) return <p>Nincs felhasználó</p>
-  
-  
+  if(isLoading) return <div className='h-dwh'>
+    <Spinner />
+  </div>
 
-  return <div><Header></Header>
+  if(!user) return nav({
+    to: "/auth/login"
+  })
+
+  return <div>
+    <Header></Header>
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-900 text-slate-100">
       {/* HERO */}
       <section className="relative overflow-hidden">
