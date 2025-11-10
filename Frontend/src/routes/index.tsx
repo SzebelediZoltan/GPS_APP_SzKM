@@ -2,7 +2,7 @@ import Header from '@/components/header'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import axios from 'axios'
 import { Riple } from "react-loading-indicators"
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import {
   Carousel,
@@ -27,9 +27,22 @@ const getUser = () => {
   return axios.get<User>("http://localhost:4000/api/auth/status", { withCredentials: true })
 }
 
+const logOut = () => {
+  return axios.delete("http://localhost:4000/api/auth/logout", { withCredentials: true })
+}
+
 function RouteComponent() {
 
   const nav = useNavigate()
+
+  const { mutate: logout } = useMutation({
+    mutationFn: logOut,
+    onSuccess: () => {
+      nav({
+        to: "/auth/login"
+      })
+    }
+  })
 
   const { data: user, isLoading } = useQuery({
     queryKey: ["user"],
@@ -48,6 +61,7 @@ function RouteComponent() {
     to: "/auth/login"
   })
 
+  
   return <>
     <Header />
     <div className='min-h-full'>
@@ -55,8 +69,8 @@ function RouteComponent() {
         <h1 className="scroll-m-20 text-center text-6xl font-semibold tracking-tight text-balance">Hi</h1>
         <p className="scroll-m-20 text-center text-2xl tracking-tight mt-1">{user.data.username}</p>
         <div className='mt-6 flex gap-2'>
-          <Button>Map_</Button>
-          <Button>Log Out_</Button>
+          <Button onClick={ () =>{nav({ to:"/map"})}}>Map_</Button>
+          <Button onClick={ () =>{logout()}}>Log Out_</Button>
         </div>
       </div>
       <div className='w-full h-flex p-20 justify-center'>

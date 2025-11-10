@@ -54,6 +54,7 @@
     "framer-motion": "^12.23.24",
     "leaflet": "^1.9.4",
     "leaflet-defaulticon-compatibility": "^0.1.2",
+    "leaflet-routing-machine": "^3.2.12",
     "lucide-react": "^0.544.0",
     "mapbox-gl": "^3.16.0",
     "react": "^19.2.0",
