@@ -1,11 +1,6 @@
-import { useMap, MapContainer, TileLayer, Marker, Popup, ZoomControl } from 'react-leaflet'
+import { MapContainer, TileLayer} from 'react-leaflet'
 import { useGeolocation } from "@uidotdev/usehooks";
-import { Circle } from 'react-leaflet';
-import { Riple } from 'react-loading-indicators';
-import Header from '@/components/header';
-import React, { useEffect } from "react";
 import "leaflet-routing-machine";
-import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import Routing from "@/components/Routing"; // <-- új import
 
@@ -47,14 +42,6 @@ export default function MapView() {
     <>
       <MapContainer center={[state.latitude, state.longitude]} zoom={7} style={{ height: '100vh' }} zoomControl={false}>
         <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"/>
-        <Circle 
-        center={[state.latitude, state.longitude]} 
-        pathOptions={fillBlueOptions} 
-        radius={state.accuracy} />
-        <Marker position={[state.latitude, state.longitude]}>
-          <Popup>Helló</Popup>
-        </Marker>
-
         <Routing from={[state.latitude, state.longitude]} to={destination}  />
       </MapContainer>
     </>

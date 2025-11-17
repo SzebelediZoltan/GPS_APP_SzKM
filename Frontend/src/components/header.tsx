@@ -84,12 +84,20 @@ export default function Header() {
               </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuLink className="px-4 py-2 hover:text-primary cursor-pointer">
+              <NavigationMenuLink className="px-4 py-2 hover:text-primary cursor-pointer" onClick={() => {
+                nav({
+                  to: "/aboutus"
+                })
+              }}>
                 About Us_
               </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuLink className="px-4 py-2 hover:text-primary cursor-pointer">
+              <NavigationMenuLink className="px-4 py-2 hover:text-primary cursor-pointer" onClick={() => {
+                nav({
+                  to: "/contact"
+                })
+              }}>
                 Contact_
               </NavigationMenuLink>
             </NavigationMenuItem>

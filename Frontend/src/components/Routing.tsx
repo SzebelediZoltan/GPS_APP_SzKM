@@ -14,7 +14,7 @@ export default function Routing({ from, to }: { from: [number, number]; to: [num
       waypoints: [L.latLng(from[0], from[1]), L.latLng(to[0], to[1])],
       routeWhileDragging: false,
       addWaypoints: false,
-      draggableWaypoints: false,
+      draggableWaypoints: true,
       lineOptions: { styles: [{ color: "blue", weight: 5 }] },
       show: false,
 

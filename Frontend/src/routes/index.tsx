@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/carousel"
 import { Card, CardContent } from "@/components/ui/card"
 import Autoplay from "embla-carousel-autoplay"
+import Footer from '@/components/footer'
+import { Separator } from '@radix-ui/react-dropdown-menu'
 
 export const Route = createFileRoute('/')({
   component: RouteComponent,
@@ -65,7 +67,7 @@ function RouteComponent() {
   return <>
     <Header />
     <div className='min-h-full'>
-      <div className='p-30 bg-gray-200 flex flex-col items-center'>
+      <div className='p-30 bg-linear-to-br from-blue-50 to-slate-100 flex flex-col items-center'>
         <h1 className="scroll-m-20 text-center text-6xl font-semibold tracking-tight text-balance">Hi</h1>
         <p className="scroll-m-20 text-center text-2xl tracking-tight mt-1">{user.data.username}</p>
         <div className='mt-6 flex gap-2'>
@@ -104,5 +106,6 @@ function RouteComponent() {
         </Carousel>
       </div>
     </div>
+    <Footer></Footer>
   </>
 }
