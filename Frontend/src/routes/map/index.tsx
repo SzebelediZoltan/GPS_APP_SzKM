@@ -3,6 +3,8 @@ import Header from '@/components/header'
 import { createFileRoute } from '@tanstack/react-router'
 import { lazy, Suspense } from 'react'
 import { Riple } from 'react-loading-indicators'
+import PlacesRecommender from "@/components/PlacesRecommender";
+
 
 // csak kliensen húzzuk be a Leaflet CSS-t
 const MapView = lazy(async () => {

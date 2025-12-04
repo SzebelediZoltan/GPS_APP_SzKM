@@ -18,6 +18,7 @@
     "@capacitor/core": "^7.4.4",
     "@capacitor/geolocation": "^7.1.5",
     "@faker-js/faker": "^10.0.0",
+    "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^5.2.2",
     "@mapbox/mapbox-gl-directions": "^4.3.1",
     "@radix-ui/react-accordion": "^1.2.12",
