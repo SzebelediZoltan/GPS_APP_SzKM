@@ -49,6 +49,15 @@ export default function MapView() {
       <MapContainer center={[state.latitude, state.longitude]} zoom={7} style={{ height: '100vh' }} zoomControl={false}>
         <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"/>
         <Routing from={[state.latitude, state.longitude]} to={destination}  />
+        {places.map((p, idx) => (
+          <Marker key={idx} position={[p.latitude, p.longitude]}>
+            <Popup>
+              <strong>{p.name}</strong>
+              <br />
+              {p.description}
+            </Popup>
+          </Marker>
+        ))}
       </MapContainer>
     </>
   )
