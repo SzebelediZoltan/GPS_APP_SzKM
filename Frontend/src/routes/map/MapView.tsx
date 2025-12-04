@@ -1,4 +1,7 @@
-import { MapContainer, TileLayer} from 'react-leaflet'
+import { useState } from "react";
+import type { Place } from "@/components/PlacesRecommender";
+import PlacesRecommender from "@/components/PlacesRecommender";
+import { MapContainer, TileLayer, Marker, Popup} from 'react-leaflet'
 import { useGeolocation } from "@uidotdev/usehooks";
 import "leaflet-routing-machine";
 import "leaflet/dist/leaflet.css";
@@ -11,6 +14,8 @@ const fillBlueOptions = { fillColor: 'blue' }
 
 export default function MapView() {
 
+
+  const [places, setPlaces] = useState<Place[]>([]);
   // const state = useGeolocation();
   // console.log(state);
 
@@ -40,6 +45,7 @@ export default function MapView() {
 
   return (
     <>
+      <PlacesRecommender onPlacesLoaded={setPlaces} />
       <MapContainer center={[state.latitude, state.longitude]} zoom={7} style={{ height: '100vh' }} zoomControl={false}>
         <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"/>
         <Routing from={[state.latitude, state.longitude]} to={destination}  />
