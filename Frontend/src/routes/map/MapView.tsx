@@ -1,8 +1,9 @@
-import { MapContainer, Marker, TileLayer } from 'react-leaflet'
+import { MapContainer, Marker, TileLayer, useMapEvents } from 'react-leaflet'
 import { useGeolocation } from "@uidotdev/usehooks";
 import "leaflet-routing-machine";
 import "leaflet/dist/leaflet.css";
 import { useState } from 'react';
+import L, { map } from "leaflet";
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 import axios from 'axios';
@@ -11,6 +12,7 @@ import { Spinner } from '@/components/ui/spinner';
 import Routing from '@/components/Routing';
 import { Button } from '@/components/ui/button';
 import { Route } from 'lucide-react';
+
 
 type Location = {
   address: {
@@ -65,6 +67,7 @@ export default function MapView() {
   const [searchText, setSearchText] = useState("")
   const [hasSelectedLocation, setHasSelectedLocation] = useState(false)
   const [destination, setDestination] = useState(["", ""])
+  const [zoom, setZoom] = useState(0)
 
   params.q = searchText
 
@@ -72,8 +75,7 @@ export default function MapView() {
     queryKey: [searchText],
     queryFn: () => search()
   })
-
-
+  
   if (state.error) {
     return <>
       <div className='h-dvh w-dvw flex justify-center items-center'>
@@ -81,7 +83,7 @@ export default function MapView() {
       </div>
     </>;
   }
-
+  
   if (!state.latitude || !state.longitude || !state.accuracy) {
     return <>
       <div className='h-dvh w-dvw flex justify-center items-center'>
@@ -89,8 +91,14 @@ export default function MapView() {
       </div>
     </>;
   }
-
-  console.log(locations);
+  
+  console.log(zoom);
+  
+  
+  const ownPos = L.icon({
+    iconUrl: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLW5hdmlnYXRpb24yLWljb24gbHVjaWRlLW5hdmlnYXRpb24tMiI+PHBvbHlnb24gcG9pbnRzPSIxMiAyIDE5IDIxIDEyIDE3IDUgMjEgMTIgMiIvPjwvc3ZnPg==",
+    iconSize:     [25, 25], // size of the icon
+  })
   
   
   return (
@@ -130,13 +138,14 @@ export default function MapView() {
           </TableBody>
         </Table>
       </div>
-      <MapContainer center={[state.latitude, state.longitude]} zoom={7} minZoom={4} style={{ height: '100vh' }} zoomControl={false}>
+      <MapContainer center={[state.latitude, state.longitude]} zoom={16.5} minZoom={4} style={{ height: '100vh' }} zoomControl={false}>
         <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" />
         {destination[0] !== "" ? 
           <Routing from={[state.latitude, state.longitude]} to={[Number(destination[0]), Number(destination[1])]}></Routing>  
-        : <Marker position={[state.latitude, state.longitude]}></Marker>}
+          : <Marker icon={ownPos}  position={[state.latitude, state.longitude]}></Marker>}
         
       </MapContainer>
     </>
   )
+
 }
