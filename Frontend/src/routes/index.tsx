@@ -7,14 +7,12 @@ import { Button } from '@/components/ui/button'
 import {
   Carousel,
   CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
+  CarouselItem
 } from "@/components/ui/carousel"
 import { Card, CardContent } from "@/components/ui/card"
 import Autoplay from "embla-carousel-autoplay"
 import Footer from '@/components/footer'
-import { Separator } from '@radix-ui/react-dropdown-menu'
+
 
 export const Route = createFileRoute('/')({
   component: RouteComponent,
