@@ -1,5 +1,9 @@
 import { useState } from "react";
 import { model } from "../gemini";
+import { Button } from "./ui/button";
+import { BrainCircuit, Route } from "lucide-react";
+import { Spinner } from "./ui/spinner";
+
 
 export type Place = {
   name: string;
@@ -9,11 +13,13 @@ export type Place = {
 };
 
 type Props = {
+  city: string;
   onPlacesLoaded: (places: Place[]) => void;
 };
 
-export default function PlacesRecommender({ onPlacesLoaded }: Props) {
-  const [city, setCity] = useState("");
+
+
+export default function PlacesRecommender({city, onPlacesLoaded }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -61,35 +67,10 @@ A koordináták legyenek pontos GPS értékek.
   }
 
   return (
-    <div style={{ marginBottom: "20px", fontFamily: "sans-serif" }}>
-      <h2>AI Helyajánló</h2>
-
-      <input
-        type="text"
-        placeholder="Írj be egy várost… (pl. Budapest)"
-        value={city}
-        onChange={(e) => setCity(e.target.value)}
-        style={{
-          width: "100%",
-          padding: "10px",
-          fontSize: "1rem",
-          marginBottom: "10px",
-        }}
-      />
-
-      <button
-        onClick={getPlaces}
-        style={{
-          padding: "10px 20px",
-          fontSize: "1rem",
-          cursor: "pointer",
-        }}
-      >
-        Keresés
-      </button>
-
-      {loading && <p>⏳ AI gondolkodik…</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-    </div>
+    <Button className='absolute -right-22 bg-gray-50 cursor-pointer hover:bg-muted' onClick={()=> getPlaces()}>
+      {loading ? <Spinner className="text-black"/> :
+      <BrainCircuit className='text-black'/>
+      }  
+          </Button>
   );
 }
