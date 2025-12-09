@@ -125,6 +125,7 @@ export default function MapView() {
           /></Button>
           <PlacesRecommender 
           city={searchText.split(',')[0]}
+          //searchText.split(',')[0]
           onPlacesLoaded={setPlaces} 
           />
           </>: <></>}
