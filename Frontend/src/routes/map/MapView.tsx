@@ -13,7 +13,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Spinner } from '@/components/ui/spinner';
 import Routing from '@/components/Routing';
 import { Button } from '@/components/ui/button';
-import { Route } from 'lucide-react';
+import { BrainCircuit, Route } from 'lucide-react';
 
 
 type Location = {
@@ -118,10 +118,19 @@ export default function MapView() {
           setHasSelectedLocation(false)
         }} />
         {isLoading && !hasSelectedLocation ? <Spinner className='absolute top-2.5 right-2.5' /> : <></>}
-        {hasSelectedLocation && locations? 
+        {hasSelectedLocation && locations?
+          <> 
           <Button className='absolute -right-11 bg-gray-50 cursor-pointer hover:bg-muted' onClick={() => setDestination([locations.data[0].lat, locations.data[0].lon])}>
             <Route className='text-black'
-          /></Button> : <></>}
+          /></Button>
+          <PlacesRecommender 
+          city={searchText.split(',')[0]}
+          //searchText.split(',')[0]
+          onPlacesLoaded={setPlaces} 
+          />
+          </>: <></>}
+          
+          
         <Table className='bg-gray-50 rounded-sm mt-1 select-none' key={searchText}>
           <TableBody>
             {locations?.data.length === 0 && !isLoading && searchText !== "" ?
@@ -147,7 +156,6 @@ export default function MapView() {
           </TableBody>
         </Table>
       </div>
-      <PlacesRecommender onPlacesLoaded={setPlaces} />
       <MapContainer center={[state.latitude, state.longitude]} zoom={16.5} minZoom={4} style={{ height: '100vh' }} zoomControl={false}>
         <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" />
         {destination[0] !== "" ? 
