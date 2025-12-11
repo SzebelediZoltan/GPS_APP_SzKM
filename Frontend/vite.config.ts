@@ -22,6 +22,9 @@ const config = defineConfig({
         short_name: 'Vase',
         description: 'Elképesztően elképesztő leírás',
         theme_color: '#ffffff',
+        start_url: "/",
+        display: 'fullscreen',
+        orientation: 'portrait',
         icons: [
           {
             src: 'android-chrome-192x192.png',

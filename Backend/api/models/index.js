@@ -1,8 +1,8 @@
 module.exports = (sequelize) =>
 {
     const User = require("./User")(sequelize);
-
     const Location = require("./Location")(sequelize);
+    const Marker = require("./Marker")(sequelize);
 
     User.hasMany(Location, 
     {
@@ -21,6 +21,24 @@ module.exports = (sequelize) =>
 
         constraints: false,
     });
+    
+    User.hasMany(Marker, 
+    {
+        foreignKey: "userID",
 
-    return { User, Location };
+        as: "Markers",
+
+        constraints: false,
+    });
+
+    Marker.belongsTo(User, 
+    {
+        foreignKey: "userID",
+
+        as: "user",
+
+        constraints: false,
+    });
+
+    return { User, Location, Marker};
 }

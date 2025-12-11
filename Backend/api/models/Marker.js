@@ -2,9 +2,9 @@ const { Model, DataTypes } = require("sequelize");
 
 module.exports = (sequelize) =>
 {
-    class Location extends Model {};
+    class Marker extends Model {};
 
-    Location.init
+    Marker.init
     (
         {
             longitude: {
@@ -17,25 +17,30 @@ module.exports = (sequelize) =>
                 allowNull: false
             },
 
-            trip: {
-                type: DataTypes.INTEGER,
+            type: {
+                type: DataTypes.ENUM("Kátyú, Úthiba", "Forgalom", "Baleset", "Rendőr, Sebességmérés", "Egyéb"),
                 allowNull: false
             },
 
-            actualSpeed: {
+            creator: {
+                type: DataTypes.STRING,
+                allowNull:false
+            },
+            score: {
                 type: DataTypes.INTEGER,
-                allowNull:true
+                allowNull:false,
+                defaultValue: 0
             }
 
         },
 
         {
             sequelize,
-            modelName: "Location",
+            modelName: "Marker",
             createdAt: "capturedAt",
             updatedAt: false,
         },
     );
 
-    return Location;
+    return Marker;
 }

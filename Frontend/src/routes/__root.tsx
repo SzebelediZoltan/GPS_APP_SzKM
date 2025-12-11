@@ -25,6 +25,19 @@ interface MyRouterContext {
   trpc: TRPCOptionsProxy<TRPCRouter>
 }
 
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("/sw.js")
+      .then((registration) => {
+        console.log("SW regisztrálva:", registration);
+      })
+      .catch((error) => {
+        console.error("SW regisztráció hiba:", error);
+      });
+  });
+}
+
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   head: () => ({
     meta: [
@@ -75,7 +88,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       },
       {
         rel: "manifest",
-        href: "/manifest.json"
+        href: "/manifest.webmanifest",
       }
     ],
   }),

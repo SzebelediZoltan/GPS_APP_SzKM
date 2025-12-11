@@ -60,7 +60,6 @@ const params = {
 
 const search = () => {
   const queryString = new URLSearchParams(params).toString()
-  console.log(baseSearchURL + queryString);
   return axios.get<Location[]>(baseSearchURL + queryString)
 }
 
@@ -82,9 +81,10 @@ export default function MapView() {
 
   const { data: locations, isLoading } = useQuery({
     queryKey: [searchText],
-    queryFn: () => search()
+    queryFn: () => search(),
+    staleTime: Infinity,
   })
-  
+
   if (state.error) {
     return <>
       <div className='h-dvh w-dvw flex justify-center items-center'>
@@ -92,7 +92,7 @@ export default function MapView() {
       </div>
     </>;
   }
-  
+
   if (!state.latitude || !state.longitude || !state.accuracy) {
     return <>
       <div className='h-dvh w-dvw flex justify-center items-center'>
@@ -100,16 +100,16 @@ export default function MapView() {
       </div>
     </>;
   }
-  
+
   console.log(zoom);
-  
-  
+
+
   const ownPos = L.icon({
     iconUrl: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLW5hdmlnYXRpb24yLWljb24gbHVjaWRlLW5hdmlnYXRpb24tMiI+PHBvbHlnb24gcG9pbnRzPSIxMiAyIDE5IDIxIDEyIDE3IDUgMjEgMTIgMiIvPjwvc3ZnPg==",
-    iconSize:     [25, 25], // size of the icon
+    iconSize: [25, 25], // size of the icon
   })
-  
-  
+
+
   return (
     <>
       <div className='absolute left-5 top-20 z-1000 w-100'>
@@ -118,10 +118,10 @@ export default function MapView() {
           setHasSelectedLocation(false)
         }} />
         {isLoading && !hasSelectedLocation ? <Spinner className='absolute top-2.5 right-2.5' /> : <></>}
-        {hasSelectedLocation && locations? 
+        {hasSelectedLocation && locations ?
           <Button className='absolute -right-11 bg-gray-50 cursor-pointer hover:bg-muted' onClick={() => setDestination([locations.data[0].lat, locations.data[0].lon])}>
             <Route className='text-black'
-          /></Button> : <></>}
+            /></Button> : <></>}
         <Table className='bg-gray-50 rounded-sm mt-1 select-none' key={searchText}>
           <TableBody>
             {locations?.data.length === 0 && !isLoading && searchText !== "" ?
@@ -146,13 +146,15 @@ export default function MapView() {
               : <></>}
           </TableBody>
         </Table>
+        <div className="bg-white">
+          <PlacesRecommender onPlacesLoaded={setPlaces} />
+        </div>
       </div>
-      <PlacesRecommender onPlacesLoaded={setPlaces} />
       <MapContainer center={[state.latitude, state.longitude]} zoom={16.5} minZoom={4} style={{ height: '100vh' }} zoomControl={false}>
         <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        {destination[0] !== "" ? 
-          <Routing from={[state.latitude, state.longitude]} to={[Number(destination[0]), Number(destination[1])]}></Routing>  
-          : <Marker icon={ownPos}  position={[state.latitude, state.longitude]}></Marker>}
+        {destination[0] !== "" ?
+          <Routing from={[state.latitude, state.longitude]} to={[Number(destination[0]), Number(destination[1])]}></Routing>
+          : <Marker icon={ownPos} position={[state.latitude, state.longitude]}></Marker>}
         {places.map((p, idx) => (
           <Marker key={idx} position={[p.latitude, p.longitude]}>
             <Popup>
