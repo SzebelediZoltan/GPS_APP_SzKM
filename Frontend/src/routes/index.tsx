@@ -24,11 +24,11 @@ type User = {
 }
 
 const getUser = () => {
-  return axios.get<User>("http://localhost:4000/api/auth/status", { withCredentials: true })
+  return axios.get<User>("/api/auth/status", { withCredentials: true })
 }
 
 const logOut = () => {
-  return axios.delete("http://localhost:4000/api/auth/logout", { withCredentials: true })
+  return axios.delete("/api/auth/logout", { withCredentials: true })
 }
 
 function RouteComponent() {
