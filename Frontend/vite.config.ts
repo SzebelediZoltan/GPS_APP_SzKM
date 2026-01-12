@@ -40,6 +40,9 @@ const config = defineConfig({
       }
     })
   ],
+  server: {
+    host: "0.0.0.0",
+  }
 })
 
 export default config
