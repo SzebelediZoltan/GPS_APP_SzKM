@@ -19,8 +19,6 @@ app.use(cookieParser());
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./docs/openapi.json');
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
-
 app.get("/api-docs.json", (req, res) => {
     res.json(swaggerDocument)
 })
@@ -34,6 +32,8 @@ const tripRoutes = require("./api/routes/tripRoutes");
 const tripPointRoutes = require("./api/routes/tripPointRoutes");
 const authRoutes = require("./api/routes/authRoutes");
 const errorHandler = require("./api/middlewares/errorHandler");
+
+api.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
 app.use("/api", api);
 
