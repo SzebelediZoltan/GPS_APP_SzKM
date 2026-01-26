@@ -23,7 +23,7 @@ import { useAuth } from "@/hooks/useAuth"
 import { useEffect } from "react"
 
 const loginUser = (userData: LoginValues) => {
-  return axios.post("http://localhost:4000/api/auth/login", userData, { withCredentials: true })
+  return axios.post("/api/auth/login", userData, { withCredentials: true })
 }
 
 // ===== ROUTE =====

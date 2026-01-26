@@ -32,7 +32,7 @@ type HeaderProps = {
 }
 
 const logOut = () => {
-    return axios.delete("http://localhost:4000/api/auth/logout", { withCredentials: true })
+    return axios.delete("/api/auth/logout", { withCredentials: true })
 }
 
 export default function Header({ user }: HeaderProps) {

@@ -8,7 +8,7 @@ export type User = {
 
 export const getUser = async (): Promise<User | null> => {
   try {
-    const res = await axios.get<User>("http://localhost:4000/api/auth/status", {
+    const res = await axios.get<User>("/api/auth/status", {
       withCredentials: true,
     })
     return res.data

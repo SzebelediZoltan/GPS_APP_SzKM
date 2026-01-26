@@ -23,7 +23,7 @@ import { useAuth } from "@/hooks/useAuth"
 import { useEffect } from "react"
 
 const registerUser = (userData: RegisterValues) => {
-    return axios.post("http://localhost:4000/api/users", userData)
+    return axios.post("/api/users", userData)
 }
 
 // ===== ROUTE =====
