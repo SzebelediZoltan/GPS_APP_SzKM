@@ -1,0 +1,60 @@
+version: "3.9"
+
+services:
+  frontend:
+    build:
+      context: ./gpass-app-frontend
+    container_name: vite-frontend
+    restart: always
+    ports:
+      - "80"
+    networks:
+      - proxy
+  
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager
+    container_name: nginx-proxy-manager
+    ports:
+      - "80:80"
+      - "81:81"
+      - "443:443"
+    volumes:
+      - "/home/tech/files/docker/volumes/nginx-proxy-manager/data:/data"
+      - "/home/tech/files/docker/volumes/nginx-proxy-manager/letencrypt:/etc/letsencrypt"
+    restart: unless-stopped
+    networks:
+      - proxy
+
+  backend:
+    build: ./gpass-app-backend
+    container_name: gpass-backend
+    restart: always
+    env_file:
+      - ./gpass-app-backend/.env
+    expose:
+      - "4000"
+    depends_on:
+      - mysql
+    networks:
+      - proxy
+
+  mysql:
+    image: mysql:8.0
+    container_name: gpass-mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: gpass_db
+      MYSQL_USER: gpass
+      MYSQL_PASSWORD: geoloc
+      MYSQL_ROOT_PASSWORD: georoot
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - proxy
+
+volumes:
+  mysql_data:
+
+networks:
+  proxy:
+    driver: bridge
