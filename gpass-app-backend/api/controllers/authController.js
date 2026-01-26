@@ -6,42 +6,35 @@ const { userService } = require("../services")(db);
 
 const authUtils = require("../utilities/authUtils");
 
-exports.login = async (req, res, next) =>
-{
+exports.login = async (req, res, next) => {
     const { userID, password } = req.body;
 
     let user;
 
-    try
-    {
-        user = await userService.getUser(userID);
+    try {
+        user = await userService.getUserForAuth(userID);
     }
-    catch(error)
-    {
+    catch (error) {
         return next(error);
     }
-    
-    if(bcrypt.compareSync(password, user.password))
-    {
+
+    if (bcrypt.compareSync(password, user.password)) {
         const token = authUtils.generateUserToken(user);
-        
-        authUtils.setCookie(res, "user_token", token);        
+
+        authUtils.setCookie(res, "user_token", token);
 
         res.status(200).json(token);
     }
-    else
-    {
-        res.status(401).json({ message: "Wrong password" });
+    else {
+        res.status(401).json({ message: "Helytelen jelszó" });
     }
 }
 
-exports.status = (req, res, next) =>
-{
+exports.status = (req, res, next) => {
     res.status(200).json(req.user);
 }
 
-exports.logout = (req, res, next) =>
-{
+exports.logout = (req, res, next) => {
     res.clearCookie("user_token");
 
     res.sendStatus(200);

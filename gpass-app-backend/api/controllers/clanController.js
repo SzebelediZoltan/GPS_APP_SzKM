@@ -1,0 +1,67 @@
+const db = require("../db");
+const { clanService } = require("../services")(db);
+
+exports.getClans = async (req, res, next) => {
+    try {
+        res.status(200).json(await clanService.getClans());
+    }
+    catch (error) {
+        next(error);
+    }
+}
+
+exports.getClan = async (req, res, next) => {
+    const clanId = req.params?.id;
+
+    try {
+        res.status(200).json(await clanService.getClan(clanId));
+    }
+    catch (error) {
+        next(error);
+    }
+}
+
+exports.createClan = async (req, res, next) => {
+    const { name, leader_id } = req.body || {};
+
+    try {
+        res.status(201).json(await clanService.createClan({ name, leader_id }));
+    }
+    catch (error) {
+        next(error);
+    }
+}
+
+exports.updateClan = async (req, res, next) => {
+    const clanId = req.params?.id;
+    const { name, leader_id } = req.body || {};
+
+    try {
+        res.status(200).json(await clanService.updateClan({ name, leader_id }, clanId));
+    }
+    catch (error) {
+        next(error);
+    }
+}
+
+exports.deleteClan = async (req, res, next) => {
+    const clanId = req.params?.id;
+
+    try {
+        res.status(200).json(await clanService.deleteClan(clanId));
+    }
+    catch (error) {
+        next(error);
+    }
+}
+
+exports.searchClans = async (req, res, next) => {
+    const query = req.query?.q;
+
+    try {
+        res.status(200).json(await clanService.searchClans(query));
+    }
+    catch (error) {
+        next(error);
+    }
+}
