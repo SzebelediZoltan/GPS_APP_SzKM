@@ -33,9 +33,9 @@ const tripPointRoutes = require("./api/routes/tripPointRoutes");
 const authRoutes = require("./api/routes/authRoutes");
 const errorHandler = require("./api/middlewares/errorHandler");
 
-api.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
-
 app.use("/api", api);
+
+api.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
 api.use("/users", userRoutes);
 api.use("/auth", authRoutes);

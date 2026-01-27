@@ -64,14 +64,14 @@ module.exports = (sequelize) => {
                 modelName: "User",
                 createdAt: "registeredAt",
                 updatedAt: false,
-                
+
                 scopes: {
                     public: {
                         attributes: ["ID", "username", "email", "isAdmin"]
                     },
 
                     auth: {
-                        attributes: ["password"]
+                        attributes: ["ID", "username", "email", "password", "isAdmin"]
                     }
                 }
             },

@@ -6,8 +6,6 @@ exports.userIsLoggedIn = (req, res, next) =>
 {
     const { user_token } = req.cookies || {};
 
-    console.log(req.cookies)
-
     if(!user_token) return next(new UnauthorizedError());
 
     try
