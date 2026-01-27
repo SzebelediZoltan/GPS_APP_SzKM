@@ -47,11 +47,7 @@ module.exports = (sequelize) => {
             score: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
-                defaultValue: 0,
-                validate: {
-                    notNull: { msg: "A score megadása kötelező." },
-                    isInt: { msg: "A score csak egész szám lehet." },
-                },
+                defaultValue: 0
             },
 
             lat: {

@@ -721,7 +721,6 @@
             "type": "string",
             "enum": ["danger", "police", "accident", "traffic", "roadblock", "speedtrap", "other"]
           },
-          "score": { "type": "integer" },
           "lat": { "type": "number" },
           "lng": { "type": "number" }
         },

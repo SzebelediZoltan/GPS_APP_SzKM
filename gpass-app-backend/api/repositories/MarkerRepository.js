@@ -51,8 +51,12 @@ class MarkerRepository {
                 {
                     where: { id: markerId }
                 });
+            
+            if ((await this.Marker.scope("public").findByPk(markerId)).dataValues.score === -2) {
+                await this.Marker.destroy(markerId)
+            }
 
-            return await this.Marker.scope("public").findByPk(markerId);
+            return (await this.Marker.scope("public").findByPk(markerId)) || "Marker deleted";
         }
         catch (error) {
             throw new DbError("Failed to update marker",

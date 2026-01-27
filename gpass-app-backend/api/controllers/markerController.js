@@ -22,10 +22,10 @@ exports.getMarker = async (req, res, next) => {
 }
 
 exports.createMarker = async (req, res, next) => {
-    const { creator_id, marker_type, score, lat, lng } = req.body || {};
+    const { creator_id, marker_type, lat, lng } = req.body || {};
 
     try {
-        res.status(201).json(await markerService.createMarker({ creator_id, marker_type, score, lat, lng }));
+        res.status(201).json(await markerService.createMarker({ creator_id, marker_type, lat, lng }));
     }
     catch (error) {
         next(error);
