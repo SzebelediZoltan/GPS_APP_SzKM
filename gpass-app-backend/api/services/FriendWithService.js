@@ -12,10 +12,7 @@ class FriendWithService {
     async getById(id) {
         if (!id) throw new BadRequestError("Hiányzik a barátság-azonosító (id).");
 
-        const rel = await this.friendWithRepository.getById(id);
-
-        console.log("FriendWithService.getById:", rel);
-        
+        const rel = await this.friendWithRepository.getById(id);        
 
         if (!rel) throw new NotFoundError("Nem található barátság/kérelem ezzel az azonosítóval.",
             {

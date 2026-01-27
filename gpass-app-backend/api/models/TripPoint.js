@@ -47,10 +47,7 @@ module.exports = (sequelize) => {
             recorded_at: {
                 type: DataTypes.DATE,
                 allowNull: false,
-                validate: {
-                    notNull: { msg: "A recorded_at megadása kötelező." },
-                    isDate: { msg: "A recorded_at érvénytelen dátum." },
-                },
+                defaultValue: DataTypes.NOW
             },
         },
         {

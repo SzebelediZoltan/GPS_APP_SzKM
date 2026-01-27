@@ -29,9 +29,6 @@ class ClanService {
 
         const nameTaken = await this.clanRepository.getClan(data.name);
 
-        console.log(nameTaken);
-        
-
         if (nameTaken) throw new BadRequestError("Ez a klán név már foglalt.",
             {
                 data: data.name

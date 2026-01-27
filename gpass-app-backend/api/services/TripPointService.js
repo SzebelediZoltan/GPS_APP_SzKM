@@ -27,7 +27,6 @@ class TripPointService {
         if (!data.trip_id) throw new BadRequestError("Hiányzik a trip azonosító (trip_id).", { data });
         if (data.lat === undefined) throw new BadRequestError("Hiányzik a pont szélesség (lat).", { data });
         if (data.lng === undefined) throw new BadRequestError("Hiányzik a pont hosszúság (lng).", { data });
-        if (!data.recorded_at) throw new BadRequestError("Hiányzik a rögzítési idő (recorded_at).", { data });
 
         return await this.tripPointRepository.createTripPoint(data);
     }

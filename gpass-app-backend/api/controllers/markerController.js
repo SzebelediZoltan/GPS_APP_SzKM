@@ -11,7 +11,7 @@ exports.getMarkers = async (req, res, next) => {
 }
 
 exports.getMarker = async (req, res, next) => {
-    const markerId = req.params?.id;
+    const markerId = req.markerID;
 
     try {
         res.status(200).json(await markerService.getMarker(markerId));
@@ -33,7 +33,7 @@ exports.createMarker = async (req, res, next) => {
 }
 
 exports.updateMarker = async (req, res, next) => {
-    const markerId = req.params?.id;
+    const markerId = req.markerID;
     const { marker_type, score, lat, lng } = req.body || {};
 
     try {
@@ -45,7 +45,7 @@ exports.updateMarker = async (req, res, next) => {
 }
 
 exports.deleteMarker = async (req, res, next) => {
-    const markerId = req.params?.id;
+    const markerId = req.markerID;
 
     try {
         res.status(200).json(await markerService.deleteMarker(markerId));
@@ -79,6 +79,7 @@ exports.getMarkersByType = async (req, res, next) => {
 
 exports.getMarkersInBox = async (req, res, next) => {
     const { minLat, maxLat, minLng, maxLng } = req.query || {};
+    
 
     try {
         res.status(200).json(await markerService.getMarkersInBox(minLat, maxLat, minLng, maxLng));

@@ -11,7 +11,7 @@ exports.getTripPoints = async (req, res, next) => {
 }
 
 exports.getTripPoint = async (req, res, next) => {
-    const pointId = req.params?.id;
+    const pointId = req.pointID;
 
     try {
         res.status(200).json(await tripPointService.getTripPoint(pointId));
@@ -22,10 +22,10 @@ exports.getTripPoint = async (req, res, next) => {
 }
 
 exports.createTripPoint = async (req, res, next) => {
-    const { trip_id, lat, lng, recorded_at } = req.body || {};
+    const { trip_id, lat, lng } = req.body || {};
 
     try {
-        res.status(201).json(await tripPointService.createTripPoint({ trip_id, lat, lng, recorded_at }));
+        res.status(201).json(await tripPointService.createTripPoint({ trip_id, lat, lng }));
     }
     catch (error) {
         next(error);
@@ -33,7 +33,7 @@ exports.createTripPoint = async (req, res, next) => {
 }
 
 exports.updateTripPoint = async (req, res, next) => {
-    const pointId = req.params?.id;
+    const pointId = req.pointID;
     const { lat, lng, recorded_at } = req.body || {};
 
     try {
@@ -45,7 +45,7 @@ exports.updateTripPoint = async (req, res, next) => {
 }
 
 exports.deleteTripPoint = async (req, res, next) => {
-    const pointId = req.params?.id;
+    const pointId = req.pointID;
 
     try {
         res.status(200).json(await tripPointService.deleteTripPoint(pointId));

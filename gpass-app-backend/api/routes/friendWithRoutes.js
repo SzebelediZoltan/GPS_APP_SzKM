@@ -17,7 +17,7 @@ router.param("id", (req, res, next, id) => {
     next();
 });
 
-router.get("/:id", friendWithController.getById);
+router.get("/:id", [authMiddleware.isAdmin], friendWithController.getById);
 router.put("/:id", friendWithController.update);
 router.delete("/:id", friendWithController.delete);
 

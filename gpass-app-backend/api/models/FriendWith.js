@@ -81,12 +81,12 @@ module.exports = (sequelize) => {
 
             scopes: {
                 public: {
-                    attributes: ["id", "sender_id", "receiver_id", "status", "created_at", "responded_at"],
+                    attributes: ["id", "sender_id", "receiver_id", "status", "created_at"],
                 },
 
                 accepted: {
                     where: { status: "accepted" },
-                    attributes: ["id", "sender_id", "receiver_id", "created_at", "responded_at"],
+                    attributes: ["id", "sender_id", "receiver_id", "created_at"],
                 },
 
                 pending: {
@@ -100,7 +100,7 @@ module.exports = (sequelize) => {
             },
 
             defaultScope: {
-                attributes: ["id", "sender_id", "receiver_id", "status", "created_at", "responded_at"],
+                attributes: ["id", "sender_id", "receiver_id", "status", "created_at"],
             },
         }
     );

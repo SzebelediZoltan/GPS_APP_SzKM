@@ -5,7 +5,7 @@ const markerController = require("../controllers/markerController");
 const authMiddleware = require("../middlewares/authMiddleware");
 
 // LISTA (logged in)
-router.get("/", [authMiddleware.userIsLoggedIn], markerController.getMarkers);
+router.get("/", [authMiddleware.userIsLoggedIn, authMiddleware.isAdmin], markerController.getMarkers);
 
 // BOX (query) (logged in)
 router.get("/box", [authMiddleware.userIsLoggedIn], markerController.getMarkersInBox);

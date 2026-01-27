@@ -11,7 +11,7 @@ exports.getTrips = async (req, res, next) => {
 }
 
 exports.getTrip = async (req, res, next) => {
-    const tripId = req.params?.id;
+    const tripId = req.tripID;
 
     try {
         res.status(200).json(await tripService.getTrip(tripId));
@@ -33,7 +33,7 @@ exports.createTrip = async (req, res, next) => {
 }
 
 exports.updateTrip = async (req, res, next) => {
-    const tripId = req.params?.id;
+    const tripId = req.tripID;
     const { user_id, trip_number } = req.body || {};
 
     try {
@@ -45,7 +45,7 @@ exports.updateTrip = async (req, res, next) => {
 }
 
 exports.deleteTrip = async (req, res, next) => {
-    const tripId = req.params?.id;
+    const tripId = req.tripID;
 
     try {
         res.status(200).json(await tripService.deleteTrip(tripId));

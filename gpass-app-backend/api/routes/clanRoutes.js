@@ -26,6 +26,6 @@ router.get("/:clanID", [authMiddleware.userIsLoggedIn], clanController.getClan);
 router.put("/:clanID", [authMiddleware.userIsLoggedIn], clanController.updateClan);
 
 // DELETE (admin) – ha akarod csak leadernek, azt majd service-ben szabályozzuk
-router.delete("/:clanID", [authMiddleware.userIsLoggedIn, authMiddleware.isAdmin], clanController.deleteClan);
+router.delete("/:clanID", [authMiddleware.userIsLoggedIn], clanController.deleteClan);
 
 module.exports = router;

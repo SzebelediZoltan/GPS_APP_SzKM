@@ -22,7 +22,6 @@ class UserRepository {
 
     async getUserForAuth(userID) {
         try {
-            console.log(userID)
             return await this.User
                 .scope("auth")
                 .findOne(

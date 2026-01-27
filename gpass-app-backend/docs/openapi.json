@@ -247,7 +247,7 @@
       },
       "delete": {
         "tags": ["clans"],
-        "summary": "Klán törlése (admin)",
+        "summary": "Klán törlése (logged in)",
         "security": [{ "cookieAuth": [] }],
         "parameters": [{ "name": "clanID", "in": "path", "required": true, "schema": { "type": "string" } }],
         "responses": { "200": { "description": "Törölve" } }
@@ -351,7 +351,7 @@
     "/friends-with/{id}": {
       "get": {
         "tags": ["friends-with"],
-        "summary": "Egy friendWith lekérése",
+        "summary": "Egy friendWith lekérése (admin)",
         "security": [{ "cookieAuth": [] }],
         "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
         "responses": { "200": { "description": "FriendWith", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FriendWith" } } } } }
@@ -376,7 +376,7 @@
     "/markers": {
       "get": {
         "tags": ["markers"],
-        "summary": "Markerek listázása",
+        "summary": "Markerek listázása (admin)",
         "security": [{ "cookieAuth": [] }],
         "responses": { "200": { "description": "Lista", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Marker" } } } } } }
       },
@@ -782,8 +782,7 @@
         "properties": {
           "trip_id": { "type": "integer" },
           "lat": { "type": "number" },
-          "lng": { "type": "number" },
-          "recorded_at": { "type": "string", "format": "date-time" }
+          "lng": { "type": "number" }
         },
         "required": ["trip_id", "lat", "lng", "recorded_at"]
       },
