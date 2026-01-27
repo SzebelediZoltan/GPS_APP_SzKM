@@ -16,6 +16,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./docs/openapi.json');
+
 const userRoutes = require("./api/routes/userRoutes");
 const friendWithRoutes = require("./api/routes/friendWithRoutes");
 const clanRoutes = require("./api/routes/clanRoutes");
@@ -27,6 +30,8 @@ const authRoutes = require("./api/routes/authRoutes");
 const errorHandler = require("./api/middlewares/errorHandler");
 
 app.use("/api", api);
+
+api.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
 api.use("/users", userRoutes);
 api.use("/auth", authRoutes);
