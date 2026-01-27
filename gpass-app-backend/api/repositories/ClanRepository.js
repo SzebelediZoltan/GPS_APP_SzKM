@@ -21,7 +21,17 @@ class ClanRepository {
 
     async getClan(clanId) {
         try {
-            return await this.Clan.scope("public").findByPk(clanId);
+            return await this.Clan.scope("public").findOne(
+                {
+                    where:
+                    {
+                        [Op.or]:
+                            [
+                                { ID: clanId },
+                                { name: clanId }
+                            ],
+                    },
+                });
         }
         catch (error) {
             throw new DbError("Failed to fetch clan",

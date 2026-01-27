@@ -11,7 +11,7 @@ exports.getClans = async (req, res, next) => {
 }
 
 exports.getClan = async (req, res, next) => {
-    const clanId = req.params?.id;
+    const clanId = req.clanID;
 
     try {
         res.status(200).json(await clanService.getClan(clanId));
@@ -33,7 +33,7 @@ exports.createClan = async (req, res, next) => {
 }
 
 exports.updateClan = async (req, res, next) => {
-    const clanId = req.params?.id;
+    const clanId = req.clanID;
     const { name, leader_id } = req.body || {};
 
     try {
@@ -45,7 +45,7 @@ exports.updateClan = async (req, res, next) => {
 }
 
 exports.deleteClan = async (req, res, next) => {
-    const clanId = req.params?.id;
+    const clanId = req.clanID;
 
     try {
         res.status(200).json(await clanService.deleteClan(clanId));
@@ -56,7 +56,7 @@ exports.deleteClan = async (req, res, next) => {
 }
 
 exports.searchClans = async (req, res, next) => {
-    const query = req.query?.q;
+    const query = req.query.query || "";
 
     try {
         res.status(200).json(await clanService.searchClans(query));

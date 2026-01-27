@@ -14,6 +14,9 @@ class FriendWithService {
 
         const rel = await this.friendWithRepository.getById(id);
 
+        console.log("FriendWithService.getById:", rel);
+        
+
         if (!rel) throw new NotFoundError("Nem található barátság/kérelem ezzel az azonosítóval.",
             {
                 data: id

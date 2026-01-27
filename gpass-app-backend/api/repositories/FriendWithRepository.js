@@ -21,7 +21,7 @@ class FriendWithRepository {
 
     async getById(id) {
         try {
-            return await this.FriendWith.scope("public").findByPk(id);
+            return await this.FriendWith.scope("public").findAll();
         }
         catch (error) {
             throw new DbError("Failed to fetch friend relation",

@@ -27,6 +27,16 @@ class ClanService {
         if (!data.name) throw new BadRequestError("Hiányzik a klán neve (name).", { data });
         if (!data.leader_id) throw new BadRequestError("Hiányzik a klánvezető azonosító (leader_id).", { data });
 
+        const nameTaken = await this.clanRepository.getClan(data.name);
+
+        console.log(nameTaken);
+        
+
+        if (nameTaken) throw new BadRequestError("Ez a klán név már foglalt.",
+            {
+                data: data.name
+            });
+
         return await this.clanRepository.createClan(data);
     }
 

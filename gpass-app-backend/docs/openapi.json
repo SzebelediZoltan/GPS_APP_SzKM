@@ -686,8 +686,7 @@
         "type": "object",
         "properties": {
           "sender_id": { "type": "integer" },
-          "receiver_id": { "type": "integer" },
-          "status": { "type": "string", "enum": ["sent", "accepted"] }
+          "receiver_id": { "type": "integer" }
         },
         "required": ["sender_id", "receiver_id"]
       },

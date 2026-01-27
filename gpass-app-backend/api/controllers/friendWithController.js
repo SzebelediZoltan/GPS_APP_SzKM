@@ -11,7 +11,7 @@ exports.getAll = async (req, res, next) => {
 }
 
 exports.getById = async (req, res, next) => {
-    const id = req.params?.id;
+    const id = req.friendWithID;
 
     try {
         res.status(200).json(await friendWithService.getById(id));
@@ -33,7 +33,7 @@ exports.create = async (req, res, next) => {
 }
 
 exports.update = async (req, res, next) => {
-    const id = req.params?.id;
+    const id = req.friendWithID;
     const { status } = req.body || {};
 
     try {
@@ -45,7 +45,7 @@ exports.update = async (req, res, next) => {
 }
 
 exports.delete = async (req, res, next) => {
-    const id = req.params?.id;
+    const id = req.friendWithID;
 
     try {
         res.status(200).json(await friendWithService.delete(id));

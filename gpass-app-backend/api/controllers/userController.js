@@ -11,7 +11,7 @@ exports.getUsers = async (req, res, next) => {
 }
 
 exports.getUser = async (req, res, next) => {
-    const userID = req.params?.id || req.userID;
+    const userID = req.userID;
 
     try {
         res.status(200).json(await userService.getUser(userID));
@@ -33,7 +33,7 @@ exports.createUser = async (req, res, next) => {
 }
 
 exports.updateUser = async (req, res, next) => {
-    const userID = req.params?.id || req.userID;
+    const userID = req.userID;
     const { username, email, password, isAdmin } = req.body || {};
 
     try {
@@ -45,7 +45,7 @@ exports.updateUser = async (req, res, next) => {
 }
 
 exports.deleteUser = async (req, res, next) => {
-    const userID = req.params?.id || req.userID;
+    const userID = req.userID;
 
     try {
         res.status(200).json(await userService.deleteUser(userID));
@@ -56,7 +56,7 @@ exports.deleteUser = async (req, res, next) => {
 }
 
 exports.searchUsers = async (req, res, next) => {
-    const query = req.query?.q;
+    const query = req.query.query || "";    
 
     try {
         res.status(200).json(await userService.searchUsers(query));

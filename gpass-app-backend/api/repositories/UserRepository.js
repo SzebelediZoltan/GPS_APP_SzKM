@@ -92,12 +92,7 @@ class UserRepository {
                 {
                     where:
                     {
-                        [Op.or]:
-                            [
-                                { ID: userID },
-                                { username: userID }, // FIX
-                                { email: userID },
-                            ],
+                        ID: userID,
                     },
                 });
         }

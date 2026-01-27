@@ -36,7 +36,7 @@ api.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 api.use("/users", userRoutes);
 api.use("/auth", authRoutes);
 
-api.use("/friends", friendWithRoutes);
+api.use("/friends-with", friendWithRoutes);
 api.use("/clans", clanRoutes);
 api.use("/clan-members", clanMemberRoutes);
 api.use("/markers", markerRoutes);
