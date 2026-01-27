@@ -42,23 +42,4 @@ const db =
     ...models,
 };
 
-(async () => 
-{
-    try
-    {
-        console.log("Database synchronization started");
-
-        await db.sequelize.sync({ alter: true });
-
-        console.log("Database synchronization OK");
-    }
-    catch(error)
-    {
-        throw new DbError("Failed to synchronize database", 
-        {
-            details: error.message
-        });
-    }
-})();
-
 module.exports = db;
