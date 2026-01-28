@@ -13,6 +13,8 @@ import { Route as MapRouteImport } from './routes/map'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProfileIndexRouteImport } from './routes/profile/index'
+import { Route as ProfileFriendsRouteImport } from './routes/profile/friends'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 
@@ -36,6 +38,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfileIndexRoute = ProfileIndexRouteImport.update({
+  id: '/profile/',
+  path: '/profile/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileFriendsRoute = ProfileFriendsRouteImport.update({
+  id: '/profile/friends',
+  path: '/profile/friends',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
   id: '/auth/register',
   path: '/auth/register',
@@ -54,6 +66,8 @@ export interface FileRoutesByFullPath {
   '/map': typeof MapRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/profile/friends': typeof ProfileFriendsRoute
+  '/profile/': typeof ProfileIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -62,6 +76,8 @@ export interface FileRoutesByTo {
   '/map': typeof MapRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/profile/friends': typeof ProfileFriendsRoute
+  '/profile': typeof ProfileIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -71,6 +87,8 @@ export interface FileRoutesById {
   '/map': typeof MapRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/profile/friends': typeof ProfileFriendsRoute
+  '/profile/': typeof ProfileIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -81,8 +99,18 @@ export interface FileRouteTypes {
     | '/map'
     | '/auth/login'
     | '/auth/register'
+    | '/profile/friends'
+    | '/profile/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/contact' | '/map' | '/auth/login' | '/auth/register'
+  to:
+    | '/'
+    | '/about'
+    | '/contact'
+    | '/map'
+    | '/auth/login'
+    | '/auth/register'
+    | '/profile/friends'
+    | '/profile'
   id:
     | '__root__'
     | '/'
@@ -91,6 +119,8 @@ export interface FileRouteTypes {
     | '/map'
     | '/auth/login'
     | '/auth/register'
+    | '/profile/friends'
+    | '/profile/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -100,6 +130,8 @@ export interface RootRouteChildren {
   MapRoute: typeof MapRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
+  ProfileFriendsRoute: typeof ProfileFriendsRoute
+  ProfileIndexRoute: typeof ProfileIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -132,6 +164,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/profile/': {
+      id: '/profile/'
+      path: '/profile'
+      fullPath: '/profile/'
+      preLoaderRoute: typeof ProfileIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile/friends': {
+      id: '/profile/friends'
+      path: '/profile/friends'
+      fullPath: '/profile/friends'
+      preLoaderRoute: typeof ProfileFriendsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/register': {
       id: '/auth/register'
       path: '/auth/register'
@@ -156,6 +202,8 @@ const rootRouteChildren: RootRouteChildren = {
   MapRoute: MapRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
+  ProfileFriendsRoute: ProfileFriendsRoute,
+  ProfileIndexRoute: ProfileIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

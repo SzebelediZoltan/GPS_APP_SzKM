@@ -1,0 +1,294 @@
+import React from "react"
+import { createFileRoute, Link } from "@tanstack/react-router"
+import {
+  ShieldCheck,
+  Shield,
+  Mail,
+  MapPin,
+  Users,
+  Flag,
+  Crown,
+  Compass,
+} from "lucide-react"
+
+import { cn } from "@/lib/utils"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Separator } from "@/components/ui/separator"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+
+export const Route = createFileRoute("/profile/")({
+  component: ProfileDashboard,
+})
+
+type Friend = {
+  id: string
+  name: string
+  isAdmin: boolean
+  avatarUrl?: string
+}
+
+type Trip = {
+  id: string
+  name: string
+  dateText: string
+  status: "Tervezett" | "Folyamatban" | "Befejezve"
+}
+
+type Clan = {
+  id: string
+  name: string
+  role: "Vezető" | "Tag"
+}
+
+function ProfileDashboard() {
+  // TODO: ide jön majd a user + tripek + barátok + klánok lekérés
+  const user = {
+    name: "Csabika66",
+    email: "csabika66@gpass.local",
+    isAdmin: true,
+    avatarUrl: "/logo.png",
+  }
+
+  const trips: Trip[] = [
+    { id: "t1", name: "Miskolc → Eger", dateText: "2026.01.18", status: "Befejezve" },
+    { id: "t2", name: "Budapest kör", dateText: "2026.01.22", status: "Folyamatban" },
+    { id: "t3", name: "Balaton túra", dateText: "2026.02.01", status: "Tervezett" },
+  ]
+
+  const friends: Friend[] = [
+    { id: "f1", name: "Levente", isAdmin: false, avatarUrl: "" },
+    { id: "f2", name: "Dominik", isAdmin: true, avatarUrl: "" },
+    { id: "f3", name: "Zoli", isAdmin: false, avatarUrl: "" },
+  ]
+
+  const clans: Clan[] = [
+    { id: "c1", name: "RoadRunners", role: "Vezető" },
+    { id: "c2", name: "NightDrivers", role: "Tag" },
+  ]
+
+  return (
+    <main className="min-h-[calc(100vh-64px)] bg-background text-foreground">
+      {/* background glow */}
+      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+        <div className="absolute -top-44 left-1/2 h-130 w-130 -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,hsl(var(--primary)/0.14),transparent_60%)] blur-2xl" />
+        <div className="absolute -bottom-48 -right-30 h-130 w-130 rounded-full bg-[radial-gradient(circle_at_center,hsl(var(--ring)/0.16),transparent_60%)] blur-2xl" />
+      </div>
+
+      <div className="mx-auto w-full max-w-6xl px-4 py-8">
+        {/* Header row */}
+        <div className="mb-6 flex items-start justify-between gap-3">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/40 px-3 py-1 text-xs text-muted-foreground">
+              <Compass className="h-3.5 w-3.5" />
+              Profil
+            </div>
+            <h1 className="mt-3 text-3xl font-bold tracking-tight">Fiók áttekintés</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Itt később a profil, tripek, barátok és klánok adatai jelennek meg.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button variant="outline" className="rounded-xl" asChild>
+              <Link to="/profile/friends">Barátok</Link>
+            </Button>
+            <Button className="rounded-xl">Szerkesztés</Button>
+          </div>
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-12">
+          {/* Left: profile card */}
+          <Card className="rounded-2xl border-border/60 bg-card/60 shadow-xl backdrop-blur lg:col-span-4">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">Profil</CardTitle>
+              <CardDescription>Alapadatok és jogosultság</CardDescription>
+            </CardHeader>
+
+            <CardContent className="space-y-5">
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <Avatar className="h-16 w-16 rounded-2xl ring-1 ring-border/60">
+                    <AvatarImage src={user.avatarUrl} alt={user.name} />
+                    <AvatarFallback className="rounded-2xl">
+                      {user.name.slice(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+
+                  {/* subtle glow */}
+                  <div className="pointer-events-none absolute -inset-6 -z-10 rounded-[28px] bg-[radial-gradient(circle_at_center,hsl(var(--primary)/0.18),transparent_60%)] blur-2xl" />
+                </div>
+
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h2 className="truncate text-xl font-semibold">{user.name}</h2>
+                    <Badge
+                      variant={user.isAdmin ? "default" : "secondary"}
+                      className={cn(
+                        "rounded-full",
+                        user.isAdmin && "bg-primary text-primary-foreground"
+                      )}
+                    >
+                      {user.isAdmin ? (
+                        <span className="inline-flex items-center gap-1">
+                          <ShieldCheck className="h-3.5 w-3.5" />
+                          Admin
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1">
+                          <Shield className="h-3.5 w-3.5" />
+                          User
+                        </span>
+                      )}
+                    </Badge>
+                  </div>
+
+                  <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
+                    <Mail className="h-4 w-4" />
+                    <span className="truncate">{user.email}</span>
+                  </div>
+                </div>
+              </div>
+
+              <Separator className="bg-border/70" />
+
+              {/* Quick stats placeholders */}
+              <div className="grid grid-cols-3 gap-3">
+                <StatBox icon={<MapPin className="h-4 w-4" />} label="Tripek" value="3" />
+                <StatBox icon={<Users className="h-4 w-4" />} label="Barátok" value="3" />
+                <StatBox icon={<Flag className="h-4 w-4" />} label="Klánok" value="2" />
+              </div>
+
+              <div className="rounded-2xl border border-border/60 bg-background/40 p-3">
+                <p className="text-xs text-muted-foreground">
+                  Tipp: itt később lehet “profil szerkesztés”, “email verifikáció”, “jelszócsere”, stb.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Right: dashboard cards */}
+          <div className="grid gap-6 lg:col-span-8">
+            {/* Trips */}
+            <Card className="rounded-2xl border-border/60 bg-card/60 shadow-xl backdrop-blur">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg">Tripek</CardTitle>
+                <CardDescription>Legutóbbi és aktuális útjaid</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {trips.map((t) => (
+                  <div
+                    key={t.id}
+                    className="flex items-center justify-between gap-3 rounded-2xl border border-border/60 bg-background/40 px-4 py-3 transition hover:bg-accent/30"
+                  >
+                    <div className="min-w-0">
+                      <div className="truncate font-medium">{t.name}</div>
+                      <div className="text-xs text-muted-foreground">{t.dateText}</div>
+                    </div>
+
+                    <Badge variant="secondary" className="rounded-full">
+                      {t.status}
+                    </Badge>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* Friends preview */}
+            <Card className="rounded-2xl border-border/60 bg-card/60 shadow-xl backdrop-blur">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg">Barátok (előnézet)</CardTitle>
+                <CardDescription>Gyors áttekintés</CardDescription>
+              </CardHeader>
+              <CardContent className="grid gap-3 sm:grid-cols-2">
+                {friends.map((f) => (
+                  <div
+                    key={f.id}
+                    className="flex items-center gap-3 rounded-2xl border border-border/60 bg-background/40 px-4 py-3"
+                  >
+                    <Avatar className="h-10 w-10 rounded-xl ring-1 ring-border/60">
+                      <AvatarImage src={f.avatarUrl} alt={f.name} />
+                      <AvatarFallback className="rounded-xl">
+                        {f.name.slice(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <div className="truncate font-medium">{f.name}</div>
+                        {f.isAdmin && (
+                          <Badge className="rounded-full" variant="default">
+                            Admin
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="text-xs text-muted-foreground">Online státusz / extra infó</div>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* Clans */}
+            <Card className="rounded-2xl border-border/60 bg-card/60 shadow-xl backdrop-blur">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg">Klánok</CardTitle>
+                <CardDescription>Tagként vagy vezetőként</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {clans.map((c) => (
+                  <div
+                    key={c.id}
+                    className="flex items-center justify-between gap-3 rounded-2xl border border-border/60 bg-background/40 px-4 py-3"
+                  >
+                    <div className="min-w-0">
+                      <div className="truncate font-medium">{c.name}</div>
+                      <div className="text-xs text-muted-foreground">
+                        Szerep: {c.role}
+                      </div>
+                    </div>
+
+                    <Badge
+                      variant={c.role === "Vezető" ? "default" : "secondary"}
+                      className={cn("rounded-full", c.role === "Vezető" && "bg-primary")}
+                    >
+                      {c.role === "Vezető" ? (
+                        <span className="inline-flex items-center gap-1">
+                          <Crown className="h-3.5 w-3.5" />
+                          Vezető
+                        </span>
+                      ) : (
+                        "Tag"
+                      )}
+                    </Badge>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </main>
+  )
+}
+
+function StatBox({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode
+  label: string
+  value: string
+}) {
+  return (
+    <div className="rounded-2xl border border-border/60 bg-background/40 px-3 py-3">
+      <div className="flex items-center justify-between text-muted-foreground">
+        <span className="text-xs">{label}</span>
+        <span className="opacity-80">{icon}</span>
+      </div>
+      <div className="mt-1 text-xl font-semibold">{value}</div>
+    </div>
+  )
+}
