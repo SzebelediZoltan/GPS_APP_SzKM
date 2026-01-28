@@ -11,6 +11,7 @@ ENV NODE_ENV=production
 ENV PORT=4000
 ENV DB_USER=gpass
 ENV DB_PASSWORD=geoloc
+ENV DB_HOST=mysql
 
 EXPOSE 4000
 
