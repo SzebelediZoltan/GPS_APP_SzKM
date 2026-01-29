@@ -34,13 +34,13 @@ const errorHandler = require("./api/middlewares/errorHandler");
 app.use("/api", api);
 
 // +++ Swagger spec endpoint (külön JSON)
-app.get("/openapi.json", (req, res) => {
+api.get("/openapi.json", (req, res) => {
     res.setHeader("Content-Type", "application/json");
     res.send(swaggerDocument);
 });
 
 // +++ Swagger UI, ami ezt az abszolút útvonalat tölti
-app.use(
+api.use(
     "/api-docs",
     swaggerUi.serve,
     swaggerUi.setup(null, {
