@@ -7,792 +7,2398 @@
   },
   "servers": [
     {
+      "url": "/api",
+      "description": "Same host (recommended)"
+    },
+    {
+      "url": "https://gpass.site/api",
+      "description": "Production (HTTPS)"
+    },
+    {
       "url": "http://localhost:4000/api",
-      "description": "Local API"
+      "description": "Local"
     }
   ],
-  "tags": [
-    { "name": "auth", "description": "Bejelentkezés / kijelentkezés / státusz" },
-    { "name": "users", "description": "Felhasználók" },
-    { "name": "clans", "description": "Klánok" },
-    { "name": "clan-members", "description": "Klántagok (ClanMember)" },
-    { "name": "friends-with", "description": "Barátkérelmek / barátságok" },
-    { "name": "markers", "description": "Térképes markerek" },
-    { "name": "trips", "description": "Utak (Trip)" },
-    { "name": "trip-points", "description": "Útpontok (TripPoint)" }
-  ],
-  "paths": {
-    "/auth/login": {
-      "post": {
-        "tags": ["auth"],
-        "summary": "Bejelentkezés",
-        "description": "Bejelentkezés userID (ID/username/email) + password alapján. Siker esetén HTTP-only cookie is beállításra kerül.",
-        "requestBody": {
-          "required": true,
+"tags": [
+  {
+    "name": "auth",
+    "description": "Bejelentkezés / kijelentkezés / státusz"
+  },
+  {
+    "name": "users",
+    "description": "Felhasználók"
+  },
+  {
+    "name": "clans",
+    "description": "Klánok"
+  },
+  {
+    "name": "clan-members",
+    "description": "Klántagok (ClanMember)"
+  },
+  {
+    "name": "friends-with",
+    "description": "Barátkérelmek / barátságok"
+  },
+  {
+    "name": "markers",
+    "description": "Térképes markerek"
+  },
+  {
+    "name": "trips",
+    "description": "Utak (Trip)"
+  },
+  {
+    "name": "trip-points",
+    "description": "Útpontok (TripPoint)"
+  }
+],
+"paths": {
+  "/auth/login": {
+    "post": {
+      "tags": [
+        "auth"
+      ],
+      "summary": "Bejelentkezés",
+      "description": "Bejelentkezés userID (ID/username/email) + password alapján. Siker esetén HTTP-only cookie is beállításra kerül.",
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/LoginRequest"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Sikeres bejelentkezés (JWT token string)",
+          "headers": {
+            "Set-Cookie": {
+              "description": "Beállítja a user_token cookie-t",
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/LoginRequest" }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Sikeres bejelentkezés (JWT token string)",
-            "headers": {
-              "Set-Cookie": {
-                "description": "Beállítja a user_token cookie-t",
-                "schema": { "type": "string" }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": { "type": "string" },
-                "examples": {
-                  "token": { "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." }
+              "schema": {
+                "type": "string"
+              },
+              "examples": {
+                "token": {
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
                 }
               }
             }
-          },
-          "401": {
-            "description": "Hibás jelszó",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/MessageResponse" },
-                "examples": {
-                  "hiba": { "value": { "message": "Helytelen jelszó" } }
+          }
+        },
+        "401": {
+          "description": "Hibás jelszó",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessageResponse"
+              },
+              "examples": {
+                "hiba": {
+                  "value": {
+                    "message": "Helytelen jelszó"
+                  }
                 }
               }
             }
-          },
-          "404": { "description": "Felhasználó nem található", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } },
-          "400": { "description": "Hibás kérés", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } },
-          "500": { "description": "Szerver hiba", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
-        }
-      }
-    },
-    "/auth/status": {
-      "get": {
-        "tags": ["auth"],
-        "summary": "Bejelentkezési státusz",
-        "description": "Visszaadja a tokenből dekódolt felhasználót (req.user).",
-        "security": [{ "cookieAuth": [] }],
-        "responses": {
-          "200": {
-            "description": "Be van jelentkezve",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/AuthUser" }
+          }
+        },
+        "404": {
+          "description": "Felhasználó nem található",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ErrorResponse"
               }
             }
-          },
-          "401": {
-            "description": "Nincs bejelentkezve",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        },
+        "400": {
+          "description": "Hibás kérés",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ErrorResponse"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Szerver hiba",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ErrorResponse"
               }
             }
           }
         }
-      }
-    },
-    "/auth/logout": {
-      "delete": {
-        "tags": ["auth"],
-        "summary": "Kijelentkezés",
-        "description": "Törli a user_token cookie-t.",
-        "responses": {
-          "200": { "description": "Sikeres kijelentkezés" }
-        }
-      }
-    },
-
-    "/users": {
-      "get": {
-        "tags": ["users"],
-        "summary": "Felhasználók listázása (admin)",
-        "security": [{ "cookieAuth": [] }],
-        "responses": {
-          "200": {
-            "description": "Felhasználók listája",
-            "content": {
-              "application/json": {
-                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/UserPublic" } }
-              }
-            }
-          },
-          "401": { "description": "Nincs jogosultság / nincs bejelentkezve", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
-        }
-      },
-      "post": {
-        "tags": ["users"],
-        "summary": "Regisztráció (public)",
-        "requestBody": {
-          "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UserCreate" } } }
-        },
-        "responses": {
-          "201": { "description": "Sikeres létrehozás", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UserPublic" } } } },
-          "400": { "description": "Validáció / foglaltság hiba", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } },
-          "500": { "description": "Szerver hiba", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
-        }
-      }
-    },
-    "/users/search": {
-      "get": {
-        "tags": ["users"],
-        "summary": "Felhasználók keresése",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [
-          { "name": "query", "in": "query", "required": true, "schema": { "type": "string" }, "description": "Keresési kifejezés (username/email)" }
-        ],
-        "responses": {
-          "200": {
-            "description": "Találatok",
-            "content": {
-              "application/json": {
-                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/UserPublic" } }
-              }
-            }
-          },
-          "400": { "description": "Hiányzó query", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } },
-          "401": { "description": "Nincs bejelentkezve", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
-        }
-      }
-    },
-    "/users/{userID}": {
-      "get": {
-        "tags": ["users"],
-        "summary": "Egy felhasználó lekérése",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [{ "name": "userID", "in": "path", "required": true, "schema": { "type": "string" } }],
-        "responses": {
-          "200": { "description": "User", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UserPublic" } } } },
-          "404": { "description": "Nem található", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
-        }
-      },
-      "put": {
-        "tags": ["users"],
-        "summary": "Felhasználó módosítása",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [{ "name": "userID", "in": "path", "required": true, "schema": { "type": "string" } }],
-        "requestBody": {
-          "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UserUpdate" } } }
-        },
-        "responses": {
-          "200": { "description": "Frissített user", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UserPublic" } } } },
-          "400": { "description": "Hibás payload / foglaltság", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } },
-          "404": { "description": "Nem található", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
-        }
-      },
-      "delete": {
-        "tags": ["users"],
-        "summary": "Felhasználó törlése (admin)",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [{ "name": "userID", "in": "path", "required": true, "schema": { "type": "string" } }],
-        "responses": {
-          "200": { "description": "Törölve" },
-          "404": { "description": "Nem található", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
-        }
-      }
-    },
-
-    "/clans": {
-      "get": {
-        "tags": ["clans"],
-        "summary": "Klánok listázása (logged in)",
-        "security": [{ "cookieAuth": [] }],
-        "responses": {
-          "200": { "description": "Lista", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Clan" } } } } }
-        }
-      },
-      "post": {
-        "tags": ["clans"],
-        "summary": "Klán létrehozása (logged in)",
-        "security": [{ "cookieAuth": [] }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ClanCreate" } } } },
-        "responses": {
-          "201": { "description": "Létrehozva", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Clan" } } } },
-          "400": { "description": "Validáció hiba", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
-        }
-      }
-    },
-    "/clans/search": {
-      "get": {
-        "tags": ["clans"],
-        "summary": "Klánok keresése (logged in)",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [{ "name": "query", "in": "query", "required": true, "schema": { "type": "string" } }],
-        "responses": {
-          "200": { "description": "Találatok", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Clan" } } } } }
-        }
-      }
-    },
-    "/clans/{clanID}": {
-      "get": {
-        "tags": ["clans"],
-        "summary": "Klán lekérése (logged in)",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [{ "name": "clanID", "in": "path", "required": true, "schema": { "type": "string" } }],
-        "responses": { "200": { "description": "Clan", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Clan" } } } } }
-      },
-      "put": {
-        "tags": ["clans"],
-        "summary": "Klán módosítása (logged in)",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [{ "name": "clanID", "in": "path", "required": true, "schema": { "type": "string" } }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ClanUpdate" } } } },
-        "responses": { "200": { "description": "Frissítve", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Clan" } } } } }
-      },
-      "delete": {
-        "tags": ["clans"],
-        "summary": "Klán törlése (logged in)",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [{ "name": "clanID", "in": "path", "required": true, "schema": { "type": "string" } }],
-        "responses": { "200": { "description": "Törölve" } }
-      }
-    },
-
-    "/clan-members": {
-      "get": {
-        "tags": ["clan-members"],
-        "summary": "Klántagságok listázása (admin)",
-        "security": [{ "cookieAuth": [] }],
-        "responses": {
-          "200": {
-            "description": "Lista",
-            "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ClanMember" } } } }
-          }
-        }
-      },
-      "post": {
-        "tags": ["clan-members"],
-        "summary": "Klántag hozzáadása",
-        "security": [{ "cookieAuth": [] }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ClanMemberCreate" } } } },
-        "responses": { "201": { "description": "Hozzáadva", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ClanMember" } } } } }
-      }
-    },
-    "/clan-members/by-clan/{clanId}": {
-      "get": {
-        "tags": ["clan-members"],
-        "summary": "Tagok listája klán szerint",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [{ "name": "clanId", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Lista", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ClanMember" } } } } } }
-      }
-    },
-    "/clan-members/by-user/{userId}": {
-      "get": {
-        "tags": ["clan-members"],
-        "summary": "Klántagságok user szerint",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [{ "name": "userId", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Lista", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ClanMember" } } } } } }
-      }
-    },
-    "/clan-members/{clanId}/{userId}": {
-      "get": {
-        "tags": ["clan-members"],
-        "summary": "Egy klántagság lekérése",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [
-          { "name": "clanId", "in": "path", "required": true, "schema": { "type": "integer" } },
-          { "name": "userId", "in": "path", "required": true, "schema": { "type": "integer" } }
-        ],
-        "responses": { "200": { "description": "ClanMember", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ClanMember" } } } } }
-      },
-      "delete": {
-        "tags": ["clan-members"],
-        "summary": "Klántag eltávolítása",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [
-          { "name": "clanId", "in": "path", "required": true, "schema": { "type": "integer" } },
-          { "name": "userId", "in": "path", "required": true, "schema": { "type": "integer" } }
-        ],
-        "responses": { "200": { "description": "Törölve" } }
-      }
-    },
-
-    "/friends-with": {
-      "get": {
-        "tags": ["friends-with"],
-        "summary": "Összes barátság/kérés (admin)",
-        "security": [{ "cookieAuth": [] }],
-        "responses": { "200": { "description": "Lista", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/FriendWith" } } } } } }
-      },
-      "post": {
-        "tags": ["friends-with"],
-        "summary": "Barátkérelem létrehozása",
-        "security": [{ "cookieAuth": [] }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FriendWithCreate" } } } },
-        "responses": { "201": { "description": "Létrehozva", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FriendWith" } } } } }
-      }
-    },
-    "/friends-with/pending/{userId}": {
-      "get": {
-        "tags": ["friends-with"],
-        "summary": "Pending (sent) kérelmek egy userhez",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [{ "name": "userId", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Lista", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/FriendWith" } } } } } }
-      }
-    },
-    "/friends-with/accepted/{userId}": {
-      "get": {
-        "tags": ["friends-with"],
-        "summary": "Elfogadott barátságok egy userhez",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [{ "name": "userId", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Lista", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/FriendWith" } } } } } }
-      }
-    },
-    "/friends-with/{id}": {
-      "get": {
-        "tags": ["friends-with"],
-        "summary": "Egy friendWith lekérése (admin)",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "FriendWith", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FriendWith" } } } } }
-      },
-      "put": {
-        "tags": ["friends-with"],
-        "summary": "FriendWith módosítása",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FriendWithUpdate" } } } },
-        "responses": { "200": { "description": "Frissítve", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FriendWith" } } } } }
-      },
-      "delete": {
-        "tags": ["friends-with"],
-        "summary": "FriendWith törlése",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Törölve" } }
-      }
-    },
-
-    "/markers": {
-      "get": {
-        "tags": ["markers"],
-        "summary": "Markerek listázása (admin)",
-        "security": [{ "cookieAuth": [] }],
-        "responses": { "200": { "description": "Lista", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Marker" } } } } } }
-      },
-      "post": {
-        "tags": ["markers"],
-        "summary": "Marker létrehozása",
-        "security": [{ "cookieAuth": [] }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MarkerCreate" } } } },
-        "responses": { "201": { "description": "Létrehozva", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Marker" } } } } }
-      }
-    },
-    "/markers/box": {
-      "get": {
-        "tags": ["markers"],
-        "summary": "Markerek lekérése bounding box alapján",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [
-          { "name": "minLat", "in": "query", "required": true, "schema": { "type": "number" } },
-          { "name": "maxLat", "in": "query", "required": true, "schema": { "type": "number" } },
-          { "name": "minLng", "in": "query", "required": true, "schema": { "type": "number" } },
-          { "name": "maxLng", "in": "query", "required": true, "schema": { "type": "number" } }
-        ],
-        "responses": { "200": { "description": "Lista", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Marker" } } } } } }
-      }
-    },
-    "/markers/type/{markerType}": {
-      "get": {
-        "tags": ["markers"],
-        "summary": "Markerek típus szerint",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [{ "name": "markerType", "in": "path", "required": true, "schema": { "type": "string" } }],
-        "responses": { "200": { "description": "Lista", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Marker" } } } } } }
-      }
-    },
-    "/markers/creator/{userId}": {
-      "get": {
-        "tags": ["markers"],
-        "summary": "Markerek létrehozó szerint",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [{ "name": "userId", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Lista", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Marker" } } } } } }
-      }
-    },
-    "/markers/{markerID}": {
-      "get": {
-        "tags": ["markers"],
-        "summary": "Egy marker lekérése",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [{ "name": "markerID", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Marker", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Marker" } } } } }
-      },
-      "put": {
-        "tags": ["markers"],
-        "summary": "Marker módosítása",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [{ "name": "markerID", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MarkerUpdate" } } } },
-        "responses": { "200": { "description": "Frissítve", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Marker" } } } } }
-      },
-      "delete": {
-        "tags": ["markers"],
-        "summary": "Marker törlése (admin)",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [{ "name": "markerID", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Törölve" } }
-      }
-    },
-
-    "/trips": {
-      "get": {
-        "tags": ["trips"],
-        "summary": "Trip-ek listázása",
-        "security": [{ "cookieAuth": [] }],
-        "responses": { "200": { "description": "Lista", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Trip" } } } } } }
-      },
-      "post": {
-        "tags": ["trips"],
-        "summary": "Trip létrehozása",
-        "security": [{ "cookieAuth": [] }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TripCreate" } } } },
-        "responses": { "201": { "description": "Létrehozva", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Trip" } } } } }
-      }
-    },
-    "/trips/by-user/{userId}": {
-      "get": {
-        "tags": ["trips"],
-        "summary": "Trip-ek user szerint",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [{ "name": "userId", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Lista", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Trip" } } } } } }
-      }
-    },
-    "/trips/by-user/{userId}/number/{tripNumber}": {
-      "get": {
-        "tags": ["trips"],
-        "summary": "Trip lekérése user + trip_number alapján",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [
-          { "name": "userId", "in": "path", "required": true, "schema": { "type": "integer" } },
-          { "name": "tripNumber", "in": "path", "required": true, "schema": { "type": "integer" } }
-        ],
-        "responses": { "200": { "description": "Trip", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Trip" } } } } }
-      }
-    },
-    "/trips/{tripID}": {
-      "get": {
-        "tags": ["trips"],
-        "summary": "Egy trip lekérése",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [{ "name": "tripID", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Trip", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Trip" } } } } }
-      },
-      "put": {
-        "tags": ["trips"],
-        "summary": "Trip módosítása",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [{ "name": "tripID", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TripUpdate" } } } },
-        "responses": { "200": { "description": "Frissítve", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Trip" } } } } }
-      },
-      "delete": {
-        "tags": ["trips"],
-        "summary": "Trip törlése (admin)",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [{ "name": "tripID", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Törölve" } }
-      }
-    },
-
-    "/trip-points": {
-      "get": {
-        "tags": ["trip-points"],
-        "summary": "TripPointok listázása",
-        "security": [{ "cookieAuth": [] }],
-        "responses": { "200": { "description": "Lista", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/TripPoint" } } } } } }
-      },
-      "post": {
-        "tags": ["trip-points"],
-        "summary": "TripPoint létrehozása",
-        "security": [{ "cookieAuth": [] }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TripPointCreate" } } } },
-        "responses": { "201": { "description": "Létrehozva", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TripPoint" } } } } }
-      }
-    },
-    "/trip-points/by-trip/{tripId}": {
-      "get": {
-        "tags": ["trip-points"],
-        "summary": "Trip pontjai trip_id szerint",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [{ "name": "tripId", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Lista", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/TripPoint" } } } } } }
-      }
-    },
-    "/trip-points/{pointID}": {
-      "get": {
-        "tags": ["trip-points"],
-        "summary": "Egy TripPoint lekérése",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [{ "name": "pointID", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "TripPoint", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TripPoint" } } } } }
-      },
-      "put": {
-        "tags": ["trip-points"],
-        "summary": "TripPoint módosítása",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [{ "name": "pointID", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TripPointUpdate" } } } },
-        "responses": { "200": { "description": "Frissítve", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TripPoint" } } } } }
-      },
-      "delete": {
-        "tags": ["trip-points"],
-        "summary": "TripPoint törlése (admin)",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [{ "name": "pointID", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Törölve" } }
       }
     }
   },
-  "components": {
-    "securitySchemes": {
-      "cookieAuth": {
-        "type": "apiKey",
-        "in": "cookie",
-        "name": "user_token"
+  "/auth/status": {
+    "get": {
+      "tags": [
+        "auth"
+      ],
+      "summary": "Bejelentkezési státusz",
+      "description": "Visszaadja a tokenből dekódolt felhasználót (req.user).",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Be van jelentkezve",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthUser"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Nincs bejelentkezve",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ErrorResponse"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/auth/logout": {
+    "delete": {
+      "tags": [
+        "auth"
+      ],
+      "summary": "Kijelentkezés",
+      "description": "Törli a user_token cookie-t.",
+      "responses": {
+        "200": {
+          "description": "Sikeres kijelentkezés"
+        }
+      }
+    }
+  },
+  "/users": {
+    "get": {
+      "tags": [
+        "users"
+      ],
+      "summary": "Felhasználók listázása (admin)",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Felhasználók listája",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/UserPublic"
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Nincs jogosultság / nincs bejelentkezve",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ErrorResponse"
+              }
+            }
+          }
+        }
       }
     },
-    "schemas": {
-      "ErrorResponse": {
-        "type": "object",
-        "properties": {
-          "message": { "type": "string" },
-          "statusCode": { "type": "integer" },
-          "isOperational": { "type": "boolean" },
-          "details": { "type": "object" }
+    "post": {
+      "tags": [
+        "users"
+      ],
+      "summary": "Regisztráció (public)",
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UserCreate"
+            }
+          }
         }
       },
-      "MessageResponse": {
-        "type": "object",
-        "properties": {
-          "message": { "type": "string" }
+      "responses": {
+        "201": {
+          "description": "Sikeres létrehozás",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserPublic"
+              }
+            }
+          }
         },
-        "required": ["message"]
-      },
-      "LoginRequest": {
-        "type": "object",
-        "properties": {
-          "userID": { "type": "string", "description": "ID / username / email" },
-          "password": { "type": "string" }
+        "400": {
+          "description": "Validáció / foglaltság hiba",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ErrorResponse"
+              }
+            }
+          }
         },
-        "required": ["userID", "password"]
-      },
-      "AuthUser": {
-        "type": "object",
-        "properties": {
-          "ID": { "type": "integer" },
-          "username": { "type": "string" },
-          "email": { "type": "string" },
-          "isAdmin": { "type": "boolean" }
+        "500": {
+          "description": "Szerver hiba",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ErrorResponse"
+              }
+            }
+          }
         }
-      },
-      "UserPublic": {
-        "type": "object",
-        "properties": {
-          "ID": { "type": "integer" },
-          "username": { "type": "string" },
-          "email": { "type": "string" },
-          "isAdmin": { "type": "boolean" }
-        },
-        "required": ["ID", "username", "email", "isAdmin"]
-      },
-      "UserCreate": {
-        "type": "object",
-        "properties": {
-          "username": { "type": "string" },
-          "email": { "type": "string" },
-          "password": { "type": "string" }
-        },
-        "required": ["username", "email", "password"]
-      },
-      "UserUpdate": {
-        "type": "object",
-        "properties": {
-          "username": { "type": "string" },
-          "email": { "type": "string" },
-          "password": { "type": "string" },
-          "isAdmin": { "type": "boolean" }
+      }
+    }
+  },
+  "/users/search": {
+    "get": {
+      "tags": [
+        "users"
+      ],
+      "summary": "Felhasználók keresése",
+      "security": [
+        {
+          "cookieAuth": []
         }
-      },
-
-      "Clan": {
-        "type": "object",
-        "properties": {
-          "id": { "type": "integer" },
-          "name": { "type": "string" },
-          "leader_id": { "type": "integer" },
-          "created_at": { "type": "string", "format": "date-time" }
-        },
-        "required": ["id", "name", "leader_id", "created_at"]
-      },
-      "ClanCreate": {
-        "type": "object",
-        "properties": {
-          "name": { "type": "string" },
-          "leader_id": { "type": "integer" }
-        },
-        "required": ["name", "leader_id"]
-      },
-      "ClanUpdate": {
-        "type": "object",
-        "properties": {
-          "name": { "type": "string" },
-          "leader_id": { "type": "integer" }
-        }
-      },
-
-      "ClanMember": {
-        "type": "object",
-        "properties": {
-          "clan_id": { "type": "integer" },
-          "user_id": { "type": "integer" },
-          "joined_at": { "type": "string", "format": "date-time" }
-        },
-        "required": ["clan_id", "user_id", "joined_at"]
-      },
-      "ClanMemberCreate": {
-        "type": "object",
-        "properties": {
-          "clan_id": { "type": "integer" },
-          "user_id": { "type": "integer" }
-        },
-        "required": ["clan_id", "user_id"]
-      },
-
-      "FriendWith": {
-        "type": "object",
-        "properties": {
-          "id": { "type": "integer" },
-          "sender_id": { "type": "integer" },
-          "receiver_id": { "type": "integer" },
-          "status": { "type": "string", "enum": ["sent", "accepted"] },
-          "created_at": { "type": "string", "format": "date-time" },
-          "responded_at": { "type": "string", "format": "date-time", "nullable": true }
-        },
-        "required": ["id", "sender_id", "receiver_id", "status", "created_at"]
-      },
-      "FriendWithCreate": {
-        "type": "object",
-        "properties": {
-          "sender_id": { "type": "integer" },
-          "receiver_id": { "type": "integer" }
-        },
-        "required": ["sender_id", "receiver_id"]
-      },
-      "FriendWithUpdate": {
-        "type": "object",
-        "properties": {
-          "status": { "type": "string", "enum": ["sent", "accepted"] }
-        }
-      },
-
-      "Marker": {
-        "type": "object",
-        "properties": {
-          "id": { "type": "integer" },
-          "creator_id": { "type": "integer" },
-          "marker_type": {
-            "type": "string",
-            "enum": ["danger", "police", "accident", "traffic", "roadblock", "speedtrap", "other"]
+      ],
+      "parameters": [
+        {
+          "name": "query",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
           },
-          "score": { "type": "integer" },
-          "lat": { "type": "number" },
-          "lng": { "type": "number" },
-          "created_at": { "type": "string", "format": "date-time" }
+          "description": "Keresési kifejezés (username/email)"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Találatok",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/UserPublic"
+                }
+              }
+            }
+          }
         },
-        "required": ["id", "creator_id", "marker_type", "score", "lat", "lng", "created_at"]
-      },
-      "MarkerCreate": {
-        "type": "object",
-        "properties": {
-          "creator_id": { "type": "integer" },
-          "marker_type": {
-            "type": "string",
-            "enum": ["danger", "police", "accident", "traffic", "roadblock", "speedtrap", "other"]
-          },
-          "lat": { "type": "number" },
-          "lng": { "type": "number" }
+        "400": {
+          "description": "Hiányzó query",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ErrorResponse"
+              }
+            }
+          }
         },
-        "required": ["creator_id", "marker_type", "lat", "lng"]
-      },
-      "MarkerUpdate": {
-        "type": "object",
-        "properties": {
-          "marker_type": {
-            "type": "string",
-            "enum": ["danger", "police", "accident", "traffic", "roadblock", "speedtrap", "other"]
-          },
-          "score": { "type": "integer" },
-          "lat": { "type": "number" },
-          "lng": { "type": "number" }
+        "401": {
+          "description": "Nincs bejelentkezve",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ErrorResponse"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/users/{userID}": {
+    "get": {
+      "tags": [
+        "users"
+      ],
+      "summary": "Egy felhasználó lekérése",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "userID",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "User",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserPublic"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Nem található",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ErrorResponse"
+              }
+            }
+          }
+        }
+      }
+    },
+    "put": {
+      "tags": [
+        "users"
+      ],
+      "summary": "Felhasználó módosítása",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "userID",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UserUpdate"
+            }
+          }
         }
       },
-
-      "Trip": {
-        "type": "object",
-        "properties": {
-          "id": { "type": "integer" },
-          "user_id": { "type": "integer" },
-          "trip_number": { "type": "integer" },
-          "created_at": { "type": "string", "format": "date-time" }
+      "responses": {
+        "200": {
+          "description": "Frissített user",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserPublic"
+              }
+            }
+          }
         },
-        "required": ["id", "user_id", "trip_number", "created_at"]
-      },
-      "TripCreate": {
-        "type": "object",
-        "properties": {
-          "user_id": { "type": "integer" },
-          "trip_number": { "type": "integer" }
+        "400": {
+          "description": "Hibás payload / foglaltság",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ErrorResponse"
+              }
+            }
+          }
         },
-        "required": ["user_id", "trip_number"]
-      },
-      "TripUpdate": {
-        "type": "object",
-        "properties": {
-          "user_id": { "type": "integer" },
-          "trip_number": { "type": "integer" }
+        "404": {
+          "description": "Nem található",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ErrorResponse"
+              }
+            }
+          }
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "users"
+      ],
+      "summary": "Felhasználó törlése (admin)",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "userID",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Törölve"
+        },
+        "404": {
+          "description": "Nem található",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ErrorResponse"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/clans": {
+    "get": {
+      "tags": [
+        "clans"
+      ],
+      "summary": "Klánok listázása (logged in)",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Lista",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Clan"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "post": {
+      "tags": [
+        "clans"
+      ],
+      "summary": "Klán létrehozása (logged in)",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ClanCreate"
+            }
+          }
         }
       },
-
-      "TripPoint": {
-        "type": "object",
-        "properties": {
-          "id": { "type": "integer" },
-          "trip_id": { "type": "integer" },
-          "lat": { "type": "number" },
-          "lng": { "type": "number" },
-          "recorded_at": { "type": "string", "format": "date-time" }
+      "responses": {
+        "201": {
+          "description": "Létrehozva",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Clan"
+              }
+            }
+          }
         },
-        "required": ["id", "trip_id", "lat", "lng", "recorded_at"]
+        "400": {
+          "description": "Validáció hiba",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ErrorResponse"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/clans/search": {
+    "get": {
+      "tags": [
+        "clans"
+      ],
+      "summary": "Klánok keresése (logged in)",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "query",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Találatok",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Clan"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/clans/{clanID}": {
+    "get": {
+      "tags": [
+        "clans"
+      ],
+      "summary": "Klán lekérése (logged in)",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "clanID",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Clan",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Clan"
+              }
+            }
+          }
+        }
+      }
+    },
+    "put": {
+      "tags": [
+        "clans"
+      ],
+      "summary": "Klán módosítása (logged in)",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "clanID",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ClanUpdate"
+            }
+          }
+        }
       },
-      "TripPointCreate": {
-        "type": "object",
-        "properties": {
-          "trip_id": { "type": "integer" },
-          "lat": { "type": "number" },
-          "lng": { "type": "number" }
+      "responses": {
+        "200": {
+          "description": "Frissítve",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Clan"
+              }
+            }
+          }
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "clans"
+      ],
+      "summary": "Klán törlése (logged in)",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "clanID",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Törölve"
+        }
+      }
+    }
+  },
+  "/clan-members": {
+    "get": {
+      "tags": [
+        "clan-members"
+      ],
+      "summary": "Klántagságok listázása (admin)",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Lista",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ClanMember"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "post": {
+      "tags": [
+        "clan-members"
+      ],
+      "summary": "Klántag hozzáadása",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ClanMemberCreate"
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Hozzáadva",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClanMember"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/clan-members/by-clan/{clanId}": {
+    "get": {
+      "tags": [
+        "clan-members"
+      ],
+      "summary": "Tagok listája klán szerint",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "clanId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Lista",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ClanMember"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/clan-members/by-user/{userId}": {
+    "get": {
+      "tags": [
+        "clan-members"
+      ],
+      "summary": "Klántagságok user szerint",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Lista",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ClanMember"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/clan-members/{clanId}/{userId}": {
+    "get": {
+      "tags": [
+        "clan-members"
+      ],
+      "summary": "Egy klántagság lekérése",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "clanId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
         },
-        "required": ["trip_id", "lat", "lng", "recorded_at"]
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "ClanMember",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClanMember"
+              }
+            }
+          }
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "clan-members"
+      ],
+      "summary": "Klántag eltávolítása",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "clanId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Törölve"
+        }
+      }
+    }
+  },
+  "/friends-with": {
+    "get": {
+      "tags": [
+        "friends-with"
+      ],
+      "summary": "Összes barátság/kérés (admin)",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Lista",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/FriendWith"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "post": {
+      "tags": [
+        "friends-with"
+      ],
+      "summary": "Barátkérelem létrehozása",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/FriendWithCreate"
+            }
+          }
+        }
       },
-      "TripPointUpdate": {
-        "type": "object",
-        "properties": {
-          "lat": { "type": "number" },
-          "lng": { "type": "number" },
-          "recorded_at": { "type": "string", "format": "date-time" }
+      "responses": {
+        "201": {
+          "description": "Létrehozva",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FriendWith"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/friends-with/pending/{userId}": {
+    "get": {
+      "tags": [
+        "friends-with"
+      ],
+      "summary": "Pending (sent) kérelmek egy userhez",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Lista",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/FriendWith"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/friends-with/accepted/{userId}": {
+    "get": {
+      "tags": [
+        "friends-with"
+      ],
+      "summary": "Elfogadott barátságok egy userhez",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Lista",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/FriendWith"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/friends-with/{id}": {
+    "get": {
+      "tags": [
+        "friends-with"
+      ],
+      "summary": "Egy friendWith lekérése (admin)",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "FriendWith",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FriendWith"
+              }
+            }
+          }
+        }
+      }
+    },
+    "put": {
+      "tags": [
+        "friends-with"
+      ],
+      "summary": "FriendWith módosítása",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/FriendWithUpdate"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Frissítve",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FriendWith"
+              }
+            }
+          }
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "friends-with"
+      ],
+      "summary": "FriendWith törlése",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Törölve"
+        }
+      }
+    }
+  },
+  "/markers": {
+    "get": {
+      "tags": [
+        "markers"
+      ],
+      "summary": "Markerek listázása (admin)",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Lista",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Marker"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "post": {
+      "tags": [
+        "markers"
+      ],
+      "summary": "Marker létrehozása",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/MarkerCreate"
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Létrehozva",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Marker"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/markers/box": {
+    "get": {
+      "tags": [
+        "markers"
+      ],
+      "summary": "Markerek lekérése bounding box alapján",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "minLat",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "maxLat",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "minLng",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "maxLng",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "number"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Lista",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Marker"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/markers/type/{markerType}": {
+    "get": {
+      "tags": [
+        "markers"
+      ],
+      "summary": "Markerek típus szerint",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "markerType",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Lista",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Marker"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/markers/creator/{userId}": {
+    "get": {
+      "tags": [
+        "markers"
+      ],
+      "summary": "Markerek létrehozó szerint",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Lista",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Marker"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/markers/{markerID}": {
+    "get": {
+      "tags": [
+        "markers"
+      ],
+      "summary": "Egy marker lekérése",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "markerID",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Marker",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Marker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "put": {
+      "tags": [
+        "markers"
+      ],
+      "summary": "Marker módosítása",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "markerID",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/MarkerUpdate"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Frissítve",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Marker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "markers"
+      ],
+      "summary": "Marker törlése (admin)",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "markerID",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Törölve"
+        }
+      }
+    }
+  },
+  "/trips": {
+    "get": {
+      "tags": [
+        "trips"
+      ],
+      "summary": "Trip-ek listázása",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Lista",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Trip"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "post": {
+      "tags": [
+        "trips"
+      ],
+      "summary": "Trip létrehozása",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/TripCreate"
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Létrehozva",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Trip"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/trips/by-user/{userId}": {
+    "get": {
+      "tags": [
+        "trips"
+      ],
+      "summary": "Trip-ek user szerint",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Lista",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Trip"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/trips/by-user/{userId}/number/{tripNumber}": {
+    "get": {
+      "tags": [
+        "trips"
+      ],
+      "summary": "Trip lekérése user + trip_number alapján",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "tripNumber",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Trip",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Trip"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/trips/{tripID}": {
+    "get": {
+      "tags": [
+        "trips"
+      ],
+      "summary": "Egy trip lekérése",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "tripID",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Trip",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Trip"
+              }
+            }
+          }
+        }
+      }
+    },
+    "put": {
+      "tags": [
+        "trips"
+      ],
+      "summary": "Trip módosítása",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "tripID",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/TripUpdate"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Frissítve",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Trip"
+              }
+            }
+          }
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "trips"
+      ],
+      "summary": "Trip törlése (admin)",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "tripID",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Törölve"
+        }
+      }
+    }
+  },
+  "/trip-points": {
+    "get": {
+      "tags": [
+        "trip-points"
+      ],
+      "summary": "TripPointok listázása",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Lista",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TripPoint"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "post": {
+      "tags": [
+        "trip-points"
+      ],
+      "summary": "TripPoint létrehozása",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/TripPointCreate"
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Létrehozva",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TripPoint"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/trip-points/by-trip/{tripId}": {
+    "get": {
+      "tags": [
+        "trip-points"
+      ],
+      "summary": "Trip pontjai trip_id szerint",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "tripId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Lista",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TripPoint"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/trip-points/{pointID}": {
+    "get": {
+      "tags": [
+        "trip-points"
+      ],
+      "summary": "Egy TripPoint lekérése",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "pointID",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "TripPoint",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TripPoint"
+              }
+            }
+          }
+        }
+      }
+    },
+    "put": {
+      "tags": [
+        "trip-points"
+      ],
+      "summary": "TripPoint módosítása",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "pointID",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/TripPointUpdate"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Frissítve",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TripPoint"
+              }
+            }
+          }
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "trip-points"
+      ],
+      "summary": "TripPoint törlése (admin)",
+      "security": [
+        {
+          "cookieAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "pointID",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Törölve"
         }
       }
     }
   }
+},
+"components": {
+  "securitySchemes": {
+    "cookieAuth": {
+      "type": "apiKey",
+      "in": "cookie",
+      "name": "user_token"
+    }
+  },
+  "schemas": {
+    "ErrorResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "statusCode": {
+          "type": "integer"
+        },
+        "isOperational": {
+          "type": "boolean"
+        },
+        "details": {
+          "type": "object"
+        }
+      }
+    },
+    "MessageResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "message"
+      ]
+    },
+    "LoginRequest": {
+      "type": "object",
+      "properties": {
+        "userID": {
+          "type": "string",
+          "description": "ID / username / email"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "userID",
+        "password"
+      ]
+    },
+    "AuthUser": {
+      "type": "object",
+      "properties": {
+        "ID": {
+          "type": "integer"
+        },
+        "username": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "isAdmin": {
+          "type": "boolean"
+        }
+      }
+    },
+    "UserPublic": {
+      "type": "object",
+      "properties": {
+        "ID": {
+          "type": "integer"
+        },
+        "username": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "isAdmin": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "ID",
+        "username",
+        "email",
+        "isAdmin"
+      ]
+    },
+    "UserCreate": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "username",
+        "email",
+        "password"
+      ]
+    },
+    "UserUpdate": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "isAdmin": {
+          "type": "boolean"
+        }
+      }
+    },
+    "Clan": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "leader_id": {
+          "type": "integer"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "leader_id",
+        "created_at"
+      ]
+    },
+    "ClanCreate": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "leader_id": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "name",
+        "leader_id"
+      ]
+    },
+    "ClanUpdate": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "leader_id": {
+          "type": "integer"
+        }
+      }
+    },
+    "ClanMember": {
+      "type": "object",
+      "properties": {
+        "clan_id": {
+          "type": "integer"
+        },
+        "user_id": {
+          "type": "integer"
+        },
+        "joined_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "clan_id",
+        "user_id",
+        "joined_at"
+      ]
+    },
+    "ClanMemberCreate": {
+      "type": "object",
+      "properties": {
+        "clan_id": {
+          "type": "integer"
+        },
+        "user_id": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "clan_id",
+        "user_id"
+      ]
+    },
+    "FriendWith": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "sender_id": {
+          "type": "integer"
+        },
+        "receiver_id": {
+          "type": "integer"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "sent",
+            "accepted"
+          ]
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "responded_at": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true
+        }
+      },
+      "required": [
+        "id",
+        "sender_id",
+        "receiver_id",
+        "status",
+        "created_at"
+      ]
+    },
+    "FriendWithCreate": {
+      "type": "object",
+      "properties": {
+        "sender_id": {
+          "type": "integer"
+        },
+        "receiver_id": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "sender_id",
+        "receiver_id"
+      ]
+    },
+    "FriendWithUpdate": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "sent",
+            "accepted"
+          ]
+        }
+      }
+    },
+    "Marker": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "creator_id": {
+          "type": "integer"
+        },
+        "marker_type": {
+          "type": "string",
+          "enum": [
+            "danger",
+            "police",
+            "accident",
+            "traffic",
+            "roadblock",
+            "speedtrap",
+            "other"
+          ]
+        },
+        "score": {
+          "type": "integer"
+        },
+        "lat": {
+          "type": "number"
+        },
+        "lng": {
+          "type": "number"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "creator_id",
+        "marker_type",
+        "score",
+        "lat",
+        "lng",
+        "created_at"
+      ]
+    },
+    "MarkerCreate": {
+      "type": "object",
+      "properties": {
+        "creator_id": {
+          "type": "integer"
+        },
+        "marker_type": {
+          "type": "string",
+          "enum": [
+            "danger",
+            "police",
+            "accident",
+            "traffic",
+            "roadblock",
+            "speedtrap",
+            "other"
+          ]
+        },
+        "lat": {
+          "type": "number"
+        },
+        "lng": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "creator_id",
+        "marker_type",
+        "lat",
+        "lng"
+      ]
+    },
+    "MarkerUpdate": {
+      "type": "object",
+      "properties": {
+        "marker_type": {
+          "type": "string",
+          "enum": [
+            "danger",
+            "police",
+            "accident",
+            "traffic",
+            "roadblock",
+            "speedtrap",
+            "other"
+          ]
+        },
+        "score": {
+          "type": "integer"
+        },
+        "lat": {
+          "type": "number"
+        },
+        "lng": {
+          "type": "number"
+        }
+      }
+    },
+    "Trip": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "user_id": {
+          "type": "integer"
+        },
+        "trip_number": {
+          "type": "integer"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "user_id",
+        "trip_number",
+        "created_at"
+      ]
+    },
+    "TripCreate": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "integer"
+        },
+        "trip_number": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "user_id",
+        "trip_number"
+      ]
+    },
+    "TripUpdate": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "integer"
+        },
+        "trip_number": {
+          "type": "integer"
+        }
+      }
+    },
+    "TripPoint": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "trip_id": {
+          "type": "integer"
+        },
+        "lat": {
+          "type": "number"
+        },
+        "lng": {
+          "type": "number"
+        },
+        "recorded_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "trip_id",
+        "lat",
+        "lng",
+        "recorded_at"
+      ]
+    },
+    "TripPointCreate": {
+      "type": "object",
+      "properties": {
+        "trip_id": {
+          "type": "integer"
+        },
+        "lat": {
+          "type": "number"
+        },
+        "lng": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "trip_id",
+        "lat",
+        "lng",
+        "recorded_at"
+      ]
+    },
+    "TripPointUpdate": {
+      "type": "object",
+      "properties": {
+        "lat": {
+          "type": "number"
+        },
+        "lng": {
+          "type": "number"
+        },
+        "recorded_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}
 }
