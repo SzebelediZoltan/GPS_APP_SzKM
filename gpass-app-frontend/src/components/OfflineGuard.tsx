@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
-import OfflinePage from "@/routes/OfflinePage"
+import OfflinePage from "./OfflinePage"
+
 
 export default function OfflineGuard({
   children,

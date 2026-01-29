@@ -1,4 +1,4 @@
-import { createRootRoute, Outlet, useLocation, useRouterState } from "@tanstack/react-router"
+import { createRootRoute, Outlet, useLocation} from "@tanstack/react-router"
 import Header from "@/components/Header"
 import { ThemeProvider } from "@/lib/ThemeProvider"
 import { useAuth } from "@/hooks/useAuth"
