@@ -169,12 +169,20 @@ function UserDropdown({ username }: { username: string }) {
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem onClick={() => { }}>
+                <DropdownMenuItem onClick={() => { 
+                    nav({
+                        to: "/profile"
+                    })
+                }}>
                     <User className="mr-2 h-4 w-4" />
                     Profil
                 </DropdownMenuItem>
 
-                <DropdownMenuItem onClick={() => { }}>
+                <DropdownMenuItem onClick={() => {
+                    nav({
+                        to: "/profile/friends"
+                    })
+                 }}>
                     <Users className="mr-2 h-4 w-4" />
                     Barátok
                 </DropdownMenuItem>
