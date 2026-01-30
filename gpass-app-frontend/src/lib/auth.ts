@@ -3,7 +3,8 @@ import axios from "axios"
 export type User = {
   userID: string
   username: string
-  isAdmin: boolean
+  isAdmin: boolean,
+  email: string
 }
 
 export const getUser = async (): Promise<User | null> => {

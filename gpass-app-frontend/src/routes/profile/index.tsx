@@ -1,5 +1,5 @@
 import React from "react"
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
 import {
   ShieldCheck,
   Shield,
@@ -17,14 +17,21 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useAuth } from "@/hooks/useAuth"
+import axios from "axios"
+import { useQuery } from "@tanstack/react-query"
 
 export const Route = createFileRoute("/profile/")({
   component: ProfileDashboard,
 })
 
+const getFriends = (userID: string) => {
+  axios.get("/api/friends-with/accepted/" + userID)
+}
+
 type Friend = {
   id: string
-  name: string
+  username: string
   isAdmin: boolean
   avatarUrl?: string
 }
@@ -44,11 +51,16 @@ type Clan = {
 
 function ProfileDashboard() {
   // TODO: ide jön majd a user + tripek + barátok + klánok lekérés
-  const user = {
-    name: "Csabika66",
-    email: "csabika66@gpass.local",
-    isAdmin: true,
-    avatarUrl: "/logo.png",
+
+  const {user} = useAuth()
+
+  const nav = useNavigate()
+
+  if(!user) {
+    nav({
+      to: "/"
+    })
+    return
   }
 
   const trips: Trip[] = [
@@ -57,11 +69,9 @@ function ProfileDashboard() {
     { id: "t3", name: "Balaton túra", dateText: "2026.02.01", status: "Tervezett" },
   ]
 
-  const friends: Friend[] = [
-    { id: "f1", name: "Levente", isAdmin: false, avatarUrl: "" },
-    { id: "f2", name: "Dominik", isAdmin: true, avatarUrl: "" },
-    { id: "f3", name: "Zoli", isAdmin: false, avatarUrl: "" },
-  ]
+  const {data: friends, isLoading} = useQuery<Friend[]>({
+    queryFn: getFriends
+  })
 
   const clans: Clan[] = [
     { id: "c1", name: "RoadRunners", role: "Vezető" },
@@ -110,9 +120,9 @@ function ProfileDashboard() {
               <div className="flex items-center gap-4">
                 <div className="relative">
                   <Avatar className="h-16 w-16 rounded-2xl ring-1 ring-border/60">
-                    <AvatarImage src={user.avatarUrl} alt={user.name} />
+                    <AvatarImage  alt={user?.username} />
                     <AvatarFallback className="rounded-2xl">
-                      {user.name.slice(0, 2).toUpperCase()}
+                      {user?.username.slice(0, 2).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
 
@@ -122,15 +132,15 @@ function ProfileDashboard() {
 
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <h2 className="truncate text-xl font-semibold">{user.name}</h2>
+                    <h2 className="truncate text-xl font-semibold">{user?.username}</h2>
                     <Badge
-                      variant={user.isAdmin ? "default" : "secondary"}
+                      variant={user?.isAdmin ? "default" : "secondary"}
                       className={cn(
                         "rounded-full",
-                        user.isAdmin && "bg-primary text-primary-foreground"
+                        user?.isAdmin && "bg-primary text-primary-foreground"
                       )}
                     >
-                      {user.isAdmin ? (
+                      {user?.isAdmin ? (
                         <span className="inline-flex items-center gap-1">
                           <ShieldCheck className="h-3.5 w-3.5" />
                           Admin
@@ -146,7 +156,7 @@ function ProfileDashboard() {
 
                   <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
                     <Mail className="h-4 w-4" />
-                    <span className="truncate">{user.email}</span>
+                    <span className="truncate">{user?.email}</span>
                   </div>
                 </div>
               </div>
@@ -174,7 +184,7 @@ function ProfileDashboard() {
             <Card className="rounded-2xl border-border/60 bg-card/60 shadow-xl backdrop-blur">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg">Tripek</CardTitle>
-                <CardDescription>Legutóbbi és aktuális útjaid</CardDescription>
+                <CardDescription>Legutóbbi utak</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 {trips.map((t) => (
@@ -199,7 +209,6 @@ function ProfileDashboard() {
             <Card className="rounded-2xl border-border/60 bg-card/60 shadow-xl backdrop-blur">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg">Barátok (előnézet)</CardTitle>
-                <CardDescription>Gyors áttekintés</CardDescription>
               </CardHeader>
               <CardContent className="grid gap-3 sm:grid-cols-2">
                 {friends.map((f) => (
@@ -234,7 +243,6 @@ function ProfileDashboard() {
             <Card className="rounded-2xl border-border/60 bg-card/60 shadow-xl backdrop-blur">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg">Klánok</CardTitle>
-                <CardDescription>Tagként vagy vezetőként</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 {clans.map((c) => (

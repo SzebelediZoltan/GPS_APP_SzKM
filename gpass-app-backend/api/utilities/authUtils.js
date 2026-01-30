@@ -6,7 +6,7 @@ const salt = 14;
 
 exports.generateUserToken = (user) =>
 {
-    return jwt.sign({ userID: user.ID, username: user.username, isAdmin: user.isAdmin }, process.env.JWT_SECRET);
+    return jwt.sign({ userID: user.ID, username: user.username, isAdmin: user.isAdmin, email: user.email }, process.env.JWT_SECRET);
 }
 
 exports.setCookie = (res, cookieName, value) =>
