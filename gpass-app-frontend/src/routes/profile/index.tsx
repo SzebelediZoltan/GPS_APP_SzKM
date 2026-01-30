@@ -1,5 +1,5 @@
 import React from "react"
-import { createFileRoute, Link} from "@tanstack/react-router"
+import { createFileRoute, Link } from "@tanstack/react-router"
 import {
   ShieldCheck,
   Shield,
@@ -20,6 +20,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAuth } from "@/hooks/useAuth"
 import axios from "axios"
 import { useQuery } from "@tanstack/react-query"
+import NotLoggedIn from "@/components/NotLoggedIn"
+import LoadingPage from "@/components/LoadingPage"
+import ServerErrorPage from "@/components/ServerErrorPage"
 
 export const Route = createFileRoute("/profile/")({
   component: ProfileDashboard,
@@ -41,9 +44,14 @@ type Trip = {
 }
 
 type Clan = {
-  id: string
-  name: string
-  role: "Vezető" | "Tag"
+  clan_id: string
+  user_id: string
+  joined_at: string
+  clan: {
+    id: string
+    name: string
+    leader_id: string
+  }
 }
 
 const getFriends = (userID: string) => {
@@ -61,26 +69,38 @@ function ProfileDashboard() {
 
   const { user } = useAuth()
 
-  const { data: friends, isLoading: friendIsLoading } = useQuery({
+
+  const { data: friends, isLoading: friendIsLoading, isError: friendError } = useQuery({
     queryKey: ["friends"],
     queryFn: () => getFriends(user?.userID!),
     enabled: !!user?.userID, // ⬅️ NAGYON FONTOS
   })
 
-  const { data: clans, isLoading: clansIsLoading } = useQuery({
+  const { data: clans, isLoading: clansIsLoading, isError: clanError } = useQuery({
     queryKey: ["clans"],
     queryFn: () => getClans(user?.userID!),
     enabled: !!user?.userID, // ⬅️ NAGYON FONTOS
   })
 
-  const { data: trips, isLoading: tripsIsLoading } = useQuery({
+
+  const { data: trips, isLoading: tripsIsLoading, isError: tripError } = useQuery({
     queryKey: ["trips"],
     queryFn: () => getTrips(user?.userID!),
     enabled: !!user?.userID, // ⬅️ NAGYON FONTOS
   })
 
-  if (!friends || !trips || !clans || friendIsLoading || clansIsLoading || tripsIsLoading ) {
-    return <></>
+  if (!user) {
+    return <>
+      <NotLoggedIn />
+    </>
+  }
+
+  if (!friends || !trips || !clans || friendError || clanError || tripError) {
+    return <ServerErrorPage />
+  }
+
+  if (friendIsLoading || clansIsLoading || tripsIsLoading) {
+    return <LoadingPage />
   }
 
   return (
@@ -170,14 +190,14 @@ function ProfileDashboard() {
 
               {/* Quick stats placeholders */}
               <div className="grid grid-cols-3 gap-3">
-                <StatBox icon={<MapPin className="h-4 w-4" />} label="Tripek" value="3" />
+                <StatBox icon={<MapPin className="h-4 w-4" />} label="Tripek" value={"" + trips.data.length} />
                 <StatBox icon={<Users className="h-4 w-4" />} label="Barátok" value={"" + friends.data.length} />
-                <StatBox icon={<Flag className="h-4 w-4" />} label="Klánok" value="2" />
+                <StatBox icon={<Flag className="h-4 w-4" />} label="Klánok" value={"" + clans.data.length} />
               </div>
 
               <div className="rounded-2xl border border-border/60 bg-background/40 p-3">
                 <p className="text-xs text-muted-foreground">
-                  Tipp: itt később lehet “profil szerkesztés”, “email verifikáció”, “jelszócsere”, stb.
+                  Status: Ide jöhet majd amit ki akar írni a felhasználó magáról.
                 </p>
               </div>
             </CardContent>
@@ -189,7 +209,7 @@ function ProfileDashboard() {
             <Card className="rounded-2xl border-border/60 bg-card/60 shadow-xl backdrop-blur">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg">Tripek</CardTitle>
-                <CardDescription>Legutóbbi utak</CardDescription>
+                <CardDescription>{trips.data.length === 0 ? "Nem mentett még le utat" : "Utak száma " + trips.data.length}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 {trips.data.map((t) => (
@@ -213,10 +233,10 @@ function ProfileDashboard() {
             {/* Friends preview */}
             <Card className="rounded-2xl border-border/60 bg-card/60 shadow-xl backdrop-blur">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Barátok (előnézet)</CardTitle>
+                <CardTitle className="text-lg">Barátok</CardTitle>
+                <CardDescription>{friends.data.length === 0 ? "Még nincsenek barátok :(" : "Barátok száma " + friends.data.length}</CardDescription>
               </CardHeader>
               <CardContent className="grid gap-3 sm:grid-cols-2">
-                {friends.data.length === 0 ? <div className="text-xs text-muted-foreground">Még nincsenek barátok</div> : <></>}
                 {friends.data.map((f) => (
                   <div
                     key={f.id}
@@ -248,26 +268,27 @@ function ProfileDashboard() {
             <Card className="rounded-2xl border-border/60 bg-card/60 shadow-xl backdrop-blur">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg">Klánok</CardTitle>
+                <CardDescription>{clans.data.length === 0 ? "Még nem csatlakozott klánhoz" : "Klánok száma " + clans.data.length}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 {clans.data.map((c) => (
                   <div
-                    key={c.id}
+                    key={c.clan.id}
                     className="flex items-center justify-between gap-3 rounded-2xl border border-border/60 bg-background/40 px-4 py-3"
                   >
                     <div className="min-w-0">
-                      <div className="truncate font-medium">{c.name}</div>
+                      <div className="truncate font-medium">{c.clan.name}</div>
                       <div className="text-xs text-muted-foreground">
-                        Szerep: {c.role}
+                        Szerep: {c.clan.leader_id === user.userID ? "Vezető" : "Tag"}
                       </div>
                       <div className="text-xs text-muted-foreground">Online státust</div>
                     </div>
 
                     <Badge
-                      variant={c.role === "Vezető" ? "default" : "secondary"}
-                      className={cn("rounded-full", c.role === "Vezető" && "bg-primary")}
+                      variant={c.clan.leader_id === user.userID ? "default" : "secondary"}
+                      className={cn("rounded-full", c.clan.leader_id === user.userID && "bg-primary")}
                     >
-                      {c.role === "Vezető" ? (
+                      {c.clan.leader_id === user.userID ? (
                         <span className="inline-flex items-center gap-1">
                           <Crown className="h-3.5 w-3.5" />
                           Vezető

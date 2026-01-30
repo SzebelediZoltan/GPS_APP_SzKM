@@ -1,3 +1,4 @@
+const { where } = require("sequelize");
 const { DbError } = require("../errors");
 
 class ClanMemberRepository {
@@ -39,6 +40,8 @@ class ClanMemberRepository {
     }
 
     async addMember(data) {
+        console.log("Adding clan member:", data);
+        
         try {
             return await this.ClanMember.create(data);
         }
@@ -91,7 +94,12 @@ class ClanMemberRepository {
         try {
             return await this.ClanMember.scope("public").findAll(
                 {
-                    where: { user_id: userId }
+                    where: { user_id: userId},
+                    include: [{
+                        association: "clan",
+                        where: { leader_id: userId },
+                        required: false,
+                    }]
                 });
         }
         catch (error) {

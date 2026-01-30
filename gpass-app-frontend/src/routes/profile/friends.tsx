@@ -1,11 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { Search, User, Users, ShieldCheck } from "lucide-react"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent} from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
+import { useAuth } from "@/hooks/useAuth"
+import NotLoggedIn from "@/components/NotLoggedIn"
 
 export const Route = createFileRoute("/profile/friends")({
   component: FriendsPage,
@@ -20,6 +22,9 @@ type Friend = {
 
 function FriendsPage() {
   // TODO: ide jön majd a lekérés
+
+  const {user} = useAuth()
+
   const friendRequestsCount = 2
 
   const friends: Friend[] = [
@@ -28,6 +33,12 @@ function FriendsPage() {
     { id: "f3", name: "Szebeledi Zoltán", isAdmin: false, avatarUrl: "" },
     { id: "f4", name: "RandomUser21", isAdmin: false, avatarUrl: "" },
   ]
+
+    if (!user) {
+      return <>
+        <NotLoggedIn />
+      </>
+    }
 
   return (
     <main className="min-h-[calc(100vh-64px)] bg-background text-foreground">
@@ -72,11 +83,6 @@ function FriendsPage() {
         </div>
 
         <Card className="rounded-2xl border-border/60 bg-card/60 shadow-xl backdrop-blur">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Ismerőseid</CardTitle>
-            <CardDescription>Helykitöltő lista – később backendből jön</CardDescription>
-          </CardHeader>
-
           <CardContent className="space-y-3">
             {friends.map((f, idx) => (
               <div key={f.id}>

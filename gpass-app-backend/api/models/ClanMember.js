@@ -29,9 +29,6 @@ module.exports = (sequelize) => {
                 type: DataTypes.DATE,
                 allowNull: false,
                 defaultValue: DataTypes.NOW,
-                validate: {
-                    isDate: { msg: "A joined_at érvénytelen dátum." },
-                },
             },
         },
         {
