@@ -1,5 +1,5 @@
 import React from "react"
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
+import { createFileRoute, Link} from "@tanstack/react-router"
 import {
   ShieldCheck,
   Shield,
@@ -25,9 +25,6 @@ export const Route = createFileRoute("/profile/")({
   component: ProfileDashboard,
 })
 
-const getFriends = (userID: string) => {
-  axios.get("/api/friends-with/accepted/" + userID)
-}
 
 type Friend = {
   id: string
@@ -49,34 +46,42 @@ type Clan = {
   role: "Vezető" | "Tag"
 }
 
+const getFriends = (userID: string) => {
+  return axios.get<Friend[]>("/api/friends-with/accepted/" + userID)
+}
+const getClans = (userID: string) => {
+  return axios.get<Clan[]>("/api/clan-members/by-user/" + userID)
+}
+const getTrips = (userID: string) => {
+  return axios.get<Trip[]>("/api/trips/by-user/" + userID)
+}
+
+
 function ProfileDashboard() {
-  // TODO: ide jön majd a user + tripek + barátok + klánok lekérés
 
-  const {user} = useAuth()
+  const { user } = useAuth()
 
-  const nav = useNavigate()
-
-  if(!user) {
-    nav({
-      to: "/"
-    })
-    return
-  }
-
-  const trips: Trip[] = [
-    { id: "t1", name: "Miskolc → Eger", dateText: "2026.01.18", status: "Befejezve" },
-    { id: "t2", name: "Budapest kör", dateText: "2026.01.22", status: "Folyamatban" },
-    { id: "t3", name: "Balaton túra", dateText: "2026.02.01", status: "Tervezett" },
-  ]
-
-  const {data: friends, isLoading} = useQuery<Friend[]>({
-    queryFn: getFriends
+  const { data: friends, isLoading: friendIsLoading } = useQuery({
+    queryKey: ["friends"],
+    queryFn: () => getFriends(user?.userID!),
+    enabled: !!user?.userID, // ⬅️ NAGYON FONTOS
   })
 
-  const clans: Clan[] = [
-    { id: "c1", name: "RoadRunners", role: "Vezető" },
-    { id: "c2", name: "NightDrivers", role: "Tag" },
-  ]
+  const { data: clans, isLoading: clansIsLoading } = useQuery({
+    queryKey: ["clans"],
+    queryFn: () => getClans(user?.userID!),
+    enabled: !!user?.userID, // ⬅️ NAGYON FONTOS
+  })
+
+  const { data: trips, isLoading: tripsIsLoading } = useQuery({
+    queryKey: ["trips"],
+    queryFn: () => getTrips(user?.userID!),
+    enabled: !!user?.userID, // ⬅️ NAGYON FONTOS
+  })
+
+  if (!friends || !trips || !clans || friendIsLoading || clansIsLoading || tripsIsLoading ) {
+    return <></>
+  }
 
   return (
     <main className="min-h-[calc(100vh-64px)] bg-background text-foreground">
@@ -113,14 +118,14 @@ function ProfileDashboard() {
           <Card className="rounded-2xl border-border/60 bg-card/60 shadow-xl backdrop-blur lg:col-span-4">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg">Profil</CardTitle>
-              <CardDescription>Alapadatok és jogosultság</CardDescription>
+              <CardDescription>Adatok</CardDescription>
             </CardHeader>
 
             <CardContent className="space-y-5">
               <div className="flex items-center gap-4">
                 <div className="relative">
                   <Avatar className="h-16 w-16 rounded-2xl ring-1 ring-border/60">
-                    <AvatarImage  alt={user?.username} />
+                    <AvatarImage alt={user?.username} />
                     <AvatarFallback className="rounded-2xl">
                       {user?.username.slice(0, 2).toUpperCase()}
                     </AvatarFallback>
@@ -166,7 +171,7 @@ function ProfileDashboard() {
               {/* Quick stats placeholders */}
               <div className="grid grid-cols-3 gap-3">
                 <StatBox icon={<MapPin className="h-4 w-4" />} label="Tripek" value="3" />
-                <StatBox icon={<Users className="h-4 w-4" />} label="Barátok" value="3" />
+                <StatBox icon={<Users className="h-4 w-4" />} label="Barátok" value={"" + friends.data.length} />
                 <StatBox icon={<Flag className="h-4 w-4" />} label="Klánok" value="2" />
               </div>
 
@@ -187,7 +192,7 @@ function ProfileDashboard() {
                 <CardDescription>Legutóbbi utak</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                {trips.map((t) => (
+                {trips.data.map((t) => (
                   <div
                     key={t.id}
                     className="flex items-center justify-between gap-3 rounded-2xl border border-border/60 bg-background/40 px-4 py-3 transition hover:bg-accent/30"
@@ -211,28 +216,28 @@ function ProfileDashboard() {
                 <CardTitle className="text-lg">Barátok (előnézet)</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-3 sm:grid-cols-2">
-                {friends.map((f) => (
+                {friends.data.length === 0 ? <div className="text-xs text-muted-foreground">Még nincsenek barátok</div> : <></>}
+                {friends.data.map((f) => (
                   <div
                     key={f.id}
                     className="flex items-center gap-3 rounded-2xl border border-border/60 bg-background/40 px-4 py-3"
                   >
                     <Avatar className="h-10 w-10 rounded-xl ring-1 ring-border/60">
-                      <AvatarImage src={f.avatarUrl} alt={f.name} />
+                      <AvatarImage src={f.avatarUrl} alt={f.username} />
                       <AvatarFallback className="rounded-xl">
-                        {f.name.slice(0, 2).toUpperCase()}
+                        {f.username.slice(0, 2).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
 
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <div className="truncate font-medium">{f.name}</div>
+                        <div className="truncate font-medium">{f.username}</div>
                         {f.isAdmin && (
                           <Badge className="rounded-full" variant="default">
                             Admin
                           </Badge>
                         )}
                       </div>
-                      <div className="text-xs text-muted-foreground">Online státusz / extra infó</div>
                     </div>
                   </div>
                 ))}
@@ -245,7 +250,7 @@ function ProfileDashboard() {
                 <CardTitle className="text-lg">Klánok</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {clans.map((c) => (
+                {clans.data.map((c) => (
                   <div
                     key={c.id}
                     className="flex items-center justify-between gap-3 rounded-2xl border border-border/60 bg-background/40 px-4 py-3"
@@ -255,6 +260,7 @@ function ProfileDashboard() {
                       <div className="text-xs text-muted-foreground">
                         Szerep: {c.role}
                       </div>
+                      <div className="text-xs text-muted-foreground">Online státust</div>
                     </div>
 
                     <Badge
