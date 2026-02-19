@@ -86,7 +86,7 @@ export default function Header({ user }: HeaderProps) {
                         <NavLink label="Térkép" to="/map" />
                         <NavLink label="Rólunk" to="/about" />
                         <NavLink label="Kapcsolat" to="/contact" />
-
+                        <NavLink label="Klánok" to="/clans" />
                     </nav>
 
                     <Separator orientation="vertical" className="hidden h-8 md:block" />
@@ -141,6 +141,8 @@ function UserDropdown({ username }: { username: string }) {
     const queryClient = useQueryClient()
     const { user } = useAuth()
 
+    const userID = user?.userID || ""
+
     const { mutate: logout } = useMutation({
         mutationFn: logOut,
         onSuccess: () => {
@@ -169,9 +171,10 @@ function UserDropdown({ username }: { username: string }) {
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem onClick={() => { 
+                <DropdownMenuItem onClick={() => {
                     nav({
-                        to: "/profile"
+                        to: "/profile/$userID",
+                        params: { userID: userID },
                     })
                 }}>
                     <User className="mr-2 h-4 w-4" />
@@ -182,12 +185,16 @@ function UserDropdown({ username }: { username: string }) {
                     nav({
                         to: "/profile/friends"
                     })
-                 }}>
+                }}>
                     <Users className="mr-2 h-4 w-4" />
                     Barátok
                 </DropdownMenuItem>
 
-                <DropdownMenuItem onClick={() => { }}>
+                <DropdownMenuItem onClick={() => { 
+                    nav({
+                        to: "/profile/settings"
+                    })
+                }}>
                     <Settings className="mr-2 h-4 w-4" />
                     Beállítások
                 </DropdownMenuItem>
@@ -259,7 +266,55 @@ function MobileMenu({ user }: { user: User | null }) {
                     )}
                 </div>
 
-                <div className="px-4 py-4 space-y-5">
+                <div className="px-4 space-y-5">
+                    {/* ACCOUNT */}
+                    {user ? (
+                        <div className="space-y-2">
+                            <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                                Fiók
+                            </p>
+
+                            <div className="rounded-xl border border-border/70 bg-card/30">
+                                <MobileActionItem
+                                    icon={<User className="h-4 w-4" />}
+                                    label="Profil"
+                                    onClick={() =>
+                                        nav({
+                                            to: "/profile/$userID",
+                                            params: { userID: user.userID },
+                                        })
+                                    }
+                                />
+                                <MobileActionItem
+                                    icon={<Users className="h-4 w-4" />}
+                                    label="Barátok"
+                                    onClick={() =>
+                                        nav({
+                                            to: "/profile/friends",
+                                        })
+                                    }
+                                />
+                                <MobileActionItem
+                                    icon={<Settings className="h-4 w-4" />}
+                                    label="Beállítások"
+                                    onClick={() =>
+                                        nav({
+                                            to: "/profile/settings",
+                                        })
+                                    }
+                                />
+                                <MobileActionItem
+                                    icon={<LogOut className="h-4 w-4" />}
+                                    label="Kijelentkezés"
+                                    danger
+                                    last
+                                    onClick={() => logout()}
+                                />
+                            </div>
+                        </div>
+                    ) : (
+                        <></>
+                    )}
                     {/* NAV */}
                     <div className="space-y-2">
                         <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
@@ -277,36 +332,17 @@ function MobileMenu({ user }: { user: User | null }) {
                                 </SheetClose>
 
                                 <SheetClose asChild>
-                                    <MobileNavItem label="Kapcsolat" to="/contact" last />
+                                    <MobileNavItem label="Kapcsolat" to="/contact" />
+                                </SheetClose>
+
+                                <SheetClose asChild>
+                                    <MobileNavItem label="Klánok" to="/clans" last />
                                 </SheetClose>
                             </div>
 
                         </div>
                     </div>
 
-                    {/* ACCOUNT */}
-                    {user ? (
-                        <div className="space-y-2">
-                            <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                                Fiók
-                            </p>
-
-                            <div className="rounded-xl border border-border/70 bg-card/30">
-                                <MobileActionItem icon={<User className="h-4 w-4" />} label="Profil" />
-                                <MobileActionItem icon={<Users className="h-4 w-4" />} label="Barátok" />
-                                <MobileActionItem icon={<Settings className="h-4 w-4" />} label="Beállítások" />
-                                <MobileActionItem
-                                    icon={<LogOut className="h-4 w-4" />}
-                                    label="Kijelentkezés"
-                                    danger
-                                    last
-                                    onClick={() => logout()}
-                                />
-                            </div>
-                        </div>
-                    ) : (
-                        <></>
-                    )}
                 </div>
             </SheetContent>
         </Sheet>

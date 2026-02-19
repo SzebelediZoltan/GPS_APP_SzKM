@@ -127,7 +127,7 @@ function ProfileDashboard() {
 
           <div className="flex items-center gap-2">
             <Button variant="outline" className="rounded-xl" asChild>
-              <Link to="/profile/friends">Barátok</Link>
+              <Link to="/profile">Barátok</Link>
             </Button>
             <Button className="rounded-xl">Szerkesztés</Button>
           </div>
