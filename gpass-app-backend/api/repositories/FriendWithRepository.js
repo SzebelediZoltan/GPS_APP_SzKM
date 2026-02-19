@@ -84,24 +84,36 @@ class FriendWithRepository {
         try {
             return await this.FriendWith.scope("pending").findAll(
                 {
-                    where: { receiver_id: userId },
+                    where: {
+                        [Op.or]:
+                            [
+                                {sender_id: userId},
+                                {receiver_id: userId}
+                            ]
+                    }
                 });
-        }
-        catch (error) {
-            throw new DbError("Failed to fetch pending friend requests",
-                {
-                    details: error.message,
-                    data: userId,
-                });
-        }
-    }
-
-    async getAcceptedForUser(userId) {
-        try {
-            return await this.FriendWith.scope("accepted").findAll(
-                {
-                    where: { receiver_id: userId },
-                });
+            }
+            catch (error) {
+                throw new DbError("Failed to fetch pending friend requests",
+                    {
+                        details: error.message,
+                        data: userId,
+                    });
+                }
+            }
+            
+            async getAcceptedForUser(userId) {
+                try {
+                    return await this.FriendWith.scope("accepted").findAll(
+                        {
+                            where: {
+                                [Op.or]:
+                                    [
+                                        {sender_id: userId},
+                                        {receiver_id: userId}
+                                    ]
+                            }
+                        });
         }
         catch (error) {
             throw new DbError("Failed to fetch friends for user",
