@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { AlertTriangle } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 
-export default function ServerError() {
+export default function ServerErrorPage() {
   return (
     <div className="flex w-full justify-center px-4 py-12">
       <Card className="w-full max-w-md rounded-2xl border-border/60 bg-card/60 shadow-lg backdrop-blur">
