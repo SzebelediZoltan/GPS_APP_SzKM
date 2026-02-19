@@ -1,93 +1,197 @@
-const request = require("supertest");
-const app = require("../../../app");
-
-
-describe("/api/friends-with", () => 
+require("dotenv").config(
 {
-    describe("GET", () => 
-    {
-        test("should return 200 with all friendships", async () => 
-        {
-            const res = await request(app).get("/api/friends-with");
+    quiet: true,
+    path: "./.env.test",
+});
 
-            expect(res.status).toBe(200);
+const request = require("supertest");
+
+const { app } = require("../../../app");
+
+const db = require("../db");
+
+describe("API FriendWith Tesztek", () => 
+{
+    describe("/api/friends-with", () => 
+    {
+        beforeEach(async () => 
+        {
+            const t = await db.sequelize.transaction();
+
+            app.set("getTransaction", () => t);
         });
-    });
 
-    describe("POST", () => 
-    {
-        test("should create new friendship and respond with object", async () => 
+        afterEach(async () => 
         {
-            const res = await request(app).post("/api/friends-with")
-            .send({ 
+            const t = app.get("getTransaction")();
+
+            await t.rollback();
+
+            app.set("getTransaction", undefined);
+        });
+
+        const friendships = 
+        [
+            {
                 sender_id: 1,
                 receiver_id: 2,
+                status: "pending",
+            },
+            {
+                sender_id: 2,
+                receiver_id: 3,
+                status: "accepted",
+            },
+        ];
+
+        describe("GET", () => 
+        {
+            test("should return all friendships", async () => 
+            {
+                const res = await request(app).get("/api/friends-with");
+
+                expect(res.status).toBe(200);
+
+                expect(res.body).toBeDefined();
+                
+                expect(Array.isArray(res.body)).toBe(true);
             });
-
-            expect(res.body).toBeDefined();
-            expect(res.body.sender_id).toEqual(1);
-            expect(res.body.receiver_id).toEqual(2);
         });
-    });
-});
 
-describe("/api/friends-with/:id", () => 
-{
-    describe("GET", () => 
-    {
-        test("should return friendship with the ID: 1", async () => 
+        describe("POST", () => 
         {
-            const res = await request(app).get("/api/friends-with/1");
+            test("should create new friendship", async () => 
+            {
+                const res = await request(app).post("/api/friends-with")
+                .send({ 
+                    sender_id: 1,
+                    receiver_id: 2,
+                });
 
-            expect(res.status).toBe(200);
-        });
-    });
+                expect(res.status).toBe(201);
 
-    describe("PUT", () => 
-    {
-        test("should update friendship and return with updated data", async () => 
-        {
-            const res = await request(app).put("/api/friends-with/1")
-            .send({ status: "accepted" });
-
-            expect(res.body).toBeDefined();
-            expect(res.body.status).toEqual("accepted");
+                expect(res.body.sender_id).toEqual(1);
+                expect(res.body.receiver_id).toEqual(2);
+            });
         });
     });
 
-    describe("DELETE", () => 
+    describe("/api/friends-with/:id", () => 
     {
-        test("should delete friendship and return result", async () => 
+        beforeEach(async () => 
         {
-            const res = await request(app).delete("/api/friends-with/1");
+            const t = await db.sequelize.transaction();
 
-            expect(res.body).toBeDefined();
+            app.set("getTransaction", () => t);
+        });
+
+        afterEach(async () => 
+        {
+            const t = app.get("getTransaction")();
+
+            await t.rollback();
+
+            app.set("getTransaction", undefined);
+        });
+
+        describe("GET", () => 
+        {
+            test("should return friendship with the ID: 1", async () => 
+            {
+                const res = await request(app).get("/api/friends-with/1");
+
+                expect(res.status).toBe(200);
+
+                expect(res.body).toBeDefined();
+            });
+        });
+
+        describe("PUT", () => 
+        {
+            test("should update friendship status", async () => 
+            {
+                const res = await request(app).put("/api/friends-with/1")
+                .send({ status: "accepted" });
+
+                expect(res.status).toBe(200);
+
+                expect(res.body.status).toEqual("accepted");
+            });
+        });
+
+        describe("DELETE", () => 
+        {
+            test("should delete friendship", async () => 
+            {
+                const res = await request(app).delete("/api/friends-with/1")
+                .set("Accept", "application/json");
+
+                expect(res.status).toBe(200);
+
+                expect(res.body).toBeDefined();
+            });
         });
     });
-});
 
-describe("/api/friends-with/pending/:userId", () => 
-{
-    describe("GET", () => 
+    describe("/api/friends-with/pending/:userId", () => 
     {
-        test("should return pending friendships for user", async () => 
+        beforeEach(async () => 
         {
-            const res = await request(app).get("/api/friends-with/pending/1");
+            const t = await db.sequelize.transaction();
 
-            expect(res.status).toBe(200);
+            app.set("getTransaction", () => t);
+        });
+
+        afterEach(async () => 
+        {
+            const t = app.get("getTransaction")();
+
+            await t.rollback();
+
+            app.set("getTransaction", undefined);
+        });
+
+        describe("GET", () => 
+        {
+            test("should return pending friendships for user", async () => 
+            {
+                const res = await request(app).get("/api/friends-with/pending/1");
+
+                expect(res.status).toBe(200);
+
+                expect(Array.isArray(res.body)).toBe(true);
+            });
         });
     });
-});
 
-describe("/api/friends-with/accepted/:userId", () => 
-{
-    describe("GET", () => 
+    describe("/api/friends-with/accepted/:userId", () => 
     {
-        test("should return accepted friendships for user", async () => 
+        beforeEach(async () => 
         {
-            const res = await request(app).get("/api/friends-with/accepted/1");
+            const t = await db.sequelize.transaction();
 
-            expect(res.status).toBe(200);
+            app.set("getTransaction", () => t);
+        });
+
+        afterEach(async () => 
+        {
+            const t = app.get("getTransaction")();
+
+            await t.rollback();
+
+            app.set("getTransaction", undefined);
+        });
+
+        describe("GET", () => 
+        {
+            test("should return accepted friendships for user", async () => 
+            {
+                const res = await request(app).get("/api/friends-with/accepted/1");
+
+                expect(res.status).toBe(200);
+
+                expect(Array.isArray(res.body)).toBe(true);
+            });
         });
     });
 });
