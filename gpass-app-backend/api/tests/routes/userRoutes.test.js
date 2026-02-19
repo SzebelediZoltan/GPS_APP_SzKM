@@ -10,6 +10,7 @@ const { app } = require("../../../app");
 
 const db = require("../db");
 
+const { withAuth } = require("../testHelper");
 
 describe("API User Tesztek", () => 
 {
@@ -18,43 +19,23 @@ describe("API User Tesztek", () =>
         beforeEach(async () => 
         {
             const t = await db.sequelize.transaction();
-
             app.set("getTransaction", () => t);
         });
 
         afterEach(async () => 
         {
             const t = app.get("getTransaction")();
-
             await t.rollback();
-
             app.set("getTransaction", undefined);
         });
 
-        const users = 
-        [
-            {
-                username: "user1",
-                password: "password123",
-                email: "user1@example.com",
-            },
-            {
-                username: "user2",
-                password: "password456",
-                email: "user2@example.com",
-            },
-        ];
-
         describe("GET", () => 
         {
-            test("should return all users", async () => 
+            test("should return all users (admin)", async () => 
             {
-                const res = await request(app).get("/api/users");
-
+                const res = await withAuth(request(app).get("/api/users"));
                 expect(res.status).toBe(200);
-
                 expect(res.body).toBeDefined();
-                
                 expect(Array.isArray(res.body)).toBe(true);
             });
         });
@@ -69,9 +50,7 @@ describe("API User Tesztek", () =>
                     password: "jelszo123",
                     email: "kiss.dominik@ckik.hu",
                 });
-
                 expect(res.status).toBe(201);
-
                 expect(res.body.username).toEqual("Kiss Dominik");
                 expect(res.body.email).toEqual("kiss.dominik@ckik.hu");
             });
@@ -83,16 +62,13 @@ describe("API User Tesztek", () =>
         beforeEach(async () => 
         {
             const t = await db.sequelize.transaction();
-
             app.set("getTransaction", () => t);
         });
 
         afterEach(async () => 
         {
             const t = app.get("getTransaction")();
-
             await t.rollback();
-
             app.set("getTransaction", undefined);
         });
 
@@ -100,10 +76,8 @@ describe("API User Tesztek", () =>
         {
             test("should return users matching search query", async () => 
             {
-                const res = await request(app).get("/api/users/search?query=Osama");
-
+                const res = await withAuth(request(app).get("/api/users/search?query=Osama"));
                 expect(res.status).toBe(200);
-
                 expect(Array.isArray(res.body)).toBe(true);
             });
         });
@@ -114,16 +88,13 @@ describe("API User Tesztek", () =>
         beforeEach(async () => 
         {
             const t = await db.sequelize.transaction();
-
             app.set("getTransaction", () => t);
         });
 
         afterEach(async () => 
         {
             const t = app.get("getTransaction")();
-
             await t.rollback();
-
             app.set("getTransaction", undefined);
         });
 
@@ -131,10 +102,8 @@ describe("API User Tesztek", () =>
         {
             test("should return user with the ID: 1", async () => 
             {
-                const res = await request(app).get("/api/users/1");
-
+                const res = await withAuth(request(app).get("/api/users/1"));
                 expect(res.status).toBe(200);
-
                 expect(res.body).toBeDefined();
             });
         });
@@ -143,24 +112,20 @@ describe("API User Tesztek", () =>
         {
             test("should update user email", async () => 
             {
-                const res = await request(app).put("/api/users/1")
+                const res = await withAuth(request(app).put("/api/users/1"))
                 .send({ email: "kiss.dominik@ckik.hu" });
-
                 expect(res.status).toBe(200);
-
                 expect(res.body.email).toEqual("kiss.dominik@ckik.hu");
             });
         });
 
         describe("DELETE", () => 
         {
-            test("should delete user", async () => 
+            test("should delete user (admin)", async () => 
             {
-                const res = await request(app).delete("/api/users/1")
+                const res = await withAuth(request(app).delete("/api/users/1"))
                 .set("Accept", "application/json");
-
                 expect(res.status).toBe(200);
-
                 expect(res.body).toBeDefined();
             });
         });
