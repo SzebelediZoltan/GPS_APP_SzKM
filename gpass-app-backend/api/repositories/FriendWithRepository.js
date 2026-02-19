@@ -19,9 +19,9 @@ class FriendWithRepository {
         }
     }
 
-    async getById(id) {       
+    async getById(id) {
         try {
-            return await this.FriendWith.findAll();
+            return await this.FriendWith.findByPk(id);
         }
         catch (error) {
             throw new DbError("Failed to fetch friend relation",
@@ -80,7 +80,6 @@ class FriendWithRepository {
     }
 
     // hasznos metódusok (repo-szintű lekérdezések)
-
     async getPendingForUser(userId) {
         try {
             return await this.FriendWith.scope("pending").findAll(
@@ -101,14 +100,7 @@ class FriendWithRepository {
         try {
             return await this.FriendWith.scope("accepted").findAll(
                 {
-                    where:
-                    {
-                        [Op.or]:
-                            [
-                                { sender_id: userId },
-                                { receiver_id: userId },
-                            ]
-                    }
+                    where: { receiver_id: userId },
                 });
         }
         catch (error) {
