@@ -1,4 +1,5 @@
-﻿using System;
+﻿using gpass_app_wpf.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -20,6 +21,8 @@ namespace gpass_app_wpf.Views
         public Home()
         {
             InitializeComponent();
+            DataContext = new HomeViewModel();
         }
+
     }
 }

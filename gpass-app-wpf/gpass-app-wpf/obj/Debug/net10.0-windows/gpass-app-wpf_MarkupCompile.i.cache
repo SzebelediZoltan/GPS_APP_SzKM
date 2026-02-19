@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-C:\Study\GPS_APP_SzKM\gpass-app-wpf\gpass-app-wpf\obj\Debug\net10.0-windows\
+C:\Users\User\Downloads\wpf_fixed\gpass-app-wpf\obj\Debug\net10.0-windows\
 gpass_app_wpf
 none
 false
 TRACE;DEBUG;NET;NET10_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NET9_0_OR_GREATER;NET10_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
-C:\Study\GPS_APP_SzKM\gpass-app-wpf\gpass-app-wpf\App.xaml
-2-441064976
+C:\Users\User\Downloads\wpf_fixed\gpass-app-wpf\App.xaml
+41900031594
 
-131766538953
+27-1673518001
 213341272928
-Views\Home.xaml;Views\Login.xaml;
+Views\Home.xaml;Views\Login.xaml;Views\UserDetailWindow.xaml;Views\UserFormWindow.xaml;
 
-False
+True
 
