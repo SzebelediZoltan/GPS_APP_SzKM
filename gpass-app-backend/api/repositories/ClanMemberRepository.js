@@ -97,7 +97,7 @@ class ClanMemberRepository {
                     where: { user_id: userId},
                     include: [{
                         association: "clan",
-                        where: { leader_id: userId },
+                        attributes: ["name","leader_id"],
                         required: false,
                     }]
                 });

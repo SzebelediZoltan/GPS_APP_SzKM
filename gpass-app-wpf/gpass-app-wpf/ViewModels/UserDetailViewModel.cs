@@ -22,6 +22,33 @@ namespace gpass_app_wpf.ViewModels
         public ObservableCollection<ClanMember> Clans      { get; } = new();
         public ObservableCollection<TripPoint>  TripPoints { get; } = new();
 
+        // Kijelölések szerkesztéshez
+        private Trip       _selectedTrip;
+        private Marker     _selectedMarker;
+        private FriendWith _selectedFriend;
+
+        public Trip SelectedTrip
+        {
+            get => _selectedTrip;
+            set { _selectedTrip = value; OnPropertyChanged(); }
+        }
+        public Marker SelectedMarker
+        {
+            get => _selectedMarker;
+            set { _selectedMarker = value; OnPropertyChanged(); }
+        }
+        public FriendWith SelectedFriend
+        {
+            get => _selectedFriend;
+            set { _selectedFriend = value; OnPropertyChanged(); }
+        }
+
+        // Parancsok
+        public RelayCommand DeleteTripCommand    { get; }
+        public RelayCommand DeleteMarkerCommand  { get; }
+        public RelayCommand ToggleFriendCommand  { get; }
+        public RelayCommand DeleteFriendCommand  { get; }
+
         private string _errors = "";
         public string Errors
         {
@@ -41,14 +68,20 @@ namespace gpass_app_wpf.ViewModels
         {
             _user = user;
             _api  = SessionService.Api;
+
+            DeleteTripCommand   = new RelayCommand(async _ => await DeleteTrip(),   _ => SelectedTrip   != null);
+            DeleteMarkerCommand = new RelayCommand(async _ => await DeleteMarker(), _ => SelectedMarker != null);
+            ToggleFriendCommand = new RelayCommand(async _ => await ToggleFriend(), _ => SelectedFriend != null);
+            DeleteFriendCommand = new RelayCommand(async _ => await DeleteFriend(), _ => SelectedFriend != null);
+
             _ = LoadAll();
         }
 
         private async Task LoadAll()
         {
             Loading = true;
+            Errors = "";
             await Task.WhenAll(LoadTrips(), LoadMarkers(), LoadFriends(), LoadClans());
-            // TripPoints a tripek után töltődnek (trip ID-k kellenek)
             await LoadTripPoints();
             Loading = false;
         }
@@ -85,11 +118,17 @@ namespace gpass_app_wpf.ViewModels
         {
             try
             {
-                var list = await _api.GetAsync<List<FriendWith>>($"friends-with/accepted/{_user.ID}");
+                var accepted = await _api.GetAsync<List<FriendWith>>($"friends-with/accepted/{_user.ID}");
+                foreach (var f in accepted) f.status = "accepted";
+
+                var pending = await _api.GetAsync<List<FriendWith>>($"friends-with/pending/{_user.ID}");
+                foreach (var f in pending) f.status = "sent";
+
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     Friends.Clear();
-                    foreach (var f in list) Friends.Add(f);
+                    foreach (var f in accepted) Friends.Add(f);
+                    foreach (var f in pending)  Friends.Add(f);
                 });
             }
             catch (Exception ex) { AppendError("Barátok", ex.Message); }
@@ -99,11 +138,15 @@ namespace gpass_app_wpf.ViewModels
         {
             try
             {
-                var list = await _api.GetAsync<List<ClanMember>>($"clan-members/by-user/{_user.ID}");
+                var memberships = await _api.GetAsync<List<ClanMember>>($"clan-members/by-user/{_user.ID}");
+
+                foreach (var m in memberships)
+                    m.clan_name = m.clan?.name ?? $"#{m.clan_id}";
+
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     Clans.Clear();
-                    foreach (var c in list) Clans.Add(c);
+                    foreach (var c in memberships) Clans.Add(c);
                 });
             }
             catch (Exception ex) { AppendError("Clánok", ex.Message); }
@@ -128,12 +171,68 @@ namespace gpass_app_wpf.ViewModels
             catch (Exception ex) { AppendError("Trip pontok", ex.Message); }
         }
 
+        // ── TRIP DELETE ───────────────────────────────────────────────────────
+        private async Task DeleteTrip()
+        {
+            if (SelectedTrip == null) return;
+            var r = MessageBox.Show($"Biztosan törlöd a Trip #{SelectedTrip.trip_number} tripet?",
+                "Törlés", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (r != MessageBoxResult.Yes) return;
+            try
+            {
+                await _api.DeleteAsync($"trips/{SelectedTrip.id}");
+                await LoadTrips();
+                await LoadTripPoints();
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message, "Hiba", MessageBoxButton.OK, MessageBoxImage.Error); }
+        }
+
+        // ── MARKER DELETE ─────────────────────────────────────────────────────
+        private async Task DeleteMarker()
+        {
+            if (SelectedMarker == null) return;
+            var r = MessageBox.Show($"Biztosan törlöd a markert? (#{SelectedMarker.id} – {SelectedMarker.marker_type})",
+                "Törlés", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (r != MessageBoxResult.Yes) return;
+            try
+            {
+                await _api.DeleteAsync($"markers/{SelectedMarker.id}");
+                await LoadMarkers();
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message, "Hiba", MessageBoxButton.OK, MessageBoxImage.Error); }
+        }
+
+        // ── FRIEND TOGGLE (sent <-> accepted) ────────────────────────────────
+        private async Task ToggleFriend()
+        {
+            if (SelectedFriend == null) return;
+            var newStatus = SelectedFriend.status == "accepted" ? "sent" : "accepted";
+            try
+            {
+                await _api.PutAsync<FriendWith>($"friends-with/{SelectedFriend.id}", new { status = newStatus });
+                await LoadFriends();
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message, "Hiba", MessageBoxButton.OK, MessageBoxImage.Error); }
+        }
+
+        // ── FRIEND DELETE ─────────────────────────────────────────────────────
+        private async Task DeleteFriend()
+        {
+            if (SelectedFriend == null) return;
+            var r = MessageBox.Show($"Biztosan törlöd a barát kapcsolatot? (#{SelectedFriend.id})",
+                "Törlés", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (r != MessageBoxResult.Yes) return;
+            try
+            {
+                await _api.DeleteAsync($"friends-with/{SelectedFriend.id}");
+                await LoadFriends();
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message, "Hiba", MessageBoxButton.OK, MessageBoxImage.Error); }
+        }
+
         private void AppendError(string section, string msg)
         {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                Errors += $"[{section}]: {msg}\n";
-            });
+            Application.Current.Dispatcher.Invoke(() => Errors += $"[{section}]: {msg}\n");
         }
     }
 }

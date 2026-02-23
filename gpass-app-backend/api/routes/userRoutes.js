@@ -28,4 +28,7 @@ router.put("/:userID", [authMiddleware.userIsLoggedIn], userController.updateUse
 // DELETE (admin)
 router.delete("/:userID", [authMiddleware.userIsLoggedIn, authMiddleware.isAdmin], userController.deleteUser);
 
+router.put("/location", [authMiddleware.userIsLoggedIn], userController.updateLocation);
+router.get("/location/:userID",[authMiddleware.userIsLoggedIn],userController.getUserLocation);
+
 module.exports = router;

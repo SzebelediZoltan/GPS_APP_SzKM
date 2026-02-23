@@ -3,79 +3,80 @@ const { Model, DataTypes } = require("sequelize");
 const authUtils = require("../utilities/authUtils");
 
 module.exports = (sequelize) => {
-    class User extends Model { };
+  class User extends Model { }
 
-    User.init
-        (
-            {
-                ID:
-                {
-                    type: DataTypes.INTEGER,
-                    primaryKey: true,
-                    autoIncrement: true,
-                    allowNull: false,
-                },
+  User.init(
+    {
+      ID: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+      },
 
-                username:
-                {
-                    type: DataTypes.STRING,
-                    allowNull: false,
-                    unique: "username"
-                },
+      username: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: "username",
+      },
 
+      email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: "email",
 
-                email:
-                {
-                    type: DataTypes.STRING,
-                    allowNull: false,
-                    unique: "email",
+        validate: {
+          isEmail: {
+            args: true,
 
-                    validate:
-                    {
-                        isEmail:
-                        {
-                            args: true,
+            msg: "Nem megfelelő email formátum",
+          },
+        },
+      },
 
-                            msg: "Nem megfelelő email formátum",
-                        }
-                    }
-                },
+      password: {
+        type: DataTypes.STRING,
+        allowNull: false,
 
-                password:
-                {
-                    type: DataTypes.STRING,
-                    allowNull: false,
+        set(value) {
+          this.setDataValue("password", authUtils.hashPassword(value));
+        },
+      },
 
-                    set(value) {
-                        this.setDataValue("password", authUtils.hashPassword(value));
-                    }
-                },
+      isAdmin: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
 
-                isAdmin:
-                {
-                    type: DataTypes.BOOLEAN,
-                    allowNull: false,
-                    defaultValue: false,
-                }
-            },
+      latitude: {
+        type: DataTypes.DECIMAL(9, 6),
+        allowNull: true,
+      },
 
-            {
-                sequelize,
-                modelName: "User",
-                createdAt: "registeredAt",
-                updatedAt: false,
+      longitude: {
+        type: DataTypes.DECIMAL(9, 6),
+        allowNull: true,
+      },
+    },
 
-                scopes: {
-                    public: {
-                        attributes: ["ID", "username", "email", "isAdmin"]
-                    },
+    {
+      sequelize,
+      modelName: "User",
+      createdAt: "registeredAt",
+      updatedAt: false,
 
-                    auth: {
-                        attributes: ["ID", "username", "email", "password", "isAdmin"]
-                    }
-                }
-            },
-        );
+      scopes: {
+        public: {
+          attributes: ["ID", "username", "email", "isAdmin", "latitude", "longitude"],
+        },
 
-    return User;
-}
+        auth: {
+          attributes: ["ID", "username", "email", "password", "isAdmin"],
+        },
+      },
+    },
+  );
+
+  return User;
+};
