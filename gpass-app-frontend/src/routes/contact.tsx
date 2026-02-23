@@ -43,8 +43,7 @@ function ContactPage() {
                             <Input
                                 placeholder="Teljes neved"
                                 className="rounded-xl"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
+                              
                             />
                         </div>
 
@@ -55,8 +54,7 @@ function ContactPage() {
                                 type="email"
                                 placeholder="email@example.com"
                                 className="rounded-xl"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                               
                             />
                         </div>
 
@@ -66,15 +64,13 @@ function ContactPage() {
                             <Textarea
                                 rows={5}
                                 placeholder="Írd ide az üzeneted..."
-                                className="rounded-xl"
-                                value={message}
-                                onChange={(e) => setMessage(e.target.value)}
+                                className="rounded-xl h-40"
+        
                             />
                         </div>
 
                         <Button
                             className="w-full rounded-xl"
-                            onClick={handleSubmit}
                         >
                             Üzenet küldése
                         </Button>
@@ -83,5 +79,5 @@ function ContactPage() {
                 </Card>
             </div>
         </main>
-    )1
+    )
 }

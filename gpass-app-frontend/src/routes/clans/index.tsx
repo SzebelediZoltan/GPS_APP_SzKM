@@ -9,7 +9,7 @@ import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import { useAuth } from '@/hooks/useAuth'
 import { createFileRoute } from '@tanstack/react-router'
-import { Search, Users } from 'lucide-react'
+import { Search, Star, Users } from 'lucide-react'
 import React from 'react'
 
 export const Route = createFileRoute('/clans/')({
@@ -151,7 +151,8 @@ function RouteComponent() {
 
                             <div className="absolute top-4 right-4">
                                 <Badge className="rounded-full bg-primary text-primary-foreground">
-                                    ⭐ Top Klán
+                                    <Star></Star>
+                                    Top Klán
                                 </Badge>
                             </div>
 

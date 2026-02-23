@@ -71,7 +71,7 @@ function LoginPage() {
       queryClient.invalidateQueries({ queryKey: ["user"] }),
         nav({ to: "/" })
     },
-    onError(error, variables, onMutateResult, context) {
+    onError(error) {
       toast.error(error.response?.data.message)
     },
   })

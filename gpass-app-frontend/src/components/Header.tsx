@@ -20,7 +20,6 @@ import ThemeSwitch from "@/components/ThemeSwitch"
 import axios from "axios"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useAuth } from "@/hooks/useAuth"
-import { Toaster } from "./ui/sonner"
 
 type User = {
     userID: string,
@@ -113,7 +112,6 @@ export default function Header({ user }: HeaderProps) {
                     </div>
                 </div>
             </div>
-            <Toaster/>
         </header>
     )
 }
