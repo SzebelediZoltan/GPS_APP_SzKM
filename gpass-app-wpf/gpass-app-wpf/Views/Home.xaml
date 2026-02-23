@@ -4,65 +4,95 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="GPass Admin" Height="580" Width="960"
+        Title="GPass Admin" Height="620" Width="1000"
         WindowStartupLocation="CenterScreen">
 
-    <DockPanel Margin="20">
+    <DockPanel Margin="16">
 
         <!-- Fejléc -->
-        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,15">
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
             <TextBlock FontSize="22" FontWeight="Bold" Text="Admin Dashboard" VerticalAlignment="Center"/>
             <TextBlock Margin="20,0,0,0" FontSize="14" Foreground="#555"
                        Text="{Binding WelcomeText}" VerticalAlignment="Center"/>
+            <Button Content="Kijelentkezés" Padding="12,5" Margin="20,0,0,0"
+                    VerticalAlignment="Center" Command="{Binding LogoutCommand}"/>
         </StackPanel>
 
-        <!-- Toolbar -->
-        <Border DockPanel.Dock="Top" Background="#f0f0f0" CornerRadius="4"
-                Padding="10,8" Margin="0,0,0,10">
-            <StackPanel Orientation="Horizontal">
+        <TabControl>
 
-                <Button Content="＋  Új" Padding="12,6" Margin="0,0,8,0"
-                        Background="#27ae60" Foreground="White"
-                        Command="{Binding AddUserCommand}"/>
+            <!-- ── FELHASZNÁLÓK TAB ── -->
+            <TabItem Header="👥 Felhasználók">
+                <DockPanel>
+                    <!-- Toolbar -->
+                    <Border DockPanel.Dock="Top" Background="#f0f0f0" CornerRadius="4"
+                            Padding="10,8" Margin="0,0,0,8">
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="＋  Új" Padding="12,6" Margin="0,0,8,0"
+                                    Background="#27ae60" Foreground="White"
+                                    Command="{Binding AddUserCommand}"/>
+                            <Button Content="✎  Szerkesztés" Padding="12,6" Margin="0,0,8,0"
+                                    Background="#2980b9" Foreground="White"
+                                    Command="{Binding EditUserCommand}"/>
+                            <Button Content="🔍  Részletek" Padding="12,6" Margin="0,0,8,0"
+                                    Background="#8e44ad" Foreground="White"
+                                    Command="{Binding ViewDetailCommand}"/>
+                            <Button Content="✕  Törlés" Padding="12,6"
+                                    Background="#e74c3c" Foreground="White"
+                                    Command="{Binding DeleteUserCommand}"/>
+                        </StackPanel>
+                    </Border>
 
-                <Button Content="✎  Szerkesztés" Padding="12,6" Margin="0,0,8,0"
-                        Background="#2980b9" Foreground="White"
-                        Command="{Binding EditUserCommand}"/>
+                    <DataGrid ItemsSource="{Binding Users}"
+                              SelectedItem="{Binding SelectedUser, Mode=TwoWay}"
+                              AutoGenerateColumns="False" IsReadOnly="True"
+                              SelectionMode="Single" CanUserAddRows="False"
+                              GridLinesVisibility="Horizontal" HeadersVisibility="Column"
+                              AlternatingRowBackground="#fafafa" BorderBrush="#ddd" BorderThickness="1">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID"             Binding="{Binding ID}"       Width="55"/>
+                            <DataGridTextColumn Header="Felhasználónév" Binding="{Binding username}" Width="200"/>
+                            <DataGridTextColumn Header="Email"          Binding="{Binding email}"    Width="*"/>
+                            <DataGridCheckBoxColumn Header="Admin"      Binding="{Binding isAdmin}"  Width="70"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </TabItem>
 
-                <Button Content="🔍  Részletek" Padding="12,6" Margin="0,0,8,0"
-                        Background="#8e44ad" Foreground="White"
-                        Command="{Binding ViewDetailCommand}"/>
+            <!-- ── KLÁNOK TAB ── -->
+            <TabItem Header="🛡 Klánok">
+                <DockPanel DataContext="{Binding ClanVM}">
+                    <!-- Toolbar -->
+                    <Border DockPanel.Dock="Top" Background="#f0f0f0" CornerRadius="4"
+                            Padding="10,8" Margin="0,0,0,8">
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="👥  Tagok megtekintése" Padding="12,6" Margin="0,0,8,0"
+                                    Background="#8e44ad" Foreground="White"
+                                    Command="{Binding ViewMembersCommand}"/>
+                            <Button Content="✎  Átnevezés" Padding="12,6" Margin="0,0,8,0"
+                                    Background="#2980b9" Foreground="White"
+                                    Command="{Binding EditClanCommand}"/>
+                            <Button Content="✕  Törlés" Padding="12,6"
+                                    Background="#e74c3c" Foreground="White"
+                                    Command="{Binding DeleteClanCommand}"/>
+                        </StackPanel>
+                    </Border>
 
-                <Button Content="✕  Törlés" Padding="12,6" Margin="0,0,0,0"
-                        Background="#e74c3c" Foreground="White"
-                        Command="{Binding DeleteUserCommand}"/>
+                    <DataGrid ItemsSource="{Binding Clans}"
+                              SelectedItem="{Binding SelectedClan, Mode=TwoWay}"
+                              AutoGenerateColumns="False" IsReadOnly="True"
+                              SelectionMode="Single" CanUserAddRows="False"
+                              GridLinesVisibility="Horizontal" HeadersVisibility="Column"
+                              AlternatingRowBackground="#fafafa" BorderBrush="#ddd" BorderThickness="1">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID"          Binding="{Binding id}"          Width="55"/>
+                            <DataGridTextColumn Header="Klán neve"   Binding="{Binding name}"        Width="200"/>
+                            <DataGridTextColumn Header="Vezető"      Binding="{Binding leader_name}" Width="150"/>
+                            <DataGridTextColumn Header="Létrehozva"  Binding="{Binding created_at, Converter={StaticResource IsoDate}}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </TabItem>
 
-                <Separator Width="1" Background="#ccc" Margin="12,0,12,0"/>
-
-                <Button Content="Kijelentkezés" Padding="12,6"
-                        Command="{Binding LogoutCommand}"/>
-
-            </StackPanel>
-        </Border>
-
-        <!-- Táblázat -->
-        <DataGrid ItemsSource="{Binding Users}"
-                  SelectedItem="{Binding SelectedUser, Mode=TwoWay}"
-                  AutoGenerateColumns="False"
-                  IsReadOnly="True"
-                  SelectionMode="Single"
-                  CanUserAddRows="False"
-                  GridLinesVisibility="Horizontal"
-                  HeadersVisibility="Column"
-                  AlternatingRowBackground="#fafafa"
-                  BorderBrush="#ddd" BorderThickness="1">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="ID"             Binding="{Binding ID}"       Width="55"/>
-                <DataGridTextColumn Header="Felhasználónév" Binding="{Binding username}" Width="200"/>
-                <DataGridTextColumn Header="Email"          Binding="{Binding email}"    Width="*"/>
-                <DataGridCheckBoxColumn Header="Admin"      Binding="{Binding isAdmin}"  Width="70"/>
-            </DataGrid.Columns>
-        </DataGrid>
-
+        </TabControl>
     </DockPanel>
 </Window>
