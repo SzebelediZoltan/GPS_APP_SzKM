@@ -2,7 +2,8 @@
 {
     public class LoginRequest
     {
-        public string userID { get; set; }   // ez valójában username
+        public string userID { get; set; }   // ide jön ID / email / username
         public string password { get; set; }
     }
+
 }

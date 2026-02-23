@@ -94,6 +94,7 @@ function ProfileDashboard() {
       <NotLoggedIn />
     </>
   }
+  
 
   if (!friends || !trips || !clans || friendError || clanError || tripError) {
     return <ServerErrorPage />
@@ -102,6 +103,7 @@ function ProfileDashboard() {
   if (friendIsLoading || clansIsLoading || tripsIsLoading) {
     return <LoadingPage />
   }
+  
 
   return (
     <main className="min-h-[calc(100vh-64px)] bg-background text-foreground">
@@ -147,7 +149,7 @@ function ProfileDashboard() {
                   <Avatar className="h-16 w-16 rounded-2xl ring-1 ring-border/60">
                     <AvatarImage alt={user?.username} />
                     <AvatarFallback className="rounded-2xl">
-                      {user?.username.slice(0, 2).toUpperCase()}
+                      {"ZO".toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
 
@@ -245,7 +247,7 @@ function ProfileDashboard() {
                     <Avatar className="h-10 w-10 rounded-xl ring-1 ring-border/60">
                       <AvatarImage src={f.avatarUrl} alt={f.username} />
                       <AvatarFallback className="rounded-xl">
-                        {f.username.slice(0, 2).toUpperCase()}
+                        {"MA".toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
 

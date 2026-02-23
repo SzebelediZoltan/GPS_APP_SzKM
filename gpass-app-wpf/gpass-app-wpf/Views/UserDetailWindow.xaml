@@ -1,0 +1,94 @@
+<Window x:Class="gpass_app_wpf.Views.UserDetailWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{Binding Title}" Height="520" Width="750"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResize">
+
+    <DockPanel Margin="16">
+
+        <StackPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+            <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="Bold" Foreground="#2c3e50"/>
+            <TextBlock Text="{Binding UserInfo}" FontSize="12" Foreground="#777" Margin="0,3,0,0"/>
+            <TextBlock Text="Betöltés..." FontStyle="Italic" Foreground="#999" Margin="0,4,0,0"
+                       Visibility="{Binding Loading, Converter={StaticResource BoolToVisibility}}"/>
+        </StackPanel>
+
+        <Border DockPanel.Dock="Top"
+                Background="#fff3cd" BorderBrush="#ffc107" BorderThickness="1"
+                CornerRadius="4" Padding="8,6" Margin="0,0,0,8"
+                Visibility="{Binding HasErrors, Converter={StaticResource BoolToVisibility}}">
+            <TextBlock Text="{Binding Errors}" Foreground="#856404" FontSize="11" TextWrapping="Wrap"/>
+        </Border>
+
+        <TabControl>
+
+            <TabItem Header="{Binding Trips.Count, StringFormat='Tripek ({0})'}">
+                <DataGrid ItemsSource="{Binding Trips}" AutoGenerateColumns="False"
+                          IsReadOnly="True" CanUserAddRows="False"
+                          GridLinesVisibility="Horizontal" AlternatingRowBackground="#fafafa">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID"         Binding="{Binding id}"          Width="60"/>
+                        <DataGridTextColumn Header="Trip #"     Binding="{Binding trip_number}" Width="80"/>
+                        <DataGridTextColumn Header="Létrehozva" Binding="{Binding created_at, Converter={StaticResource IsoDate}}" Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+            <TabItem Header="{Binding Markers.Count, StringFormat='Markerek ({0})'}">
+                <DataGrid ItemsSource="{Binding Markers}" AutoGenerateColumns="False"
+                          IsReadOnly="True" CanUserAddRows="False"
+                          GridLinesVisibility="Horizontal" AlternatingRowBackground="#fafafa">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID"         Binding="{Binding id}"          Width="50"/>
+                        <DataGridTextColumn Header="Típus"      Binding="{Binding marker_type}" Width="100"/>
+                        <DataGridTextColumn Header="Pont"       Binding="{Binding score}"       Width="55"/>
+                        <DataGridTextColumn Header="Lat"        Binding="{Binding lat}"         Width="95"/>
+                        <DataGridTextColumn Header="Lng"        Binding="{Binding lng}"         Width="95"/>
+                        <DataGridTextColumn Header="Létrehozva" Binding="{Binding created_at, Converter={StaticResource IsoDate}}" Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+            <TabItem Header="{Binding Friends.Count, StringFormat='Barátok ({0})'}">
+                <DataGrid ItemsSource="{Binding Friends}" AutoGenerateColumns="False"
+                          IsReadOnly="True" CanUserAddRows="False"
+                          GridLinesVisibility="Horizontal" AlternatingRowBackground="#fafafa">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID"         Binding="{Binding id}"          Width="50"/>
+                        <DataGridTextColumn Header="Küldő ID"   Binding="{Binding sender_id}"   Width="90"/>
+                        <DataGridTextColumn Header="Fogadó ID"  Binding="{Binding receiver_id}" Width="90"/>
+                        <DataGridTextColumn Header="Állapot"    Binding="{Binding status}"      Width="80"/>
+                        <DataGridTextColumn Header="Létrehozva" Binding="{Binding created_at, Converter={StaticResource IsoDate}}" Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+            <TabItem Header="{Binding Clans.Count, StringFormat='Clánok ({0})'}">
+                <DataGrid ItemsSource="{Binding Clans}" AutoGenerateColumns="False"
+                          IsReadOnly="True" CanUserAddRows="False"
+                          GridLinesVisibility="Horizontal" AlternatingRowBackground="#fafafa">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Clán ID"     Binding="{Binding clan_id}"  Width="90"/>
+                        <DataGridTextColumn Header="Csatlakozott" Binding="{Binding joined_at, Converter={StaticResource IsoDate}}" Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+            <TabItem Header="{Binding TripPoints.Count, StringFormat='Trip pontok ({0})'}">
+                <DataGrid ItemsSource="{Binding TripPoints}" AutoGenerateColumns="False"
+                          IsReadOnly="True" CanUserAddRows="False"
+                          GridLinesVisibility="Horizontal" AlternatingRowBackground="#fafafa">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID"       Binding="{Binding id}"          Width="55"/>
+                        <DataGridTextColumn Header="Trip ID"  Binding="{Binding trip_id}"     Width="75"/>
+                        <DataGridTextColumn Header="Lat"      Binding="{Binding lat}"         Width="110"/>
+                        <DataGridTextColumn Header="Lng"      Binding="{Binding lng}"         Width="110"/>
+                        <DataGridTextColumn Header="Rögzítve" Binding="{Binding recorded_at, Converter={StaticResource IsoDate}}" Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+        </TabControl>
+    </DockPanel>
+</Window>

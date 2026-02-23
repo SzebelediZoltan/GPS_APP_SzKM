@@ -147,7 +147,6 @@ function UserDropdown({ username }: { username: string }) {
         mutationFn: logOut,
         onSuccess: () => {
             queryClient.setQueryData(["user"], null),
-                console.log(user)
             nav({
                 to: "/auth/login"
             })
@@ -221,7 +220,6 @@ function MobileMenu({ user }: { user: User | null }) {
         mutationFn: logOut,
         onSuccess: () => {
             queryClient.setQueryData(["user"], null),
-                console.log(user)
             nav({
                 to: "/auth/login"
             })

@@ -1,23 +1,39 @@
-﻿<Window x:Class="gpass_app_wpf.Views.Login"
+<Window x:Class="gpass_app_wpf.Views.Login"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Login" Height="300" Width="300">
+        Title="GPass - Bejelentkezés" Height="400" Width="400"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Background="#1a1a2e">
 
-    <StackPanel Margin="20">
+    <Grid>
+        <Border Background="White" CornerRadius="10"
+                Margin="40,30,40,30" Padding="35,30">
+            <StackPanel>
 
-        <TextBlock Text="Felhasználónév"/>
-        <TextBox Margin="0,5"
-             Text="{Binding Username}" />
+                <TextBlock Text="GPass Admin" FontSize="24" FontWeight="Bold"
+                           HorizontalAlignment="Center" Margin="0,0,0,25"
+                           Foreground="#2c3e50"/>
 
-        <TextBlock Text="Jelszó"/>
-        <PasswordBox x:Name="passwordBox"
-                 Margin="0,5"/>
+                <TextBlock Text="Felhasználó (ID / email / név)"
+                           Foreground="#666" FontSize="12" Margin="0,0,0,4"/>
+                <TextBox x:Name="userBox" Height="34" Padding="8,6"
+                         FontSize="13" BorderBrush="#ccc" BorderThickness="1"
+                         Margin="0,0,0,14"
+                         Text="{Binding UserIdentifier, UpdateSourceTrigger=PropertyChanged}"/>
 
-        <Button Content="Bejelentkezés"
-            Margin="0,10"
-            Command="{Binding LoginCommand}"/>
+                <TextBlock Text="Jelszó" Foreground="#666" FontSize="12" Margin="0,0,0,4"/>
+                <PasswordBox x:Name="passwordBox" Height="34" Padding="8,6"
+                             FontSize="13" BorderBrush="#ccc" BorderThickness="1"
+                             Margin="0,0,0,22"/>
 
-    </StackPanel>
+                <Button Content="Bejelentkezés" Height="38"
+                        FontSize="14" FontWeight="SemiBold"
+                        Background="#2c3e50" Foreground="White"
+                        BorderThickness="0"
+                        Command="{Binding LoginCommand}"/>
 
-
+            </StackPanel>
+        </Border>
+    </Grid>
 </Window>

@@ -17,10 +17,11 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import ThemeSwitch from "@/components/ThemeSwitch"
-import axios from "axios"
+import axios, { AxiosError } from "axios"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useAuth } from "@/hooks/useAuth"
 import { useEffect } from "react"
+import { toast, Toaster } from "sonner"
 
 const loginUser = (userData: LoginValues) => {
   return axios.post("/api/auth/login", userData, { withCredentials: true })
@@ -60,13 +61,19 @@ function LoginPage() {
 
   const queryClient = useQueryClient()
 
-  const { mutate: login } = useMutation({
+  const { mutate: login } = useMutation<unknown, AxiosError<{message: string}>, LoginValues>({
     mutationFn: (userData: LoginValues) => loginUser(userData),
     mutationKey: ["user"],
     onSuccess: () => {
+      toast.success("Sikeres bejelentkezés!", {
+        position: "bottom-right"
+      })
       queryClient.invalidateQueries({ queryKey: ["user"] }),
         nav({ to: "/" })
-    }
+    },
+    onError(error) {
+      toast.error(error.response?.data.message)
+    },
   })
 
   const form = useForm<LoginValues>({
@@ -84,7 +91,7 @@ function LoginPage() {
 
   return (
     <main className="relative min-h-screen bg-background text-foreground">
-
+      <Toaster/>
 
       {/* background glow, illeszkedik a landinghez */}
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">

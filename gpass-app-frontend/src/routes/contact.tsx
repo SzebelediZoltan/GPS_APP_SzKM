@@ -1,6 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
 
 export const Route = createFileRoute("/contact")({
     component: ContactPage,
@@ -8,39 +11,73 @@ export const Route = createFileRoute("/contact")({
 
 function ContactPage() {
     return (
-        <div className="mx-auto w-full max-w-6xl px-4 py-10">
-            <div className="mb-6 space-y-2">
-                <h1 className="text-3xl font-semibold tracking-tight">Kapcsolat</h1>
-                <p className="text-muted-foreground">
-                    Írj nekünk, ha kérdésed van vagy visszajelzést küldenél.
-                </p>
+        <main className="min-h-[calc(100vh-64px)] bg-background text-foreground">
+            {/* Glow háttér */}
+            <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+                <div className="absolute -top-44 left-1/2 h-130 w-130 -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,hsl(var(--primary)/0.14),transparent_60%)] blur-2xl" />
             </div>
 
-            <Card className="rounded-2xl border-border/60 bg-card/60 backdrop-blur">
-                <CardHeader>
-                    <CardTitle>Elérhetőségek</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4 text-sm text-muted-foreground">
-                    <div className="space-y-1">
-                        <div className="text-foreground font-medium">Email</div>
-                        <div>gpass.geolocate@gmail.com</div>
-                    </div>
+            <div className="mx-auto w-full max-w-4xl px-4 py-12">
 
-                    <div className="space-y-1">
-                        <div className="text-foreground font-medium">Telefon</div>
-                        <div>+36 70 904 8601</div>
-                    </div>
+                {/* Header */}
+                <div className="text-center mb-10">
+                    <h1 className="text-3xl font-bold tracking-tight">Kapcsolat</h1>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                        Kérdésed van? Írj nekünk és hamarosan válaszolunk.
+                    </p>
+                </div>
 
-                    <div className="space-y-1">
-                        <div className="text-foreground font-medium">Üzenet</div>
-                        <div className="rounded-xl border border-border/70 bg-background/50 p-3">
-                            Mit szeretnél nekünk üzenni?
+                <Card className="rounded-2xl border-border/60 bg-card/60 shadow-xl backdrop-blur">
+                    <CardHeader>
+                        <CardTitle>Üzenet küldése</CardTitle>
+                        <CardDescription>
+                            Töltsd ki az alábbi űrlapot.
+                        </CardDescription>
+                    </CardHeader>
+
+                    <CardContent className="space-y-6">
+
+                        {/* Név */}
+                        <div className="space-y-2">
+                            <Label>Név</Label>
+                            <Input
+                                placeholder="Teljes neved"
+                                className="rounded-xl"
+                              
+                            />
                         </div>
-                    </div>
 
-                    <Button>Üzenet küldése</Button>
-                </CardContent>
-            </Card>
-        </div>
+                        {/* Email */}
+                        <div className="space-y-2">
+                            <Label>Email cím</Label>
+                            <Input
+                                type="email"
+                                placeholder="email@example.com"
+                                className="rounded-xl"
+                               
+                            />
+                        </div>
+
+                        {/* Üzenet */}
+                        <div className="space-y-2">
+                            <Label>Üzenet</Label>
+                            <Textarea
+                                rows={5}
+                                placeholder="Írd ide az üzeneted..."
+                                className="rounded-xl h-40"
+        
+                            />
+                        </div>
+
+                        <Button
+                            className="w-full rounded-xl"
+                        >
+                            Üzenet küldése
+                        </Button>
+
+                    </CardContent>
+                </Card>
+            </div>
+        </main>
     )
 }

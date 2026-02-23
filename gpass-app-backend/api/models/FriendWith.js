@@ -86,12 +86,12 @@ module.exports = (sequelize) => {
 
                 accepted: {
                     where: { status: "accepted" },
-                    attributes: ["id", "sender_id", "receiver_id", "created_at"],
+                    attributes: ["id", "sender_id", "receiver_id", "status" ,"created_at"],
                 },
 
                 pending: {
                     where: { status: "sent" },
-                    attributes: ["id", "sender_id", "receiver_id", "created_at"],
+                    attributes: ["id", "sender_id", "receiver_id", "status", "created_at"],
                 },
 
                 minimal: {
