@@ -149,6 +149,9 @@ module.exports = (sequelize) =>
         foreignKey: "trip_id",
         as: "points",
         constraints: false,
+
+        onDelete: "CASCADE",
+        hooks: true,
     });
 
     TripPoint.belongsTo(Trip,

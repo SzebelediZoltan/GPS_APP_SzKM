@@ -25,7 +25,7 @@ class TripService {
     async createTrip(data) {
         if (!data) throw new BadRequestError("Hiányzik a trip adata (payload).", { data });
         if (!data.user_id) throw new BadRequestError("Hiányzik a felhasználó azonosító (user_id).", { data });
-        if (!data.trip_number) throw new BadRequestError("Hiányzik a trip sorszám (trip_number).", { data });
+        if (!data.trip_name) throw new BadRequestError("Hiányzik a trip név (trip_name).", { data });
 
         return await this.tripRepository.createTrip(data);
     }
@@ -49,15 +49,15 @@ class TripService {
         return await this.tripRepository.deleteTrip(tripId);
     }
 
-    async getTripByUserAndNumber(userId, tripNumber) {
+    async getTripByUserAndNumber(userId, tripName) {
         if (!userId) throw new BadRequestError("Hiányzik a felhasználó azonosító (userId).");
-        if (!tripNumber) throw new BadRequestError("Hiányzik a trip sorszám (tripNumber).");
+        if (!tripName) throw new BadRequestError("Hiányzik a trip sorszám (tripName).");
 
-        const trip = await this.tripRepository.getTripByUserAndNumber(userId, tripNumber);
+        const trip = await this.tripRepository.getTripByUserAndNumber(userId, tripName);
 
         if (!trip) throw new NotFoundError("Nem található trip ezzel a felhasználóval és tripszámmal.",
             {
-                data: { userId, tripNumber }
+                data: { userId, tripName }
             });
 
         return trip;

@@ -13,8 +13,8 @@ router.get("/", tripController.getTrips);
 // user tripjei
 router.get("/by-user/:userId", tripController.getTripsByUser);
 
-// user + tripNumber
-router.get("/by-user/:userId/number/:tripNumber", tripController.getTripByUserAndNumber);
+// user + tripName
+router.get("/by-user/:userId/number/:tripID", tripController.getTripByUserAndNumber);
 
 // CREATE
 router.post("/", tripController.createTrip);

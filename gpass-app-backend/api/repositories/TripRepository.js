@@ -78,14 +78,14 @@ class TripRepository {
         }
     }
 
-    async getTripByUserAndNumber(userId, tripNumber) {
+    async getTripByUserAndName(userId, tripName) {
         try {
             return await this.Trip.scope("public").findOne(
                 {
                     where:
                     {
                         user_id: userId,
-                        trip_number: tripNumber,
+                        trip_name: tripName,
                     }
                 });
         }
@@ -93,7 +93,7 @@ class TripRepository {
             throw new DbError("Failed to fetch trip by user and number",
                 {
                     details: error.message,
-                    data: { userId, tripNumber },
+                    data: { userId, tripName: tripName },
                 });
         }
     }

@@ -22,13 +22,13 @@ module.exports = (sequelize) => {
                 },
             },
 
-            trip_number: {
-                type: DataTypes.INTEGER,
+            trip_name: {
+                type: DataTypes.STRING,
                 allowNull: false,
                 validate: {
-                    notNull: { msg: "A trip_number megadása kötelező." },
-                    isInt: { msg: "A trip_number csak egész szám lehet." },
-                    min: { args: [1], msg: "A trip_number csak pozitív szám lehet." },
+                    notNull: { msg: "A trip_name megadása kötelező." },
+                    isAlphanumeric: { msg: "A trip_name csak szöveg és/vagy szám lehet." },
+                    min: { args: [1], msg: "A trip_name minimum 1 hosszú." },
                 },
             },
 
@@ -50,8 +50,8 @@ module.exports = (sequelize) => {
             indexes: [
                 {
                     unique: true,
-                    fields: ["user_id", "trip_number"],
-                    name: "uq_trips_user_trip_number",
+                    fields: ["user_id", "trip_name"],
+                    name: "uq_trips_user_trip_name",
                 },
                 { fields: ["user_id"], name: "ix_trips_user_id" },
                 { fields: ["created_at"], name: "ix_trips_created_at" },
@@ -59,18 +59,18 @@ module.exports = (sequelize) => {
 
             scopes: {
                 public: {
-                    attributes: ["id", "user_id", "trip_number", "created_at"],
+                    attributes: ["id", "user_id", "trip_name", "created_at"],
                 },
                 minimal: {
-                    attributes: ["id", "trip_number"],
+                    attributes: ["id", "trip_name"],
                 },
                 admin: {
-                    attributes: ["id", "user_id", "trip_number", "created_at"],
+                    attributes: ["id", "user_id", "trip_name", "created_at"],
                 },
             },
 
             defaultScope: {
-                attributes: ["id", "user_id", "trip_number", "created_at"],
+                attributes: ["id", "user_id", "trip_name", "created_at"],
             },
         }
     );
