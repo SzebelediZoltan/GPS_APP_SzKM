@@ -11,10 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as MapRouteImport } from './routes/map'
 import { Route as ContactRouteImport } from './routes/contact'
-import { Route as ClansRouteImport } from './routes/clans'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProfileIndexRouteImport } from './routes/profile/index'
+import { Route as ClansIndexRouteImport } from './routes/clans/index'
 import { Route as ProfileSettingsRouteImport } from './routes/profile/settings'
 import { Route as ProfileFriendsRouteImport } from './routes/profile/friends'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
@@ -31,11 +31,6 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ClansRoute = ClansRouteImport.update({
-  id: '/clans',
-  path: '/clans',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -49,6 +44,11 @@ const IndexRoute = IndexRouteImport.update({
 const ProfileIndexRoute = ProfileIndexRouteImport.update({
   id: '/profile/',
   path: '/profile/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClansIndexRoute = ClansIndexRouteImport.update({
+  id: '/clans/',
+  path: '/clans/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileSettingsRoute = ProfileSettingsRouteImport.update({
@@ -80,26 +80,26 @@ const ProfileUserIDIndexRoute = ProfileUserIDIndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/clans': typeof ClansRoute
   '/contact': typeof ContactRoute
   '/map': typeof MapRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/profile/friends': typeof ProfileFriendsRoute
   '/profile/settings': typeof ProfileSettingsRoute
+  '/clans/': typeof ClansIndexRoute
   '/profile/': typeof ProfileIndexRoute
   '/profile/$userID/': typeof ProfileUserIDIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/clans': typeof ClansRoute
   '/contact': typeof ContactRoute
   '/map': typeof MapRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/profile/friends': typeof ProfileFriendsRoute
   '/profile/settings': typeof ProfileSettingsRoute
+  '/clans': typeof ClansIndexRoute
   '/profile': typeof ProfileIndexRoute
   '/profile/$userID': typeof ProfileUserIDIndexRoute
 }
@@ -107,13 +107,13 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/clans': typeof ClansRoute
   '/contact': typeof ContactRoute
   '/map': typeof MapRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/profile/friends': typeof ProfileFriendsRoute
   '/profile/settings': typeof ProfileSettingsRoute
+  '/clans/': typeof ClansIndexRoute
   '/profile/': typeof ProfileIndexRoute
   '/profile/$userID/': typeof ProfileUserIDIndexRoute
 }
@@ -122,39 +122,39 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
-    | '/clans'
     | '/contact'
     | '/map'
     | '/auth/login'
     | '/auth/register'
     | '/profile/friends'
     | '/profile/settings'
+    | '/clans/'
     | '/profile/'
     | '/profile/$userID/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
-    | '/clans'
     | '/contact'
     | '/map'
     | '/auth/login'
     | '/auth/register'
     | '/profile/friends'
     | '/profile/settings'
+    | '/clans'
     | '/profile'
     | '/profile/$userID'
   id:
     | '__root__'
     | '/'
     | '/about'
-    | '/clans'
     | '/contact'
     | '/map'
     | '/auth/login'
     | '/auth/register'
     | '/profile/friends'
     | '/profile/settings'
+    | '/clans/'
     | '/profile/'
     | '/profile/$userID/'
   fileRoutesById: FileRoutesById
@@ -162,13 +162,13 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
-  ClansRoute: typeof ClansRoute
   ContactRoute: typeof ContactRoute
   MapRoute: typeof MapRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
   ProfileFriendsRoute: typeof ProfileFriendsRoute
   ProfileSettingsRoute: typeof ProfileSettingsRoute
+  ClansIndexRoute: typeof ClansIndexRoute
   ProfileIndexRoute: typeof ProfileIndexRoute
   ProfileUserIDIndexRoute: typeof ProfileUserIDIndexRoute
 }
@@ -187,13 +187,6 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/clans': {
-      id: '/clans'
-      path: '/clans'
-      fullPath: '/clans'
-      preLoaderRoute: typeof ClansRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -215,6 +208,13 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile/'
       preLoaderRoute: typeof ProfileIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/clans/': {
+      id: '/clans/'
+      path: '/clans'
+      fullPath: '/clans/'
+      preLoaderRoute: typeof ClansIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile/settings': {
@@ -258,13 +258,13 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
-  ClansRoute: ClansRoute,
   ContactRoute: ContactRoute,
   MapRoute: MapRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
   ProfileFriendsRoute: ProfileFriendsRoute,
   ProfileSettingsRoute: ProfileSettingsRoute,
+  ClansIndexRoute: ClansIndexRoute,
   ProfileIndexRoute: ProfileIndexRoute,
   ProfileUserIDIndexRoute: ProfileUserIDIndexRoute,
 }
