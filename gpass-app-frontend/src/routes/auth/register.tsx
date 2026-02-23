@@ -21,6 +21,8 @@ import ThemeSwitch from "@/components/ThemeSwitch"
 import { useMutation } from "@tanstack/react-query"
 import { useAuth } from "@/hooks/useAuth"
 import { useEffect } from "react"
+import { toast } from "sonner"
+import { Toaster } from "@/components/ui/sonner"
 
 const registerUser = (userData: RegisterValues) => {
     return axios.post("/api/users", userData)
@@ -66,8 +68,16 @@ function RegisterPage() {
         mutationFn: (userData: RegisterValues) => registerUser(userData),
         mutationKey: ["user"],
         onSuccess: () => {
+            toast.success("Sikeres regisztráció!", {
+                position: "bottom-right"
+            })
             nav({
                 to: "/auth/login"
+            })
+        },
+        onError: () => {
+            toast.error("Sikertelen regisztráció!", {
+                position: "bottom-right"
             })
         }
     })
@@ -88,6 +98,7 @@ function RegisterPage() {
 
     return (
         <main className="relative min-h-screen bg-background text-foreground">
+            <Toaster />
             {/* háttér glow – egységes a login/landing stílussal */}
             <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
                 <div className="absolute -top-44 left-1/2 h-130 w-130 -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,hsl(var(--primary)/0.18),transparent_60%)] blur-2xl" />
