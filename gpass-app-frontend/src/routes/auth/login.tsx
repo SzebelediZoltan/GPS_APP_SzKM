@@ -17,12 +17,11 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import ThemeSwitch from "@/components/ThemeSwitch"
-import axios from "axios"
+import axios, { AxiosError } from "axios"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useAuth } from "@/hooks/useAuth"
 import { useEffect } from "react"
-import { toast } from "sonner"
-import { Toaster } from "@/components/ui/sonner"
+import { toast, Toaster } from "sonner"
 
 const loginUser = (userData: LoginValues) => {
   return axios.post("/api/auth/login", userData, { withCredentials: true })
@@ -62,7 +61,7 @@ function LoginPage() {
 
   const queryClient = useQueryClient()
 
-  const { mutate: login } = useMutation({
+  const { mutate: login } = useMutation<unknown, AxiosError<{message: string}>, LoginValues>({
     mutationFn: (userData: LoginValues) => loginUser(userData),
     mutationKey: ["user"],
     onSuccess: () => {
@@ -72,10 +71,8 @@ function LoginPage() {
       queryClient.invalidateQueries({ queryKey: ["user"] }),
         nav({ to: "/" })
     },
-    onError() {
-      toast.error("Sikertelen bejelentkezés!" + "", {
-        position: "bottom-right"
-      })
+    onError(error, variables, onMutateResult, context) {
+      toast.error(error.response?.data.message)
     },
   })
 
