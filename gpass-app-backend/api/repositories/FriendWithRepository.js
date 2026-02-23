@@ -1,5 +1,6 @@
 const { DbError } = require("../errors");
-const { Op } = require("sequelize");
+const { Op, Association } = require("sequelize");
+const User = require("../models/User");
 
 class FriendWithRepository {
     constructor(db) {
@@ -84,36 +85,58 @@ class FriendWithRepository {
         try {
             return await this.FriendWith.scope("pending").findAll(
                 {
+                    include: [
+                        { association: "sender",
+                            attributes: ["username", "email"],
+                        },
+
+                        { association: "receiver", 
+                            attributes: ["username", "email"],
+                        }
+                    ],
+                    
                     where: {
                         [Op.or]:
                             [
-                                {sender_id: userId},
-                                {receiver_id: userId}
+                                { sender_id: userId },
+                                { receiver_id: userId }
                             ]
                     }
                 });
-            }
-            catch (error) {
-                throw new DbError("Failed to fetch pending friend requests",
-                    {
-                        details: error.message,
-                        data: userId,
-                    });
-                }
-            }
-            
-            async getAcceptedForUser(userId) {
-                try {
-                    return await this.FriendWith.scope("accepted").findAll(
-                        {
-                            where: {
-                                [Op.or]:
-                                    [
-                                        {sender_id: userId},
-                                        {receiver_id: userId}
-                                    ]
-                            }
-                        });
+        }
+        catch (error) {
+            throw new DbError("Failed to fetch pending friend requests",
+                {
+                    details: error.message,
+                    data: userId,
+                });
+        }
+    }
+
+    async getAcceptedForUser(userId) {
+        try {
+            return await this.FriendWith.scope("accepted").findAll(
+                {
+                    
+                    
+                    include: [
+                        { association: "sender", 
+                            attributes: ["username", "email"],
+                        },
+
+                        { association: "receiver" ,
+                            attributes: ["username", "email"],
+                        }
+                    ],
+
+                    where: {
+                        [Op.or]:
+                            [
+                                { sender_id: userId },
+                                { receiver_id: userId }
+                            ]
+                    }
+                });
         }
         catch (error) {
             throw new DbError("Failed to fetch friends for user",
