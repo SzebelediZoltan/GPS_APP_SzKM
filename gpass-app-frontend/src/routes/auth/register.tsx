@@ -63,15 +63,18 @@ function RegisterPage() {
 
 
 
-    const { mutate: create, isError, error} = useMutation<unknown, AxiosError<{message: string}>, RegisterValues>({
+    const { mutate: create} = useMutation<unknown, AxiosError<{message: string}>, RegisterValues>({
         mutationFn: (userData: RegisterValues) => registerUser(userData),
         mutationKey: ["user"],
         onSuccess: () => {
+            toast.success("Sikeres regisztráció!", {
+                position: "bottom-right"
+            })
             nav({
                 to: "/auth/login"
             })
         },
-        onError(error, variables, onMutateResult, context) {
+        onError(error) {
             toast.error(error.response?.data.message)
             
         },

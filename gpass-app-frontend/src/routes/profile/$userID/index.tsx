@@ -1,30 +1,24 @@
-import React from "react"
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router"
 import {
   ShieldCheck,
   Shield,
   Mail,
-  MapPin,
-  Users,
-  Flag,
-  Crown,
   Compass,
   UserPlus,
-  Pen,
   Pencil,
   UserX,
   UserCheck,
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAuth } from "@/hooks/useAuth"
 import axios from "axios"
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import NotLoggedIn from "@/components/NotLoggedIn"
 import LoadingPage from "@/components/LoadingPage"
 import ServerErrorPage from "@/components/ServerErrorPage"
@@ -45,11 +39,24 @@ type User = {
 type FriendRelation = {
   id: string,
   sender_id: string,
-  receive_id: string
+  receiver_id: string,
+  status: string
+}
+
+const acceptRequest = (id: string) => {
+  return axios.put("/api/friends-with/" + id, { status: "accepted" })
 }
 
 const getPendingRequests = (id: string) => {
   return axios.get<FriendRelation[]>("/api/friends-with/pending/" + id)
+}
+
+const getAcceptedRequests = (id: string) => {
+  return axios.get<FriendRelation[]>("/api/friends-with/accepted/" + id)
+}
+
+const deleteRequest = (id: string) => {
+  return axios.delete("/api/friends-with/" + id)
 }
 
 const addFriend = (sender_id: string, receiver_id: string) => {
@@ -60,32 +67,53 @@ const getUser = (id: string) => {
   return axios.get<User>("/api/users/" + id)
 }
 
-
 function RouteComponent() {
   const { user } = useAuth()
   const params = Route.useParams()
+  const queryClient = useQueryClient()
 
   const { data: pendingRequests, isLoading: pendingRequestsIsLoading } = useQuery({
-    queryKey: ["pendingRequests", params.userID],
-    queryFn: () => getPendingRequests(params.userID)
+    queryKey: ["pendingRequests"],
+    queryFn: () => getPendingRequests(params.userID),
+    enabled: !!user,
   })
 
   const { data: currentUser, isLoading: userIsLoading } = useQuery({
     queryKey: ["currentUser", params.userID],
     queryFn: () => getUser(params.userID),
-    enabled: !user,
+    enabled: !!user,
+  })
+
+  const { data: acceptedRequests, isLoading: acceptedRequestsIsLoading } = useQuery({
+    queryKey: ["acceptedRequests"],
+    queryFn: () => getAcceptedRequests(params.userID),
+    enabled: !!user,
+  })
+
+  const { mutate: terminateRequest } = useMutation({
+    mutationFn: (id: string) => deleteRequest(id),
+    onSuccess: () => {
+      toast.success("Barátkérelem törölve!", {
+        position: "bottom-right"
+      })
+      queryClient.invalidateQueries({ queryKey: ["pendingRequests"] })
+      queryClient.invalidateQueries({ queryKey: ["acceptedRequests"] })
+    },
+    onError: () => {
+      toast.error("Barátkérelem törlése sikertlen!", {
+        position: "bottom-right",
+      })
+    }
   })
 
   const { mutate: add } = useMutation({
     mutationFn: ({ sender_id, receiver_id }: { sender_id: string, receiver_id: string }) => addFriend(sender_id, receiver_id),
     onSuccess: () => {
       toast.success("Barátkérelem elküldve!", {
-        action: {
-          label: "Undo",
-          onClick: () => console.log("Undo"),
-        },
         position: "bottom-right"
       })
+      queryClient.invalidateQueries({ queryKey: ["pendingRequests"] })
+      queryClient.invalidateQueries({ queryKey: ["acceptedRequests"] })
     },
     onError: () => {
       toast.error("Barátkérelem elküldése sikertlen!", {
@@ -94,13 +122,24 @@ function RouteComponent() {
     }
   })
 
+  const { mutate: accept } = useMutation({
+    mutationFn: (id: string) => acceptRequest(id),
+    onSuccess: () => {
+      toast.success("Barátkérelem elfogadva!", {
+        position: "bottom-right"
+      })
+      queryClient.invalidateQueries({ queryKey: ["pendingRequests"] })
+      queryClient.invalidateQueries({ queryKey: ["acceptedRequests"] })
+    },
+    onError: () => {
+      toast.error("Barátkérelem elfogadása sikertlen!", {
+        position: "bottom-right",
+      })
+    }
+  })
 
-  if (userIsLoading || pendingRequestsIsLoading) {
+  if (userIsLoading || pendingRequestsIsLoading || acceptedRequestsIsLoading) {
     return <LoadingPage />
-  }
-
-  if (!currentUser || !pendingRequests) {
-    return <ServerErrorPage />
   }
 
   if (!user) {
@@ -109,11 +148,25 @@ function RouteComponent() {
     </>
   }
 
-  const isReceiver = pendingRequests.data.some((e) => e.sender_id === user.userID)
-  const isSender = pendingRequests.data.some((e) => e.receive_id === user.userID)
-
+  if (!currentUser || !pendingRequests || !acceptedRequests) {
+    return <ServerErrorPage />
+  }
 
   const isOthersProfile = currentUser.data.ID !== user.userID
+
+  const theirRelation
+    = pendingRequests.data.find((e) => {
+      if (e.receiver_id === user.userID || e.sender_id === user.userID) {
+        return true
+      }
+    })
+    || acceptedRequests.data.find((e) => {
+      if (e.receiver_id === user.userID || e.sender_id === user.userID) {
+        return true
+      }
+    })
+
+  const isReceiver = theirRelation?.receiver_id === currentUser.data.ID
 
   return (
     <main className="min-h-[calc(100vh-64px)] bg-background text-foreground">
@@ -129,28 +182,34 @@ function RouteComponent() {
           </div>
 
           {isOthersProfile ?
-            isReceiver ?
-              <Button className="rounded-xl" onClick={() => add({ sender_id: user.userID, receiver_id: currentUser.data.ID })}>
-                <UserX />
-                Barátkérelem törlése
-              </Button>
-              :
-              isSender ?
-                <>
-                  <Button className="rounded-xl" onClick={() => add({ sender_id: user.userID, receiver_id: currentUser.data.ID })}>
-                    <UserCheck />
-                    Elfogadás
-                  </Button>
-                  <Button className="rounded-xl" onClick={() => add({ sender_id: user.userID, receiver_id: currentUser.data.ID })}>
+            theirRelation ?
+              theirRelation.status == "sent" ?
+                isReceiver ?
+                  <Button className="rounded-xl" onClick={() => terminateRequest(theirRelation.id)}>
                     <UserX />
-                    Elutasítás
+                    Barátkérelem törlése
                   </Button>
-                </>
+                  :
+                  <div>
+                    <Button className="rounded-xl mr-2 bg-green-500" onClick={() => accept(theirRelation.id)}>
+                      <UserCheck />
+                      Elfogadás
+                    </Button>
+                    <Button className="rounded-xl bg-red-400" onClick={() => terminateRequest(theirRelation.id)}>
+                      <UserX />
+                      Elutasítás
+                    </Button>
+                  </div>
                 :
-                <Button className="rounded-xl" onClick={() => add({ sender_id: user.userID, receiver_id: currentUser.data.ID })}>
-                  <UserPlus />
-                  Barátnak jelölés
+                <Button className="rounded-xl" onClick={() => terminateRequest(theirRelation?.id)}>
+                  <UserX />
+                  Barát törlése
                 </Button>
+              :
+              <Button className="rounded-xl" onClick={() => add({ sender_id: user.userID, receiver_id: currentUser.data.ID })}>
+                <UserPlus />
+                Barátnak jelölés
+              </Button>
             :
             <Button className="rounded-xl">
               <Pencil />
