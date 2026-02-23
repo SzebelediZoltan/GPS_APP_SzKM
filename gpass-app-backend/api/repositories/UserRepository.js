@@ -153,6 +153,46 @@ class UserRepository {
                 });
         }
     }
+
+    async updateLocation(userID, latitude, longitude) {
+        try {
+            return await this.User.update(
+                {
+                    latitude,
+                    longitude
+                },
+                {
+                    where: { ID: userID }
+                }
+            );
+
+        } catch (error) {
+            throw new DbError("Failed to update location",
+                {
+                    details: error.message,
+                    data: {userID, latitude, longitude},
+                });
+        }
+
+    }
+    async getUserLocation(userID) {
+
+        try {
+            return await this.User.findOne({
+                where: { ID: userID },
+                attributes: ["latitude", "longitude"]
+                });
+
+        } catch (error) {
+            throw new DbError("Failed to update location",
+                {
+                    details: error.message,
+                    data: {userID},
+                });     
+        }
+
+    }
+
 }
 
 module.exports = UserRepository;

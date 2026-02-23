@@ -8,7 +8,6 @@ namespace gpass_app_wpf.DAL
     {
         private readonly HttpClient _client;
 
-        // Case-insensitive, hogy a backend snake_case / camelCase mezők mind működjenek
         private static readonly JsonSerializerOptions _jsonOptions = new()
         {
             PropertyNameCaseInsensitive = true
@@ -32,7 +31,6 @@ namespace gpass_app_wpf.DAL
 
             var body = await response.Content.ReadAsStringAsync();
             string message = null;
-
             try
             {
                 var doc = JsonSerializer.Deserialize<JsonElement>(body);
@@ -42,47 +40,34 @@ namespace gpass_app_wpf.DAL
                     message = msg.GetString();
             }
             catch { }
-
             throw new Exception(message ?? $"{(int)response.StatusCode} {response.ReasonPhrase}");
         }
 
-        public async Task<T> PostAsync<T>(string endpoint, object data)
+        private async Task<string> SendAndRead(HttpMethod method, string endpoint, object data = null)
         {
-            var json = JsonSerializer.Serialize(data);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var request = new HttpRequestMessage(HttpMethod.Post, endpoint) { Content = content };
+            var request = new HttpRequestMessage(method, endpoint);
             AttachCookie(request);
+            if (data != null)
+                request.Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
             var response = await _client.SendAsync(request);
             await EnsureSuccess(response);
-            return JsonSerializer.Deserialize<T>(await response.Content.ReadAsStringAsync(), _jsonOptions);
+            return await response.Content.ReadAsStringAsync();
         }
 
         public async Task<T> GetAsync<T>(string endpoint)
-        {
-            var request = new HttpRequestMessage(HttpMethod.Get, endpoint);
-            AttachCookie(request);
-            var response = await _client.SendAsync(request);
-            await EnsureSuccess(response);
-            return JsonSerializer.Deserialize<T>(await response.Content.ReadAsStringAsync(), _jsonOptions);
-        }
+            => JsonSerializer.Deserialize<T>(await SendAndRead(HttpMethod.Get, endpoint), _jsonOptions);
+
+        // Raw JSON lekérés — ha a scope hibás és null mezőket küld
+        public async Task<string> GetRawAsync(string endpoint)
+            => await SendAndRead(HttpMethod.Get, endpoint);
+
+        public async Task<T> PostAsync<T>(string endpoint, object data)
+            => JsonSerializer.Deserialize<T>(await SendAndRead(HttpMethod.Post, endpoint, data), _jsonOptions);
 
         public async Task<T> PutAsync<T>(string endpoint, object data)
-        {
-            var json = JsonSerializer.Serialize(data);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var request = new HttpRequestMessage(HttpMethod.Put, endpoint) { Content = content };
-            AttachCookie(request);
-            var response = await _client.SendAsync(request);
-            await EnsureSuccess(response);
-            return JsonSerializer.Deserialize<T>(await response.Content.ReadAsStringAsync(), _jsonOptions);
-        }
+            => JsonSerializer.Deserialize<T>(await SendAndRead(HttpMethod.Put, endpoint, data), _jsonOptions);
 
         public async Task DeleteAsync(string endpoint)
-        {
-            var request = new HttpRequestMessage(HttpMethod.Delete, endpoint);
-            AttachCookie(request);
-            var response = await _client.SendAsync(request);
-            await EnsureSuccess(response);
-        }
+            => await SendAndRead(HttpMethod.Delete, endpoint);
     }
 }

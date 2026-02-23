@@ -101,6 +101,26 @@ class UserService {
         return deletedCount; // destroy() száma
     }
 
+    async updateUserLocation(userID, latitude, longitude) {
+
+        if (!latitude || !longitude) {
+            throw new Error("Hiányzó koordináták");
+        }
+
+        return await this.userRepository.updateLocation(
+            userID,
+            latitude,
+            longitude
+        );
+    }
+
+    async getUserLocation(userID) {
+
+        if(!userID) throw new BadRequestError("Hiányzik a felhasználó azonosító (userID).", { data: userID });
+
+        return await this.userRepository.getUserLocation(userID);
+    }
+
 }
 
 module.exports = UserService;
