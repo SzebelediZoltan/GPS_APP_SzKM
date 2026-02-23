@@ -17,6 +17,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.set("trust proxy", 1);
+app.use(attachTransaction)
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./docs/openapi.json');
@@ -30,6 +31,7 @@ const tripRoutes = require("./api/routes/tripRoutes");
 const tripPointRoutes = require("./api/routes/tripPointRoutes");
 const authRoutes = require("./api/routes/authRoutes");
 const errorHandler = require("./api/middlewares/errorHandler");
+const { attachTransaction } = require("./api/middlewares/TransactionHandler");
 
 app.use("/api", api);
 
