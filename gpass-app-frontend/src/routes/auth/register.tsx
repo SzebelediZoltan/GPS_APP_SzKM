@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import axios from "axios"
+import axios, { AxiosError, type AxiosResponse } from "axios"
 
 import { cn } from "@/lib/utils"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -21,9 +21,10 @@ import ThemeSwitch from "@/components/ThemeSwitch"
 import { useMutation } from "@tanstack/react-query"
 import { useAuth } from "@/hooks/useAuth"
 import { useEffect } from "react"
+import { toast, Toaster } from "sonner"
 
 const registerUser = (userData: RegisterValues) => {
-    return axios.post("/api/users", userData)
+    return axios.post<RegisterValues, AxiosResponse<{asd: string}>>("/api/users", userData)
 }
 
 // ===== ROUTE =====
@@ -62,15 +63,20 @@ function RegisterPage() {
 
 
 
-    const { mutate: create } = useMutation({
+    const { mutate: create, isError, error} = useMutation<unknown, AxiosError<{message: string}>, RegisterValues>({
         mutationFn: (userData: RegisterValues) => registerUser(userData),
         mutationKey: ["user"],
         onSuccess: () => {
             nav({
                 to: "/auth/login"
             })
-        }
+        },
+        onError(error, variables, onMutateResult, context) {
+            toast.error(error.response?.data.message)
+            
+        },
     })
+    
 
     const form = useForm<RegisterValues>({
         resolver: zodResolver(RegisterSchema),
@@ -88,6 +94,7 @@ function RegisterPage() {
 
     return (
         <main className="relative min-h-screen bg-background text-foreground">
+            <Toaster/>
             {/* háttér glow – egységes a login/landing stílussal */}
             <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
                 <div className="absolute -top-44 left-1/2 h-130 w-130 -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,hsl(var(--primary)/0.18),transparent_60%)] blur-2xl" />

@@ -1,3 +1,4 @@
+import NotLoggedIn from '@/components/NotLoggedIn'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -6,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
+import { useAuth } from '@/hooks/useAuth'
 import { createFileRoute } from '@tanstack/react-router'
 import { Search, Users } from 'lucide-react'
 import React from 'react'
@@ -59,6 +61,13 @@ const dummyClans = [
 ]
 
 function RouteComponent() {
+    const {user} = useAuth()
+
+    if(!user) {
+        return (
+        <NotLoggedIn/>)
+    }
+
     const [searchTerm, setSearchTerm] = React.useState("")
     const [sortBy, setSortBy] = React.useState("most-members")
 
