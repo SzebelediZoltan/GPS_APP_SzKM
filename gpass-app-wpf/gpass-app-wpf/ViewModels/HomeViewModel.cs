@@ -23,6 +23,8 @@ namespace gpass_app_wpf.ViewModels
 
         public ObservableCollection<User> Users { get; set; } = new();
 
+        public ClanViewModel ClanVM { get; } = new();
+
         private User _selectedUser;
         public User SelectedUser
         {

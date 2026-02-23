@@ -69,6 +69,9 @@ module.exports = (sequelize) => {
             ],
 
             scopes: {
+                public: {
+                    attributes: ["id", "name", "created_at", "leader_id"],
+                },
                 minimal: {
                     attributes: ["id", "name"],
                 },

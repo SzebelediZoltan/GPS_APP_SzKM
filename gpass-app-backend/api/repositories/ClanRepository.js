@@ -9,7 +9,13 @@ class ClanRepository {
 
     async getClans() {
         try {
-            return await this.Clan.scope("public").findAll();
+            return await this.Clan.scope("public").findAll({
+                include: [{
+                    association: "leader",
+                    attributes: ["username"],
+                    required: false,
+                }]
+            });
         }
         catch (error) {
             throw new DbError("Failed to fetch clans",

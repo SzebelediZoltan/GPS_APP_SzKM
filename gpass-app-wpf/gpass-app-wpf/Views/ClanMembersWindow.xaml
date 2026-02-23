@@ -1,0 +1,60 @@
+<Window x:Class="gpass_app_wpf.Views.ClanMembersWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{Binding Title}" Height="480" Width="660"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResize">
+
+    <DockPanel Margin="16">
+
+        <!-- Fejléc -->
+        <StackPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+            <TextBlock Text="{Binding Title}" FontSize="17" FontWeight="Bold" Foreground="#2c3e50"/>
+            <TextBlock Text="{Binding ClanInfo}" FontSize="12" Foreground="#777" Margin="0,3,0,0"/>
+            <TextBlock Text="⏳ Betöltés..." FontStyle="Italic" Foreground="#999" Margin="0,4,0,0"
+                       Visibility="{Binding Loading, Converter={StaticResource BoolToVisibility}}"/>
+        </StackPanel>
+
+        <!-- Toolbar -->
+        <Border DockPanel.Dock="Bottom" Background="#f8f8f8" Padding="8,6"
+                BorderBrush="#ddd" BorderThickness="0,1,0,0">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock VerticalAlignment="Center" Margin="0,0,12,0" Foreground="#555"
+                           Text="{Binding Members.Count, StringFormat='Összesen: {0} tag'}"/>
+                <Button Content="👑  Vezető kinevezése" Padding="10,5" Margin="0,0,8,0"
+                        Background="#e67e22" Foreground="White"
+                        Command="{Binding ChangeLeaderCommand}"
+                        ToolTip="Kijelölt tag legyen az új vezető"/>
+                <Button Content="✕  Tag eltávolítása" Padding="10,5"
+                        Background="#e74c3c" Foreground="White"
+                        Command="{Binding RemoveMemberCommand}"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Táblázat -->
+        <DataGrid ItemsSource="{Binding Members}"
+                  SelectedItem="{Binding SelectedMember, Mode=TwoWay}"
+                  AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
+                  GridLinesVisibility="Horizontal" AlternatingRowBackground="#fafafa">
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Style.Triggers>
+                        <!-- Vezető sor kiemelése -->
+                        <DataTrigger Binding="{Binding is_leader}" Value="True">
+                            <Setter Property="Background" Value="#fff9e6"/>
+                            <Setter Property="FontWeight" Value="SemiBold"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="User ID"      Binding="{Binding user_id}"        Width="70"/>
+                <DataGridTextColumn Header="Felhasználó"  Binding="{Binding display_name}"   Width="150"/>
+                <DataGridTextColumn Header="Email"        Binding="{Binding display_email}"  Width="*"/>
+                <DataGridTextColumn Header="Szerep"       Binding="{Binding role_label}"     Width="80"/>
+                <DataGridTextColumn Header="Csatlakozott" Binding="{Binding joined_at, Converter={StaticResource IsoDate}}" Width="135"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+    </DockPanel>
+</Window>

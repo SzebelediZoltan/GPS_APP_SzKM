@@ -11,10 +11,12 @@ C:\Users\User\Downloads\wpf_fixed\gpass-app-wpf\bin\Debug\net10.0-windows\Micros
 C:\Users\User\Downloads\wpf_fixed\gpass-app-wpf\bin\Debug\net10.0-windows\Microsoft.IdentityModel.Tokens.dll
 C:\Users\User\Downloads\wpf_fixed\gpass-app-wpf\bin\Debug\net10.0-windows\System.IdentityModel.Tokens.Jwt.dll
 C:\Users\User\Downloads\wpf_fixed\gpass-app-wpf\obj\Debug\net10.0-windows\gpass-app-wpf.csproj.AssemblyReference.cache
+C:\Users\User\Downloads\wpf_fixed\gpass-app-wpf\obj\Debug\net10.0-windows\Views\ClanMembersWindow.baml
 C:\Users\User\Downloads\wpf_fixed\gpass-app-wpf\obj\Debug\net10.0-windows\Views\Home.baml
 C:\Users\User\Downloads\wpf_fixed\gpass-app-wpf\obj\Debug\net10.0-windows\Views\Login.baml
 C:\Users\User\Downloads\wpf_fixed\gpass-app-wpf\obj\Debug\net10.0-windows\Views\UserDetailWindow.baml
 C:\Users\User\Downloads\wpf_fixed\gpass-app-wpf\obj\Debug\net10.0-windows\Views\UserFormWindow.baml
+C:\Users\User\Downloads\wpf_fixed\gpass-app-wpf\obj\Debug\net10.0-windows\Views\ClanMembersWindow.g.cs
 C:\Users\User\Downloads\wpf_fixed\gpass-app-wpf\obj\Debug\net10.0-windows\Views\Home.g.cs
 C:\Users\User\Downloads\wpf_fixed\gpass-app-wpf\obj\Debug\net10.0-windows\Views\Login.g.cs
 C:\Users\User\Downloads\wpf_fixed\gpass-app-wpf\obj\Debug\net10.0-windows\Views\UserDetailWindow.g.cs
@@ -48,10 +50,12 @@ C:\_Study\GPS_APP_SzKM\gpass-app-wpf\gpass-app-wpf\bin\Debug\net10.0-windows\Mic
 C:\_Study\GPS_APP_SzKM\gpass-app-wpf\gpass-app-wpf\bin\Debug\net10.0-windows\Microsoft.IdentityModel.Tokens.dll
 C:\_Study\GPS_APP_SzKM\gpass-app-wpf\gpass-app-wpf\bin\Debug\net10.0-windows\System.IdentityModel.Tokens.Jwt.dll
 C:\_Study\GPS_APP_SzKM\gpass-app-wpf\gpass-app-wpf\obj\Debug\net10.0-windows\gpass-app-wpf.csproj.AssemblyReference.cache
+C:\_Study\GPS_APP_SzKM\gpass-app-wpf\gpass-app-wpf\obj\Debug\net10.0-windows\Views\ClanMembersWindow.baml
 C:\_Study\GPS_APP_SzKM\gpass-app-wpf\gpass-app-wpf\obj\Debug\net10.0-windows\Views\Home.baml
 C:\_Study\GPS_APP_SzKM\gpass-app-wpf\gpass-app-wpf\obj\Debug\net10.0-windows\Views\Login.baml
 C:\_Study\GPS_APP_SzKM\gpass-app-wpf\gpass-app-wpf\obj\Debug\net10.0-windows\Views\UserDetailWindow.baml
 C:\_Study\GPS_APP_SzKM\gpass-app-wpf\gpass-app-wpf\obj\Debug\net10.0-windows\Views\UserFormWindow.baml
+C:\_Study\GPS_APP_SzKM\gpass-app-wpf\gpass-app-wpf\obj\Debug\net10.0-windows\Views\ClanMembersWindow.g.cs
 C:\_Study\GPS_APP_SzKM\gpass-app-wpf\gpass-app-wpf\obj\Debug\net10.0-windows\Views\Home.g.cs
 C:\_Study\GPS_APP_SzKM\gpass-app-wpf\gpass-app-wpf\obj\Debug\net10.0-windows\Views\Login.g.cs
 C:\_Study\GPS_APP_SzKM\gpass-app-wpf\gpass-app-wpf\obj\Debug\net10.0-windows\Views\UserDetailWindow.g.cs
