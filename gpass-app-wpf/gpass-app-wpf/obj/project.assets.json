@@ -365,11 +365,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\gpass-app-wpf.csproj",
+      "projectUniqueName": "C:\\Users\\User\\Downloads\\gpass-app-wpf-addfix\\gpass-app-wpf\\gpass-app-wpf.csproj",
       "projectName": "gpass-app-wpf",
-      "projectPath": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\gpass-app-wpf.csproj",
+      "projectPath": "C:\\Users\\User\\Downloads\\gpass-app-wpf-addfix\\gpass-app-wpf\\gpass-app-wpf.csproj",
       "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-      "outputPath": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\obj\\",
+      "outputPath": "C:\\Users\\User\\Downloads\\gpass-app-wpf-addfix\\gpass-app-wpf\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

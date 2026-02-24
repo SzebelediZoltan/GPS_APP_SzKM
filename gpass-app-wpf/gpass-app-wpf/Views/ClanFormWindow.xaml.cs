@@ -6,22 +6,22 @@ using System.Windows.Input;
 
 namespace gpass_app_wpf.Views
 {
-    public partial class ClanMembersWindow : Window
+    public partial class ClanFormWindow : Window
     {
-        private ClanMembersViewModel _vm;
+        public ClanFormViewModel VM { get; }
 
-        public ClanMembersWindow(ClanWithMembers clan)
+        public ClanFormWindow()
         {
             InitializeComponent();
-            _vm = new ClanMembersViewModel(clan);
-            DataContext = _vm;
+            VM = new ClanFormViewModel(this);
+            DataContext = VM;
         }
 
-        private void AddSearchListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void LeaderSearchListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (sender is ListBox lb && lb.SelectedItem is User user)
             {
-                _vm.SelectAddUserCommand.Execute(user);
+                VM.SelectLeaderCommand.Execute(user);
                 lb.SelectedItem = null;
             }
         }

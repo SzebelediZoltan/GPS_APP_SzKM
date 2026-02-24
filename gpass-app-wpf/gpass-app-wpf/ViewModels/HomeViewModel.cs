@@ -4,6 +4,7 @@ using gpass_app_wpf.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -30,6 +31,29 @@ namespace gpass_app_wpf.ViewModels
         {
             get => _selectedUser;
             set { _selectedUser = value; OnPropertyChanged(); }
+        }
+
+        // ── User keresés ──────────────────────────────────────────────────────
+        private string _userSearch = "";
+        public string UserSearch
+        {
+            get => _userSearch;
+            set { _userSearch = value; OnPropertyChanged(); DebounceUserSearch(); }
+        }
+
+        private CancellationTokenSource _userSearchCts;
+        private async void DebounceUserSearch()
+        {
+            _userSearchCts?.Cancel();
+            _userSearchCts = new CancellationTokenSource();
+            var token = _userSearchCts.Token;
+            try
+            {
+                await Task.Delay(350, token);
+                if (!token.IsCancellationRequested)
+                    await LoadUsers();
+            }
+            catch (TaskCanceledException) { }
         }
 
         public HomeViewModel()
@@ -69,11 +93,15 @@ namespace gpass_app_wpf.ViewModels
         }
 
         // ── READ ──────────────────────────────────────────────────────────────
-        private async Task LoadUsers()
+        public async Task LoadUsers()
         {
             try
             {
-                var users = await _api.GetAsync<List<User>>("users");
+                var endpoint = string.IsNullOrWhiteSpace(UserSearch)
+                    ? "users"
+                    : $"users/search?query={Uri.EscapeDataString(UserSearch.Trim())}";
+
+                var users = await _api.GetAsync<List<User>>(endpoint);
                 Users.Clear();
                 foreach (var u in users) Users.Add(u);
             }
@@ -91,23 +119,8 @@ namespace gpass_app_wpf.ViewModels
             dialog.Owner = Application.Current.MainWindow;
             dialog.ShowDialog();
 
-            if (!dialog.VM.Confirmed) return;
-
-            try
-            {
-                await _api.PostAsync<User>("users", new CreateUserRequest
-                {
-                    username = dialog.VM.Username,
-                    email    = dialog.VM.Email,
-                    password = dialog.VM.Password
-                });
+            if (dialog.VM.Confirmed)
                 await LoadUsers();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Hiba a létrehozáskor: {ex.Message}", "Hiba",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
         }
 
         // ── UPDATE ────────────────────────────────────────────────────────────
@@ -119,27 +132,8 @@ namespace gpass_app_wpf.ViewModels
             dialog.Owner = Application.Current.MainWindow;
             dialog.ShowDialog();
 
-            if (!dialog.VM.Confirmed) return;
-
-            try
-            {
-                var payload = new Dictionary<string, object>
-                {
-                    ["username"] = dialog.VM.Username,
-                    ["email"]    = dialog.VM.Email,
-                    ["isAdmin"]  = dialog.VM.IsAdmin
-                };
-                if (!string.IsNullOrWhiteSpace(dialog.VM.Password))
-                    payload["password"] = dialog.VM.Password;
-
-                await _api.PutAsync<User>($"users/{SelectedUser.ID}", payload);
+            if (dialog.VM.Confirmed)
                 await LoadUsers();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Hiba a szerkesztéskor: {ex.Message}", "Hiba",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
         }
 
         // ── DELETE ────────────────────────────────────────────────────────────

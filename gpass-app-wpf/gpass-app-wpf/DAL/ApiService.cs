@@ -34,8 +34,41 @@ namespace gpass_app_wpf.DAL
             try
             {
                 var doc = JsonSerializer.Deserialize<JsonElement>(body);
-                if (doc.TryGetProperty("details", out var details) && details.ValueKind == JsonValueKind.String)
-                    message = details.GetString();
+
+                // 1. details String — pl. BadRequestError vagy DbError (Sequelize hiba stringként)
+                if (doc.TryGetProperty("details", out var details))
+                {
+                    if (details.ValueKind == JsonValueKind.String)
+                    {
+                        var raw = details.GetString() ?? "";
+                        // Sequelize: "Validation error: Nem megfelelő email formátum\nValidation error: ..."
+                        // Kiszedjük az egyes sorokat és eltávolítjuk a "Validation error: " prefixet
+                        var lines = raw.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+                        var cleaned = new System.Collections.Generic.List<string>();
+                        foreach (var line in lines)
+                        {
+                            var l = line.Trim();
+                            if (l.StartsWith("Validation error: "))
+                                l = l.Substring("Validation error: ".Length);
+                            if (!string.IsNullOrEmpty(l))
+                                cleaned.Add(l);
+                        }
+                        message = cleaned.Count > 0 ? string.Join("\n", cleaned) : raw;
+                    }
+                    // 2. details objektum errors[] tömbbel
+                    else if (details.ValueKind == JsonValueKind.Object &&
+                             details.TryGetProperty("errors", out var errArr) &&
+                             errArr.ValueKind == JsonValueKind.Array)
+                    {
+                        var msgs = new System.Collections.Generic.List<string>();
+                        foreach (var e in errArr.EnumerateArray())
+                            if (e.TryGetProperty("message", out var em))
+                                msgs.Add(em.GetString());
+                        if (msgs.Count > 0) message = string.Join("\n", msgs);
+                    }
+                }
+
+                // 3. Fallback: message mező
                 if (string.IsNullOrEmpty(message) && doc.TryGetProperty("message", out var msg))
                     message = msg.GetString();
             }
