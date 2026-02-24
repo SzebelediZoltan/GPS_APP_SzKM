@@ -1,5 +1,6 @@
 const db = require("../db");
 const { userService } = require("../services")(db);
+const authUtils = require('../utilities/authUtils');
 
 exports.getUsers = async (req, res, next) => {
     try {
@@ -35,9 +36,21 @@ exports.createUser = async (req, res, next) => {
 exports.updateUser = async (req, res, next) => {
     const userID = req.userID;
     const { username, email, password, isAdmin } = req.body || {};
-
+    
     try {
-        res.status(200).json(await userService.updateUser({ username, email, password, isAdmin }, userID));
+        const newUser = await userService.updateUser({ username, email, password, isAdmin }, userID);
+        // user frissítés után
+
+        const newToken = authUtils.generateUserToken({
+            ID: userID,
+            username,
+            isAdmin,
+            email
+        })
+
+        authUtils.setCookie(res, "user_token", newToken)
+
+        res.status(200).json(newUser)
     }
     catch (error) {
         next(error);
@@ -56,7 +69,7 @@ exports.deleteUser = async (req, res, next) => {
 }
 
 exports.searchUsers = async (req, res, next) => {
-    const query = req.query.query || "";    
+    const query = req.query.query || "";
 
     try {
         res.status(200).json(await userService.searchUsers(query));
@@ -67,18 +80,18 @@ exports.searchUsers = async (req, res, next) => {
 }
 
 exports.updateLocation = async (req, res) => {
-    
-        const { latitude, longitude } = req.body;
-        const userID = req.user.ID;
 
-        await userService.updateUserLocation(
-            userID,
-            latitude,
-            longitude
-        );
+    const { latitude, longitude } = req.body;
+    const userID = req.user.ID;
+
+    await userService.updateUserLocation(
+        userID,
+        latitude,
+        longitude
+    );
     try {
 
-        res.status(200).json(await userService.updateUserLocation(userID,latitude,longitude));
+        res.status(200).json(await userService.updateUserLocation(userID, latitude, longitude));
 
     } catch (error) {
 
@@ -90,8 +103,8 @@ exports.updateLocation = async (req, res) => {
 };
 
 exports.getUserLocation = async (req, res) => {
-    
-        const userID = req.userID;
+
+    const userID = req.userID;
 
     try {
 
