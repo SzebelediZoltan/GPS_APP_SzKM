@@ -10,8 +10,7 @@ import {
   UserCheck,
   MapPin,
   Users,
-  Flag,
-  Crown,
+  Flag
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -29,7 +28,6 @@ import ServerErrorPage from "@/components/ServerErrorPage"
 import { useMappedFriends } from "@/hooks/useMappedFriends"
 import { StatBox } from "@/components/StatBox"
 import { toast } from "sonner"
-import { useEffect } from "react"
 
 export const Route = createFileRoute('/profile/$userID/')({
   component: RouteComponent,
@@ -180,24 +178,19 @@ function RouteComponent() {
 
   const theirRelation
     = pendingRequests.data.find((e) => {
-      if ((e.receiver_id === user.userID || e.sender_id === user.userID) && isOthersProfile ) {
+      if ((e.receiver_id === user.userID || e.sender_id === user.userID) && isOthersProfile) {
         return true
       }
     })
     || acceptedRequests.data.find((e) => {
-      if ((e.receiver_id === user.userID || e.sender_id === user.userID) && isOthersProfile ) {
+      if ((e.receiver_id === user.userID || e.sender_id === user.userID) && isOthersProfile) {
         return true
       }
     })
 
-  console.log("currentUser", currentUser);
-  console.log("pendingRequests", pendingRequests);
-  console.log("acceptedRequests", acceptedRequests);
-  console.log("theirRelation", theirRelation);
-  
+
   const isReceiver = theirRelation?.receiver_id === currentUser.data.ID
 
-  console.log("isReceiver", isReceiver);
   return (
     <main className="min-h-[calc(100vh-64px)] bg-background text-foreground">
       <div className="mx-auto w-full max-w-6xl px-4 py-8">
