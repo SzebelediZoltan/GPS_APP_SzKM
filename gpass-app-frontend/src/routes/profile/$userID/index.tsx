@@ -235,10 +235,12 @@ function RouteComponent() {
               </Button>
             :
             <div>
-              <Button variant={"outline"} className="rounded-xl mr-2">
-                <Users />
-                Barátok
-              </Button>
+              <Link to="/profile/friends">
+                <Button variant={"outline"} className="rounded-xl mr-2">
+                  <Users />
+                  Barátok
+                </Button>
+              </Link>
               <Button className="rounded-xl">
                 <Pencil />
                 Szerkesztés
