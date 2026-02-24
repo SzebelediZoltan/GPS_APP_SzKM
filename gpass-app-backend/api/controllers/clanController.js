@@ -22,10 +22,10 @@ exports.getClan = async (req, res, next) => {
 }
 
 exports.createClan = async (req, res, next) => {
-    const { name, leader_id } = req.body || {};
+    const { name, leader_id, description } = req.body || {};
 
     try {
-        res.status(201).json(await clanService.createClan({ name, leader_id }));
+        res.status(201).json(await clanService.createClan({ name, leader_id, description }));
     }
     catch (error) {
         next(error);
@@ -34,10 +34,10 @@ exports.createClan = async (req, res, next) => {
 
 exports.updateClan = async (req, res, next) => {
     const clanId = req.clanID;
-    const { name, leader_id } = req.body || {};
+    const { name, leader_id, description } = req.body || {};
 
     try {
-        res.status(200).json(await clanService.updateClan({ name, leader_id }, clanId));
+        res.status(200).json(await clanService.updateClan({ name, leader_id, description }, clanId));
     }
     catch (error) {
         next(error);

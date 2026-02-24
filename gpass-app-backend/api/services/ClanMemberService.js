@@ -5,6 +5,7 @@ class ClanMemberService
     constructor(db)
     {
         this.clanMemberRepository = require("../repositories")(db).clanMemberRepository;
+        this.clanRepository = require("../repositories")(db).clanRepository;
     }
 
     async getMembers()
@@ -32,6 +33,7 @@ class ClanMemberService
         if(!data) throw new BadRequestError("Hiányzik a klántagság adata (payload).", { data });
         if(!data.clan_id) throw new BadRequestError("Hiányzik a klán azonosító (clan_id).", { data });
         if(!data.user_id) throw new BadRequestError("Hiányzik a felhasználó azonosító (user_id).", { data });
+        // if(this.clanRepository.getClans) throw new BadRequestError("Nincs ilyen klán.", { data })
 
         return await this.clanMemberRepository.addMember(data);
     }

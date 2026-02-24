@@ -53,6 +53,9 @@ module.exports = (sequelize) =>
         foreignKey: "clan_id",
         as: "members",
         constraints: false,
+        
+        onDelete: "CASCADE",
+        hooks: true,
     });
 
     ClanMember.belongsTo(Clan,

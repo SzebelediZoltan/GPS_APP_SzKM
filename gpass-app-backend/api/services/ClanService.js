@@ -3,6 +3,7 @@ const { BadRequestError, NotFoundError } = require("../errors");
 class ClanService {
     constructor(db) {
         this.clanRepository = require("../repositories")(db).clanRepository;
+        this.userRepository = require("../repositories")(db).userRepository;
     }
 
     async getClans() {
@@ -29,11 +30,12 @@ class ClanService {
 
         const nameTaken = await this.clanRepository.getClan(data.name);
 
-        if (nameTaken) throw new BadRequestError("Ez a klán név már foglalt.",
-            {
-                data: data.name
-            });
+        if (nameTaken) throw new BadRequestError("Ez a klán név már foglalt.", { data: data.name });
 
+        const UserExists = await this.userRepository.getUser(data.leader_id)
+
+        if (!UserExists) throw new BadRequestError("Nincs ilyen felhasználó a megadott ID-val.", { data: data.leader_id })
+            
         return await this.clanRepository.createClan(data);
     }
 

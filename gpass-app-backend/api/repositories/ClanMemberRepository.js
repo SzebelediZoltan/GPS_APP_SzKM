@@ -78,7 +78,18 @@ class ClanMemberRepository {
         try {
             return await this.ClanMember.scope("public").findAll(
                 {
-                    where: { clan_id: clanId }
+                    where: { clan_id: clanId },
+
+                    include: [
+                        {
+                            association: "clan",
+                            attributes: ["name", "leader_id", "description"]
+                        },
+                        {
+                            association: "user",
+                            attributes: ["id", "username", "isAdmin"]
+                        },
+                    ]
                 });
         }
         catch (error) {
@@ -97,7 +108,7 @@ class ClanMemberRepository {
                     where: { user_id: userId},
                     include: [{
                         association: "clan",
-                        attributes: ["name","leader_id"],
+                        attributes: ["name", "leader_id", "description"],
                         required: false,
                     }]
                 });

@@ -13,6 +13,8 @@ module.exports = (sequelize) => {
                     isInt: { msg: "A clan_id csak egész szám lehet." },
                     min: { args: [1], msg: "A clan_id csak pozitív szám lehet." },
                 },
+
+                onDelete: "CASCADE",
             },
 
             user_id: {

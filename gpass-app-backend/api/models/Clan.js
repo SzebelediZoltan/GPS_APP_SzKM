@@ -31,6 +31,18 @@ module.exports = (sequelize) => {
                 },
             },
 
+            description: {
+                type: DataTypes.STRING,
+                allowNull: true,
+                
+                validate: {
+                    len: {
+                        args: [0, 200],
+                        msg: "A klán leírása max 200 karakter lehet.",
+                    }
+                }
+            },
+
             leader_id: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
