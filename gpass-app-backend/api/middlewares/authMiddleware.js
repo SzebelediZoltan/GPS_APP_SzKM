@@ -26,3 +26,26 @@ exports.isAdmin = (req, res, next) =>
 
     next();
 }
+
+exports.attachUserIfExists = (req, res, next) =>
+{
+    const { user_token } = req.cookies || {};
+
+    if (!user_token)
+    {
+        return next(); // nincs user, de nem dobunk hibát
+    }
+
+    try
+    {
+        req.user = authUtils.verifyToken(user_token);
+    }
+    catch (error)
+    {
+        // hibás token esetén sem dobunk hibát
+        // egyszerűen vendégként kezeljük
+        req.user = null;
+    }
+
+    next();
+}

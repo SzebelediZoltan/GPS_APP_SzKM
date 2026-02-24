@@ -21,6 +21,8 @@ app.set("trust proxy", 1);
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./docs/openapi.json');
 
+const contactRoutes = require("./api/routes/contactRoutes");
+
 const userRoutes = require("./api/routes/userRoutes");
 const friendWithRoutes = require("./api/routes/friendWithRoutes");
 const clanRoutes = require("./api/routes/clanRoutes");
@@ -52,6 +54,7 @@ api.use(
     })
 );
 
+api.use("/contact", contactRoutes);
 
 api.use("/users", userRoutes);
 api.use("/auth", authRoutes);
