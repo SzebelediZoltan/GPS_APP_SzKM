@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, Link } from "@tanstack/react-router"
 import {
   ShieldCheck,
   Shield,
@@ -8,10 +8,14 @@ import {
   Pencil,
   UserX,
   UserCheck,
+  MapPin,
+  Users,
+  Flag,
+  Crown,
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
@@ -22,8 +26,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import NotLoggedIn from "@/components/NotLoggedIn"
 import LoadingPage from "@/components/LoadingPage"
 import ServerErrorPage from "@/components/ServerErrorPage"
+import { useMappedFriends } from "@/hooks/useMappedFriends"
+import { StatBox } from "@/components/StatBox"
 import { toast } from "sonner"
-import { Toaster } from "@/components/ui/sonner"
+import { useEffect } from "react"
 
 export const Route = createFileRoute('/profile/$userID/')({
   component: RouteComponent,
@@ -40,7 +46,17 @@ type FriendRelation = {
   id: string,
   sender_id: string,
   receiver_id: string,
-  status: string
+  status: string,
+  sender: {
+    ID: string,
+    username: string,
+    isAdmin: boolean
+  },
+  receiver: {
+    ID: string,
+    username: string,
+    isAdmin: boolean
+  }
 }
 
 const acceptRequest = (id: string) => {
@@ -73,7 +89,7 @@ function RouteComponent() {
   const queryClient = useQueryClient()
 
   const { data: pendingRequests, isLoading: pendingRequestsIsLoading } = useQuery({
-    queryKey: ["pendingRequests"],
+    queryKey: ["pendingRequests", params.userID],
     queryFn: () => getPendingRequests(params.userID),
     enabled: !!user,
   })
@@ -85,12 +101,12 @@ function RouteComponent() {
   })
 
   const { data: acceptedRequests, isLoading: acceptedRequestsIsLoading } = useQuery({
-    queryKey: ["acceptedRequests"],
+    queryKey: ["acceptedRequests", params.userID],
     queryFn: () => getAcceptedRequests(params.userID),
     enabled: !!user,
   })
 
-  const { mutate: terminateRequest } = useMutation({
+  const { mutate: terminateRequest, isPending: isTerminating } = useMutation({
     mutationFn: (id: string) => deleteRequest(id),
     onSuccess: () => {
       toast.success("Barátkérelem törölve!", {
@@ -106,7 +122,7 @@ function RouteComponent() {
     }
   })
 
-  const { mutate: add } = useMutation({
+  const { mutate: add, isPending: isAdding } = useMutation({
     mutationFn: ({ sender_id, receiver_id }: { sender_id: string, receiver_id: string }) => addFriend(sender_id, receiver_id),
     onSuccess: () => {
       toast.success("Barátkérelem elküldve!", {
@@ -122,7 +138,7 @@ function RouteComponent() {
     }
   })
 
-  const { mutate: accept } = useMutation({
+  const { mutate: accept, isPending: isAccepting } = useMutation({
     mutationFn: (id: string) => acceptRequest(id),
     onSuccess: () => {
       toast.success("Barátkérelem elfogadva!", {
@@ -138,7 +154,14 @@ function RouteComponent() {
     }
   })
 
-  if (userIsLoading || pendingRequestsIsLoading || acceptedRequestsIsLoading) {
+  const { mappedFriends: friends } = useMappedFriends(
+    currentUser?.data.username ?? "",
+    pendingRequests?.data ?? [],
+    acceptedRequests?.data ?? []
+  )
+
+
+  if (userIsLoading || pendingRequestsIsLoading || acceptedRequestsIsLoading || isTerminating || isAdding || isAccepting) {
     return <LoadingPage />
   }
 
@@ -148,26 +171,33 @@ function RouteComponent() {
     </>
   }
 
-  if (!currentUser || !pendingRequests || !acceptedRequests) {
+  if (!currentUser || !pendingRequests || !acceptedRequests || currentUser.status !== 200 || pendingRequests.status !== 200 || acceptedRequests.status !== 200) {
     return <ServerErrorPage />
   }
+
 
   const isOthersProfile = currentUser.data.ID !== user.userID
 
   const theirRelation
     = pendingRequests.data.find((e) => {
-      if (e.receiver_id === user.userID || e.sender_id === user.userID) {
+      if ((e.receiver_id === user.userID || e.sender_id === user.userID) && isOthersProfile ) {
         return true
       }
     })
     || acceptedRequests.data.find((e) => {
-      if (e.receiver_id === user.userID || e.sender_id === user.userID) {
+      if ((e.receiver_id === user.userID || e.sender_id === user.userID) && isOthersProfile ) {
         return true
       }
     })
 
+  console.log("currentUser", currentUser);
+  console.log("pendingRequests", pendingRequests);
+  console.log("acceptedRequests", acceptedRequests);
+  console.log("theirRelation", theirRelation);
+  
   const isReceiver = theirRelation?.receiver_id === currentUser.data.ID
 
+  console.log("isReceiver", isReceiver);
   return (
     <main className="min-h-[calc(100vh-64px)] bg-background text-foreground">
       <div className="mx-auto w-full max-w-6xl px-4 py-8">
@@ -211,10 +241,17 @@ function RouteComponent() {
                 Barátnak jelölés
               </Button>
             :
-            <Button className="rounded-xl">
-              <Pencil />
-              Szerkesztés
-            </Button>}
+            <div>
+              <Button variant={"outline"} className="rounded-xl mr-2">
+                <Users />
+                Barátok
+              </Button>
+              <Button className="rounded-xl">
+                <Pencil />
+                Szerkesztés
+              </Button>
+            </div>
+          }
 
         </div>
 
@@ -272,6 +309,13 @@ function RouteComponent() {
 
               <Separator className="bg-border/70" />
 
+              {/* Quick stats placeholders */}
+              <div className="grid grid-cols-3 gap-3">
+                <StatBox icon={<MapPin className="h-4 w-4" />} label="Tripek" value={"" + 0} />
+                <StatBox icon={<Users className="h-4 w-4" />} label="Barátok" value={"" + friends.length} />
+                <StatBox icon={<Flag className="h-4 w-4" />} label="Klánok" value={"" + 0} />
+              </div>
+
 
               <div className="rounded-2xl border border-border/60 bg-background/40 p-3">
                 <p className="text-xs text-muted-foreground">
@@ -280,9 +324,109 @@ function RouteComponent() {
               </div>
             </CardContent>
           </Card>
+          <div className="grid gap-6 lg:col-span-8">
+            {/* Trips */}
+            {/* <Card className="rounded-2xl border-border/60 bg-card/60 shadow-xl backdrop-blur">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg">Tripek</CardTitle>
+                <CardDescription>{trips.data.length === 0 ? "Nem mentett még le utat" : "Utak száma " + trips.data.length}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {trips.data.map((t) => (
+                  <div
+                    key={t.id}
+                    className="flex items-center justify-between gap-3 rounded-2xl border border-border/60 bg-background/40 px-4 py-3 transition hover:bg-accent/30"
+                  >
+                    <div className="min-w-0">
+                      <div className="truncate font-medium">{t.name}</div>
+                      <div className="text-xs text-muted-foreground">{t.dateText}</div>
+                    </div>
+
+                    <Badge variant="secondary" className="rounded-full">
+                      {t.status}
+                    </Badge>
+                  </div>
+                ))}
+              </CardContent>
+            </Card> */}
+
+            {/* Friends preview */}
+            <Card className="rounded-2xl border-border/60 bg-card/60 shadow-xl backdrop-blur">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg">Barátok</CardTitle>
+                <CardDescription>{friends.filter((f) => f.status === "accepted").length === 0 ? "Még nincsenek barátok :(" : "Barátok száma " + friends.filter((f) => f.status === "accepted").length}</CardDescription>
+              </CardHeader>
+              <CardContent className="grid gap-3 sm:grid-cols-2">
+                {friends.filter((f) => f.status === "accepted").map((f) => (
+                  <Link
+                    key={f.ID}
+                    to="/profile/$userID"
+                    params={{ userID: f.ID }}
+                    className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border/60 bg-background/40 px-4 py-3 hover:bg-muted/50 transition"
+                  >
+                    <Avatar className="h-10 w-10 rounded-xl ring-1 ring-border/60">
+                      <AvatarImage src={""} alt={f.username} />
+                      <AvatarFallback className="rounded-xl">
+                        {"MA".toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <div className="truncate font-medium">{f.username}</div>
+                        {f.isAdmin && (
+                          <Badge className="rounded-full" variant="default">
+                            <ShieldCheck className="h-3.5 w-3.5" />
+                            Admin
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* Clans */}
+            {/* <Card className="rounded-2xl border-border/60 bg-card/60 shadow-xl backdrop-blur">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg">Klánok</CardTitle>
+                <CardDescription>{clans.data.length === 0 ? "Még nem csatlakozott klánhoz" : "Klánok száma " + clans.data.length}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {clans.data.map((c) => (
+                  <div
+                    key={c.clan.id}
+                    className="flex items-center justify-between gap-3 rounded-2xl border border-border/60 bg-background/40 px-4 py-3"
+                  >
+                    <div className="min-w-0">
+                      <div className="truncate font-medium">{c.clan.name}</div>
+                      <div className="text-xs text-muted-foreground">
+                        Szerep: {c.clan.leader_id === user.userID ? "Vezető" : "Tag"}
+                      </div>
+                      <div className="text-xs text-muted-foreground">Online státust</div>
+                    </div>
+
+                    <Badge
+                      variant={c.clan.leader_id === user.userID ? "default" : "secondary"}
+                      className={cn("rounded-full", c.clan.leader_id === user.userID && "bg-primary")}
+                    >
+                      {c.clan.leader_id === user.userID ? (
+                        <span className="inline-flex items-center gap-1">
+                          <Crown className="h-3.5 w-3.5" />
+                          Vezető
+                        </span>
+                      ) : (
+                        "Tag"
+                      )}
+                    </Badge>
+                  </div>
+                ))}
+              </CardContent>
+            </Card> */}
+          </div>
         </div>
       </div>
-      <Toaster />
     </main>
   )
 }

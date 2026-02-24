@@ -87,11 +87,11 @@ class FriendWithRepository {
                 {
                     include: [
                         { association: "sender",
-                            attributes: ["username", "email"],
+                            attributes: ["ID", "username", "email", "isAdmin"],
                         },
 
                         { association: "receiver", 
-                            attributes: ["username", "email"],
+                            attributes: ["ID", "username", "email", "isAdmin"],
                         }
                     ],
                     
@@ -121,11 +121,11 @@ class FriendWithRepository {
                     
                     include: [
                         { association: "sender", 
-                            attributes: ["username", "email"],
+                            attributes: ["ID", "username", "email", "isAdmin"],
                         },
 
                         { association: "receiver" ,
-                            attributes: ["username", "email"],
+                            attributes: ["ID", "username", "email", "isAdmin"],
                         }
                     ],
 

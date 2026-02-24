@@ -21,7 +21,7 @@ import axios, { AxiosError } from "axios"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useAuth } from "@/hooks/useAuth"
 import { useEffect } from "react"
-import { toast, Toaster } from "sonner"
+import { toast } from "sonner"
 
 const loginUser = (userData: LoginValues) => {
   return axios.post("/api/auth/login", userData, { withCredentials: true })
@@ -91,7 +91,6 @@ function LoginPage() {
 
   return (
     <main className="relative min-h-screen bg-background text-foreground">
-      <Toaster/>
 
       {/* background glow, illeszkedik a landinghez */}
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
