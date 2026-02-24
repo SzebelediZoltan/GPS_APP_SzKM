@@ -1,58 +1,94 @@
 @echo off
-title GPASS Starter
-setlocal
+title GPASS Server Controller
+cd /d "%~dp0"
 
-echo =====================================
-echo GPASS PROJECT STARTING...
-echo =====================================
+echo ==========================
+echo Szerverek inditasa...
+echo ==========================
 
-:: === Apache inditas (ablak nelkul) ===
-echo Apache inditasa...
-start "" /B C:\xampp\apache\bin\httpd.exe
+:: Apache
+start "" /MIN cmd /c C:\xampp\apache_start.bat
 
-timeout /t 3 > nul
-
-:: === MySQL inditas (ablak nelkul) ===
-echo MySQL inditasa...
-start "" /B C:\xampp\mysql\bin\mysqld.exe
+:: MySQL
+start "" /MIN cmd /c C:\xampp\mysql_start.bat
 
 timeout /t 5 > nul
 
-:: === Backend inditas (hatterben) ===
+
+:: Backend inditas
 echo Backend inditasa...
-cd /d "%~dp0gpass-app-backend"
-start "" /B npm start
+start "" cmd /k "cd /d "%~dp0gpass-app-backend" && npm start"
 
-timeout /t 3 > nul
+:: PID mentés
+set BACKENDPID=%!
 
-:: === Frontend inditas (hatterben) ===
+
+:: Frontend inditas
 echo Frontend inditasa...
-cd /d "%~dp0gpass-app-frontend"
-start "" /B npm run dev
+start "" cmd /k "cd /d "%~dp0gpass-app-frontend" && npm run dev"
 
-timeout /t 5 > nul
+set FRONTENDPID=%!
 
-:: === Chrome megnyitasa ===
-start chrome http://localhost:3000
+
+:menu
 
 echo.
-echo =====================================
-echo MINDEN FUT!
-echo Nyomj egy gombot a leallitashoz...
-echo =====================================
-pause
+echo ==========================
+echo VEZERLES
+echo ==========================
+echo X - Minden leallitasa
+echo F - Frontend ujrainditas
+echo B - Backend ujrainditas
+echo ==========================
 
-echo Leallitas...
+choice /c XFB /n /m "Valasztas: "
 
-:: Node processzek leallitasa
-taskkill /IM node.exe /F > nul 2>&1
+if errorlevel 3 goto backend
+if errorlevel 2 goto frontend
+if errorlevel 1 goto stop
 
-:: Apache leallitasa
-taskkill /IM httpd.exe /F > nul 2>&1
+goto menu
 
-:: MySQL leallitasa
-taskkill /IM mysqld.exe /F > nul 2>&1
 
-echo Minden leallitva.
+
+:frontend
+
+echo Frontend ujrainditas...
+
+taskkill /F /IM node.exe > nul 2>&1
+
 timeout /t 2 > nul
+
+start "" cmd /k "cd /d "%~dp0gpass-app-frontend" && npm run dev"
+
+goto menu
+
+
+
+:backend
+
+echo Backend ujrainditas...
+
+taskkill /F /IM node.exe > nul 2>&1
+
+timeout /t 2 > nul
+
+start "" cmd /k "cd /d "%~dp0gpass-app-backend" && npm start"
+
+goto menu
+
+
+
+:stop
+
+echo.
+echo Szerverek leallitasa...
+
+taskkill /F /IM httpd.exe > nul 2>&1
+taskkill /F /IM mysqld.exe > nul 2>&1
+taskkill /F /IM node.exe > nul 2>&1
+
+echo Kesz.
+timeout /t 2 > nul
+
 exit
