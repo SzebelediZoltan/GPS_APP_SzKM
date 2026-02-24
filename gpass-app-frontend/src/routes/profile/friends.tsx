@@ -13,7 +13,7 @@ import NotLoggedIn from "@/components/NotLoggedIn"
 import LoadingPage from "@/components/LoadingPage"
 import ServerErrorPage from "@/components/ServerErrorPage"
 import { useState } from "react"
-import UserSearchDialog from "@/components/userSearchDialog"
+import UserSearchDialog from "@/components/UserSearchDialog"
 import FriendRequestsDialog from "@/components/FriendRequestsDialog"
 
 export const Route = createFileRoute("/profile/friends")({

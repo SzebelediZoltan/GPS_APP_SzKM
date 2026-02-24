@@ -22,9 +22,10 @@ import { useMutation } from "@tanstack/react-query"
 import { useAuth } from "@/hooks/useAuth"
 import { useEffect } from "react"
 import { toast } from "sonner"
+import { ArrowLeft } from "lucide-react"
 
 const registerUser = (userData: RegisterValues) => {
-    return axios.post<RegisterValues, AxiosResponse<{asd: string}>>("/api/users", userData)
+    return axios.post<RegisterValues, AxiosResponse<{ asd: string }>>("/api/users", userData)
 }
 
 // ===== ROUTE =====
@@ -63,7 +64,7 @@ function RegisterPage() {
 
 
 
-    const { mutate: create} = useMutation<unknown, AxiosError<{message: string}>, RegisterValues>({
+    const { mutate: create } = useMutation<unknown, AxiosError<{ message: string }>, RegisterValues>({
         mutationFn: (userData: RegisterValues) => registerUser(userData),
         mutationKey: ["user"],
         onSuccess: () => {
@@ -76,10 +77,10 @@ function RegisterPage() {
         },
         onError(error) {
             toast.error(error.response?.data.message)
-            
+
         },
     })
-    
+
 
     const form = useForm<RegisterValues>({
         resolver: zodResolver(RegisterSchema),
@@ -104,6 +105,12 @@ function RegisterPage() {
             </div>
 
             <div className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-4 py-10">
+                <Link to="/">
+                    <Button variant="ghost" size="sm" className="mb-4">
+                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        Főoldal
+                    </Button>
+                </Link>
                 {/* Logo + brand */}
                 <div className="mb-6 flex flex-col items-center text-center">
                     <div className="mb-3 flex items-center">

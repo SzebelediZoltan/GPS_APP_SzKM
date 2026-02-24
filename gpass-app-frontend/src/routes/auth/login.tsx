@@ -22,6 +22,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useAuth } from "@/hooks/useAuth"
 import { useEffect } from "react"
 import { toast } from "sonner"
+import { ArrowLeft } from "lucide-react"
 
 const loginUser = (userData: LoginValues) => {
   return axios.post("/api/auth/login", userData, { withCredentials: true })
@@ -61,7 +62,7 @@ function LoginPage() {
 
   const queryClient = useQueryClient()
 
-  const { mutate: login } = useMutation<unknown, AxiosError<{message: string}>, LoginValues>({
+  const { mutate: login } = useMutation<unknown, AxiosError<{ message: string }>, LoginValues>({
     mutationFn: (userData: LoginValues) => loginUser(userData),
     mutationKey: ["user"],
     onSuccess: () => {
@@ -99,6 +100,12 @@ function LoginPage() {
       </div>
 
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-4 py-10">
+        <Link to="/">
+          <Button variant="ghost" size="sm" className="mb-4">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Főoldal
+          </Button>
+        </Link>
         {/* Logo + Brand (header nélkül, középen) */}
         <div className="mb-6 flex flex-col items-center text-center">
           <div className="mb-3 flex items-center">
