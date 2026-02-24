@@ -59,7 +59,7 @@ namespace gpass_app_wpf {
             
             #line default
             #line hidden
-            System.Uri resourceLocater = new System.Uri("/gpass-app-wpf;V1.0.0.0;component/app.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/gpass-app-wpf;component/app.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\App.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

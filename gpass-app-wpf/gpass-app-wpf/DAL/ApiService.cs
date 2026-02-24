@@ -13,10 +13,11 @@ namespace gpass_app_wpf.DAL
             PropertyNameCaseInsensitive = true
         };
 
-        public ApiService()
+        public ApiService(string baseUrl)
         {
             _client = new HttpClient();
-            _client.BaseAddress = new Uri("http://localhost:4000/api/");
+            _client.Timeout = System.TimeSpan.FromSeconds(10);
+            _client.BaseAddress = new Uri(baseUrl);
         }
 
         private void AttachCookie(HttpRequestMessage request)
