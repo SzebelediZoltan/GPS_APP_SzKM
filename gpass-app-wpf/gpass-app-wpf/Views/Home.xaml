@@ -26,20 +26,42 @@
                     <!-- Toolbar -->
                     <Border DockPanel.Dock="Top" Background="#f0f0f0" CornerRadius="4"
                             Padding="10,8" Margin="0,0,0,8">
-                        <StackPanel Orientation="Horizontal">
-                            <Button Content="＋  Új" Padding="12,6" Margin="0,0,8,0"
-                                    Background="#27ae60" Foreground="White"
-                                    Command="{Binding AddUserCommand}"/>
-                            <Button Content="✎  Szerkesztés" Padding="12,6" Margin="0,0,8,0"
-                                    Background="#2980b9" Foreground="White"
-                                    Command="{Binding EditUserCommand}"/>
-                            <Button Content="🔍  Részletek" Padding="12,6" Margin="0,0,8,0"
-                                    Background="#8e44ad" Foreground="White"
-                                    Command="{Binding ViewDetailCommand}"/>
-                            <Button Content="✕  Törlés" Padding="12,6"
-                                    Background="#e74c3c" Foreground="White"
-                                    Command="{Binding DeleteUserCommand}"/>
-                        </StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                <Button Content="＋  Új" Padding="12,6" Margin="0,0,8,0"
+                                        Background="#27ae60" Foreground="White"
+                                        Command="{Binding AddUserCommand}"/>
+                                <Button Content="✎  Szerkesztés" Padding="12,6" Margin="0,0,8,0"
+                                        Background="#2980b9" Foreground="White"
+                                        Command="{Binding EditUserCommand}"/>
+                                <Button Content="🔍  Részletek" Padding="12,6" Margin="0,0,8,0"
+                                        Background="#8e44ad" Foreground="White"
+                                        Command="{Binding ViewDetailCommand}"/>
+                                <Button Content="✕  Törlés" Padding="12,6"
+                                        Background="#e74c3c" Foreground="White"
+                                        Command="{Binding DeleteUserCommand}"/>
+                            </StackPanel>
+
+                            <!-- Keresősáv -->
+                            <Border Grid.Column="1" HorizontalAlignment="Right"
+                                    Background="White" BorderBrush="#ccc" BorderThickness="1"
+                                    CornerRadius="4" Padding="8,0" Width="230">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="🔍" Foreground="#999" FontSize="12"
+                                               VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                    <TextBox Text="{Binding UserSearch, UpdateSourceTrigger=PropertyChanged}"
+                                             BorderThickness="0" Background="Transparent"
+                                             VerticalAlignment="Center" Width="185" Padding="0,5"
+                                             ToolTip="Keresés felhasználónév vagy email alapján"/>
+                                </StackPanel>
+                            </Border>
+
+                        </Grid>
                     </Border>
 
                     <DataGrid ItemsSource="{Binding Users}"
@@ -64,17 +86,39 @@
                     <!-- Toolbar -->
                     <Border DockPanel.Dock="Top" Background="#f0f0f0" CornerRadius="4"
                             Padding="10,8" Margin="0,0,0,8">
-                        <StackPanel Orientation="Horizontal">
-                            <Button Content="👥  Tagok megtekintése" Padding="12,6" Margin="0,0,8,0"
-                                    Background="#8e44ad" Foreground="White"
-                                    Command="{Binding ViewMembersCommand}"/>
-                            <Button Content="✎  Átnevezés" Padding="12,6" Margin="0,0,8,0"
-                                    Background="#2980b9" Foreground="White"
-                                    Command="{Binding EditClanCommand}"/>
-                            <Button Content="✕  Törlés" Padding="12,6"
-                                    Background="#e74c3c" Foreground="White"
-                                    Command="{Binding DeleteClanCommand}"/>
-                        </StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                <Button Content="＋  Új klán" Padding="12,6" Margin="0,0,8,0"
+                                        Background="#27ae60" Foreground="White"
+                                        Command="{Binding CreateClanCommand}"/>
+                                <Button Content="✎  Szerkesztés" Padding="12,6" Margin="0,0,8,0"
+                                        Background="#2980b9" Foreground="White"
+                                        Command="{Binding ViewMembersCommand}"/>
+                                <Button Content="✕  Törlés" Padding="12,6"
+                                        Background="#e74c3c" Foreground="White"
+                                        Command="{Binding DeleteClanCommand}"/>
+                            </StackPanel>
+
+                            <!-- Keresősáv -->
+                            <Border Grid.Column="1" HorizontalAlignment="Right"
+                                    Background="White" BorderBrush="#ccc" BorderThickness="1"
+                                    CornerRadius="4" Padding="8,0" Width="230">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="🔍" Foreground="#999" FontSize="12"
+                                               VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                    <TextBox Text="{Binding ClanSearch, UpdateSourceTrigger=PropertyChanged}"
+                                             BorderThickness="0" Background="Transparent"
+                                             VerticalAlignment="Center" Width="185" Padding="0,5"
+                                             ToolTip="Keresés klán neve alapján"/>
+                                </StackPanel>
+                            </Border>
+
+                        </Grid>
                     </Border>
 
                     <DataGrid ItemsSource="{Binding Clans}"

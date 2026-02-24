@@ -1,6 +1,7 @@
 using gpass_app_wpf.Models;
 using gpass_app_wpf.ViewModels;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace gpass_app_wpf.Views
 {
@@ -14,8 +15,8 @@ namespace gpass_app_wpf.Views
             VM = new UserFormViewModel(this, editUser);
             DataContext = VM;
 
-            passwordBox.PasswordChanged += (s, e) =>
-                VM.Password = passwordBox.Password;
+            // PasswordBox -> ViewModel kötés codebehindból
+            passwordBox.PasswordChanged += (_, _) => VM.Password = passwordBox.Password;
         }
     }
 }

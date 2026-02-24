@@ -4,6 +4,7 @@ using gpass_app_wpf.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -22,6 +23,30 @@ namespace gpass_app_wpf.ViewModels
             set { _selectedClan = value; OnPropertyChanged(); }
         }
 
+        // ── Klán keresés ──────────────────────────────────────────────────────
+        private string _clanSearch = "";
+        public string ClanSearch
+        {
+            get => _clanSearch;
+            set { _clanSearch = value; OnPropertyChanged(); DenounceClanSearch(); }
+        }
+
+        private CancellationTokenSource _clanSearchCts;
+        private async void DenounceClanSearch()
+        {
+            _clanSearchCts?.Cancel();
+            _clanSearchCts = new CancellationTokenSource();
+            var token = _clanSearchCts.Token;
+            try
+            {
+                await Task.Delay(350, token);
+                if (!token.IsCancellationRequested)
+                    await LoadClans();
+            }
+            catch (TaskCanceledException) { }
+        }
+
+        public RelayCommand CreateClanCommand   { get; }
         public RelayCommand ViewMembersCommand  { get; }
         public RelayCommand EditClanCommand     { get; }
         public RelayCommand DeleteClanCommand   { get; }
@@ -30,7 +55,8 @@ namespace gpass_app_wpf.ViewModels
         {
             _api = SessionService.Api;
 
-            ViewMembersCommand = new RelayCommand(_ => ViewMembers(),              _ => SelectedClan != null);
+            CreateClanCommand  = new RelayCommand(async _ => await CreateClan());
+            ViewMembersCommand = new RelayCommand(async _ => await ViewMembers(), _ => SelectedClan != null);
             EditClanCommand    = new RelayCommand(async _ => await EditClan(),     _ => SelectedClan != null);
             DeleteClanCommand  = new RelayCommand(async _ => await DeleteClan(),   _ => SelectedClan != null);
 
@@ -41,7 +67,11 @@ namespace gpass_app_wpf.ViewModels
         {
             try
             {
-                var raw = await _api.GetRawAsync("clans");
+                var endpoint = string.IsNullOrWhiteSpace(ClanSearch)
+                    ? "clans"
+                    : $"clans/search?query={Uri.EscapeDataString(ClanSearch.Trim())}";
+
+                var raw = await _api.GetRawAsync(endpoint);
                 var list = new List<ClanWithMembers>();
                 var doc = System.Text.Json.JsonDocument.Parse(raw);
                 foreach (var elem in doc.RootElement.EnumerateArray())
@@ -80,12 +110,23 @@ namespace gpass_app_wpf.ViewModels
             }
         }
 
-        private void ViewMembers()
+        private async Task CreateClan()
+        {
+            var dialog = new ClanFormWindow();
+            dialog.Owner = Application.Current.MainWindow;
+            dialog.ShowDialog();
+
+            if (dialog.VM.Confirmed)
+                await LoadClans();
+        }
+
+        private async Task ViewMembers()
         {
             if (SelectedClan == null) return;
             var w = new ClanMembersWindow(SelectedClan);
             w.Owner = Application.Current.MainWindow;
             w.ShowDialog();
+            await LoadClans();
         }
 
         private async Task EditClan()

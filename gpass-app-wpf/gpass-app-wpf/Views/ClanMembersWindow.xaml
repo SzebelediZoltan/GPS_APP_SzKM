@@ -1,7 +1,7 @@
 <Window x:Class="gpass_app_wpf.Views.ClanMembersWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="{Binding Title}" Height="480" Width="660"
+        Title="{Binding Title}" Height="680" Width="680"
         WindowStartupLocation="CenterOwner"
         ResizeMode="CanResize">
 
@@ -15,7 +15,113 @@
                        Visibility="{Binding Loading, Converter={StaticResource BoolToVisibility}}"/>
         </StackPanel>
 
-        <!-- Toolbar -->
+        <!-- Klán neve szerkesztés -->
+        <Border DockPanel.Dock="Top" Background="#f0f0f0" CornerRadius="4"
+                BorderBrush="#ddd" BorderThickness="1" Padding="12,10" Margin="0,0,0,10">
+            <StackPanel>
+                <TextBlock Text="Klán neve" Foreground="#555" FontSize="12" Margin="0,0,0,4"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" Padding="6,5" Margin="0,0,8,0"
+                             Text="{Binding ClanName, UpdateSourceTrigger=PropertyChanged}"
+                             IsEnabled="{Binding NameSaving, Converter={StaticResource InverseBool}}"/>
+                    <Button Grid.Column="1" Padding="12,5"
+                            Background="#2980b9" Foreground="White" FontWeight="SemiBold"
+                            Command="{Binding SaveNameCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="⏳ " Visibility="{Binding NameSaving, Converter={StaticResource BoolToVisibility}}"/>
+                            <TextBlock Text="Név mentése"/>
+                        </StackPanel>
+                    </Button>
+                </Grid>
+                <TextBlock Text="{Binding ClanNameError}" Foreground="#c0392b" FontSize="11"
+                           Margin="2,3,0,0"
+                           Visibility="{Binding HasClanNameError, Converter={StaticResource BoolToVisibility}}"/>
+                <TextBlock Text="{Binding NameSaveResult}" FontSize="11" Margin="2,3,0,0"
+                           Visibility="{Binding HasNameSaveResult, Converter={StaticResource BoolToVisibility}}">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Foreground" Value="#27ae60"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding NameSaveResult[0]}" Value="⚠">
+                                    <Setter Property="Foreground" Value="#c0392b"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding NameSaveResult[0]}" Value="ℹ">
+                                    <Setter Property="Foreground" Value="#777"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </StackPanel>
+        </Border>
+
+        <!-- Tag hozzáadás szekció -->
+        <Border DockPanel.Dock="Top" Background="#f0f0f0" CornerRadius="4"
+                BorderBrush="#ddd" BorderThickness="1" Padding="12,10" Margin="0,0,0,10">
+            <StackPanel>
+                <TextBlock Text="Tag hozzáadása" Foreground="#555" FontSize="12" Margin="0,0,0,4"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" Padding="6,5" Margin="0,0,8,0"
+                             Text="{Binding AddSearch, UpdateSourceTrigger=PropertyChanged}"
+                             ToolTip="Keresés felhasználónév vagy email alapján"/>
+                    <TextBlock Grid.Column="1" Text="⏳" FontSize="14"
+                               VerticalAlignment="Center" Margin="0,0,8,0"
+                               Visibility="{Binding AddSearching, Converter={StaticResource BoolToVisibility}}"/>
+                    <Button Grid.Column="2" Content="＋  Hozzáadás" Padding="12,5"
+                            Background="#27ae60" Foreground="White" FontWeight="SemiBold"
+                            Command="{Binding AddMemberCommand}"/>
+                </Grid>
+
+                <!-- Keresési találatok -->
+                <ListBox x:Name="addSearchListBox"
+                         ItemsSource="{Binding AddSearchResults}"
+                         MaxHeight="100" Margin="0,5,0,0"
+                         BorderBrush="#ccc" BorderThickness="1"
+                         SelectionChanged="AddSearchListBox_SelectionChanged"
+                         Visibility="{Binding AddSearchResults.Count, Converter={StaticResource IntToVisibility}}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Margin="2,3">
+                                <TextBlock Text="{Binding username}" FontWeight="SemiBold"/>
+                                <TextBlock Text="  "/>
+                                <TextBlock Text="{Binding email}" Foreground="#666" FontSize="11"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#e8f4fd"/>
+                                    <Setter Property="Cursor" Value="Hand"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
+
+                <!-- Kiválasztott user visszajelzés -->
+                <Border Background="#eafaf1" BorderBrush="#27ae60" BorderThickness="1"
+                        CornerRadius="3" Padding="8,5" Margin="0,5,0,0"
+                        Visibility="{Binding HasUserToAdd, Converter={StaticResource BoolToVisibility}}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="✔ Kiválasztva: " Foreground="#27ae60" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding UserToAddText}" Foreground="#1e8449"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Border>
+
+        <!-- Toolbar (alul) -->
         <Border DockPanel.Dock="Bottom" Background="#f8f8f8" Padding="8,6"
                 BorderBrush="#ddd" BorderThickness="0,1,0,0">
             <StackPanel Orientation="Horizontal">
@@ -39,7 +145,6 @@
             <DataGrid.RowStyle>
                 <Style TargetType="DataGridRow">
                     <Style.Triggers>
-                        <!-- Vezető sor kiemelése -->
                         <DataTrigger Binding="{Binding is_leader}" Value="True">
                             <Setter Property="Background" Value="#fff9e6"/>
                             <Setter Property="FontWeight" Value="SemiBold"/>

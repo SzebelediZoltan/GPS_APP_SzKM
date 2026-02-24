@@ -102,7 +102,12 @@ class ClanRepository {
                     where:
                     {
                         name: { [Op.like]: `%${query}%` }
-                    }
+                    },
+                    include: [{
+                        association: "leader",
+                        attributes: ["username"],
+                        required: false,
+                    }]
                 });
         }
         catch (error) {

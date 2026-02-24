@@ -5,6 +5,8 @@
              StartupUri="Views/Login.xaml">
     <Application.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
-        <conv:IsoDateConverter x:Key="IsoDate"/>
+        <conv:IsoDateConverter      x:Key="IsoDate"/>
+        <conv:InverseBoolConverter       x:Key="InverseBool"/>
+        <conv:IntToVisibilityConverter  x:Key="IntToVisibility"/>
     </Application.Resources>
 </Application>

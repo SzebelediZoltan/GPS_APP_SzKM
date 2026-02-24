@@ -1,12 +1,52 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\",
-  "Documents": [],
+  "WorkspaceRootPath": "C:\\Users\\User\\Downloads\\gpass-app-wpf-serverselect\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|c:\\users\\user\\downloads\\gpass-app-wpf-serverselect\\gpass-app-wpf\\views\\login.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|solutionrelative:gpass-app-wpf\\views\\login.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|c:\\users\\user\\downloads\\gpass-app-wpf-serverselect\\gpass-app-wpf\\viewmodels\\loginviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|solutionrelative:gpass-app-wpf\\viewmodels\\loginviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "LoginViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\User\\Downloads\\gpass-app-wpf-serverselect\\gpass-app-wpf\\ViewModels\\LoginViewModel.cs",
+              "RelativeDocumentMoniker": "gpass-app-wpf\\ViewModels\\LoginViewModel.cs",
+              "ToolTip": "C:\\Users\\User\\Downloads\\gpass-app-wpf-serverselect\\gpass-app-wpf\\ViewModels\\LoginViewModel.cs",
+              "RelativeToolTip": "gpass-app-wpf\\ViewModels\\LoginViewModel.cs",
+              "ViewState": "AgIAAEUAAAAAAAAAAAAiwHQAAAA8AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-24T20:27:15.067Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Login.xaml",
+              "DocumentMoniker": "C:\\Users\\User\\Downloads\\gpass-app-wpf-serverselect\\gpass-app-wpf\\Views\\Login.xaml",
+              "RelativeDocumentMoniker": "gpass-app-wpf\\Views\\Login.xaml",
+              "ToolTip": "C:\\Users\\User\\Downloads\\gpass-app-wpf-serverselect\\gpass-app-wpf\\Views\\Login.xaml",
+              "RelativeToolTip": "gpass-app-wpf\\Views\\Login.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-02-24T20:21:42.57Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }

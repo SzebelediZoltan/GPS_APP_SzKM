@@ -1,0 +1,121 @@
+<Window x:Class="gpass_app_wpf.Views.ClanFormWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Új klán létrehozása" Height="450" Width="440"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner">
+
+    <Grid Margin="25">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Cím -->
+        <TextBlock Grid.Row="0" Text="Új klán létrehozása" FontSize="18" FontWeight="Bold"
+                   Foreground="#2c3e50" Margin="0,0,0,14"/>
+
+        <!-- Backend hibasáv -->
+        <Border Grid.Row="1"
+                Background="#fdecea" BorderBrush="#e74c3c" BorderThickness="1"
+                CornerRadius="4" Padding="10,7" Margin="0,0,0,12"
+                Visibility="{Binding HasError, Converter={StaticResource BoolToVisibility}}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="⚠ " Foreground="#c0392b" FontWeight="Bold"/>
+                <TextBlock Text="{Binding ErrorMessage}" Foreground="#c0392b"
+                           TextWrapping="Wrap" FontSize="13"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Form -->
+        <StackPanel Grid.Row="2">
+
+            <!-- Klán neve -->
+            <TextBlock Text="Klán neve *" Foreground="#555" Margin="0,0,0,3"/>
+            <TextBox Padding="6,5" Margin="0,0,0,2"
+                     Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                     IsEnabled="{Binding Saving, Converter={StaticResource InverseBool}}"/>
+            <TextBlock Text="{Binding NameError}" Foreground="#c0392b" FontSize="11"
+                       Margin="2,0,0,12"
+                       Visibility="{Binding HasNameError, Converter={StaticResource BoolToVisibility}}"/>
+
+            <!-- Vezető keresés label -->
+            <TextBlock Text="Vezető keresése *" Foreground="#555" Margin="0,0,0,3"/>
+
+            <!-- Keresőmező + spinner -->
+            <Grid Margin="0,0,0,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Grid.Column="0" Padding="6,5"
+                         Text="{Binding LeaderSearch, UpdateSourceTrigger=PropertyChanged}"
+                         IsEnabled="{Binding Saving, Converter={StaticResource InverseBool}}"
+                         ToolTip="Keresés felhasználónév vagy email alapján"/>
+                <TextBlock Grid.Column="1" Text="⏳" FontSize="14"
+                           VerticalAlignment="Center" Margin="7,0,0,0"
+                           Visibility="{Binding Searching, Converter={StaticResource BoolToVisibility}}"/>
+            </Grid>
+
+            <!-- Találati lista — csak ha van eredmény -->
+            <ListBox x:Name="leaderSearchListBox"
+                     ItemsSource="{Binding SearchResults}"
+                     MaxHeight="120"
+                     BorderBrush="#ccc" BorderThickness="1"
+                     SelectionChanged="LeaderSearchListBox_SelectionChanged"
+                     Visibility="{Binding SearchResults.Count, Converter={StaticResource IntToVisibility}}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Margin="2,3">
+                            <TextBlock Text="{Binding username}" FontWeight="SemiBold"/>
+                            <TextBlock Text="  "/>
+                            <TextBlock Text="{Binding email}" Foreground="#666" FontSize="11"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#e8f4fd"/>
+                                <Setter Property="Cursor" Value="Hand"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+            </ListBox>
+
+            <!-- Kiválasztott vezető visszajelzés -->
+            <Border Background="#eafaf1" BorderBrush="#27ae60" BorderThickness="1"
+                    CornerRadius="3" Padding="8,6" Margin="0,5,0,0"
+                    Visibility="{Binding HasSelectedLeader, Converter={StaticResource BoolToVisibility}}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="✔ Vezető: " Foreground="#27ae60" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding LeaderDisplayText}" Foreground="#1e8449"/>
+                </StackPanel>
+            </Border>
+            <TextBlock Text="{Binding LeaderError}" Foreground="#c0392b" FontSize="11"
+                       Margin="2,3,0,0"
+                       Visibility="{Binding HasLeaderError, Converter={StaticResource BoolToVisibility}}"/>
+
+        </StackPanel>
+
+        <!-- Gombok -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,14,0,0">
+            <Button Content="Mégse" Padding="14,7" Margin="0,0,10,0"
+                    Command="{Binding CancelCommand}"/>
+            <Button Padding="14,7" Background="#2c3e50" Foreground="White" FontWeight="SemiBold"
+                    Command="{Binding SaveCommand}">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="⏳ " Visibility="{Binding Saving, Converter={StaticResource BoolToVisibility}}"/>
+                        <TextBlock Text="Létrehozás"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+        </StackPanel>
+
+    </Grid>
+</Window>

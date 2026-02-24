@@ -1,7 +1,7 @@
 <Window x:Class="gpass_app_wpf.Views.Login"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="GPass - Bejelentkezés" Height="400" Width="400"
+        Title="GPass - Bejelentkezés" Height="540" Width="400"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
         Background="#1a1a2e">
@@ -15,23 +15,51 @@
                            HorizontalAlignment="Center" Margin="0,0,0,25"
                            Foreground="#2c3e50"/>
 
+                
+                
+
                 <TextBlock Text="Felhasználó (ID / email / név)"
                            Foreground="#666" FontSize="12" Margin="0,0,0,4"/>
                 <TextBox x:Name="userBox" Height="34" Padding="8,6"
                          FontSize="13" BorderBrush="#ccc" BorderThickness="1"
                          Margin="0,0,0,14"
+                         IsEnabled="{Binding Loading, Converter={StaticResource InverseBool}}"
                          Text="{Binding UserIdentifier, UpdateSourceTrigger=PropertyChanged}"/>
 
                 <TextBlock Text="Jelszó" Foreground="#666" FontSize="12" Margin="0,0,0,4"/>
                 <PasswordBox x:Name="passwordBox" Height="34" Padding="8,6"
                              FontSize="13" BorderBrush="#ccc" BorderThickness="1"
-                             Margin="0,0,0,22"/>
+                             Margin="0,0,0,18"
+                             IsEnabled="{Binding Loading, Converter={StaticResource InverseBool}}"/>
 
-                <Button Content="Bejelentkezés" Height="38"
-                        FontSize="14" FontWeight="SemiBold"
-                        Background="#2c3e50" Foreground="White"
-                        BorderThickness="0"
-                        Command="{Binding LoginCommand}"/>
+                <!-- Szerver választó -->
+                <TextBlock Text="Szerver" Foreground="#666" FontSize="12" Margin="0,0,0,4"/>
+                <ComboBox Height="34" Padding="8,6" FontSize="13"
+                          Margin="0,0,0,22"
+                          ItemsSource="{Binding Servers}"
+                          SelectedItem="{Binding SelectedServer, Mode=TwoWay}"
+                          IsEnabled="{Binding Loading, Converter={StaticResource InverseBool}}"/>
+
+                <Button Height="38" FontSize="14" FontWeight="SemiBold"
+                        Background="#2c3e50" Foreground="White" BorderThickness="0"
+                        Command="{Binding LoginCommand}">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="⏳ " FontSize="14"
+                                   Visibility="{Binding Loading, Converter={StaticResource BoolToVisibility}}"/>
+                        <TextBlock Text="Bejelentkezés"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- Hibasáv -->
+                <Border Background="#fdecea" BorderBrush="#e74c3c" BorderThickness="1"
+                    CornerRadius="4" Padding="10,8" Margin="0,16,0,0"
+                    Visibility="{Binding HasError, Converter={StaticResource BoolToVisibility}}">   
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="⚠ " Foreground="#c0392b" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding ErrorMessage}" Foreground="#c0392b"
+                            TextWrapping="Wrap" FontSize="12"/>
+                    </StackPanel>
+                </Border>
 
             </StackPanel>
         </Border>
