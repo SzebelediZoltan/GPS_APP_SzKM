@@ -1,104 +1,113 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
-import { Search, User, Users, ShieldCheck } from "lucide-react"
+import { Users, ShieldCheck, UserX, User, Search } from "lucide-react"
 
-import { Card, CardContent} from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { useAuth } from "@/hooks/useAuth"
+import { useFriends } from "@/hooks/useFriends"
+import { useMappedFriends } from "@/hooks/useMappedFriends"
 import NotLoggedIn from "@/components/NotLoggedIn"
+import LoadingPage from "@/components/LoadingPage"
+import ServerErrorPage from "@/components/ServerErrorPage"
+import { useState } from "react"
+import UserSearchDialog from "@/components/userSearchDialog"
+import FriendRequestsDialog from "@/components/FriendRequestsDialog"
 
 export const Route = createFileRoute("/profile/friends")({
   component: FriendsPage,
 })
 
-type Friend = {
-  id: string
-  name: string
-  isAdmin: boolean
-  avatarUrl?: string
-}
-
 function FriendsPage() {
-  // TODO: ide jön majd a lekérés
+  const { user } = useAuth()
+  const [removingId, setRemovingId] = useState<string | null>(null)
 
-  const {user} = useAuth()
+  const {
+    acceptedRequests,
+    pendingRequests,
+    terminateRequest,
+  } = useFriends(user?.userID ?? "", !!user)
 
-  const friendRequestsCount = 2
+  /* SAFE DEFAULTS */
+  const accepted = acceptedRequests.data?.data ?? []
+  const pending = pendingRequests.data?.data ?? []
 
-  const friends: Friend[] = [
-    { id: "f1", name: "Miskolczi Levente", isAdmin: false, avatarUrl: "" },
-    { id: "f2", name: "Kiss Dominik", isAdmin: true, avatarUrl: "" },
-    { id: "f3", name: "Szebeledi Zoltán", isAdmin: false, avatarUrl: "" },
-    { id: "f4", name: "RandomUser21", isAdmin: false, avatarUrl: "" },
-  ]
+  const { mappedFriends: friends } = useMappedFriends(
+    user?.username ?? "",
+    [],
+    accepted
+  )
 
-    if (!user) {
-      return <>
-        <NotLoggedIn />
-      </>
-    }
+  if (!user) return <NotLoggedIn />
+
+  if (acceptedRequests.isLoading || pendingRequests.isLoading) {
+    return <LoadingPage />
+  }
+
+  if (!acceptedRequests.data || !pendingRequests.data) {
+    return <ServerErrorPage />
+  }
 
   return (
     <main className="min-h-[calc(100vh-64px)] bg-background text-foreground">
-      {/* glow */}
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-44 left-1/2 h-130 w-130 -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,hsl(var(--primary)/0.14),transparent_60%)] blur-2xl" />
-        <div className="absolute -bottom-48 -right-30 h-130 w-130 rounded-full bg-[radial-gradient(circle_at_center,hsl(var(--ring)/0.16),transparent_60%)] blur-2xl" />
-      </div>
-
       <div className="mx-auto w-full max-w-6xl px-4 py-8">
-        {/* Top header */}
+
+        {/* HEADER */}
         <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/40 px-3 py-1 text-xs text-muted-foreground">
               <Users className="h-3.5 w-3.5" />
               Barátok
             </div>
-            <h1 className="mt-3 text-3xl font-bold tracking-tight">Barátlista</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Itt később keresés, kérések és részletes profilok lesznek.
-            </p>
+            <h1 className="mt-3 text-3xl font-bold tracking-tight">
+              Barátlista
+            </h1>
           </div>
 
-          {/* Right actions */}
+          {/* Right side buttons */}
           <div className="flex items-center gap-2">
-            <Button variant="outline" className="rounded-xl">
-              Barát kérelmek
-              <span className="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-xs font-semibold text-primary-foreground">
-                {friendRequestsCount}
-              </span>
-            </Button>
 
-            <Button variant="outline" className="rounded-xl">
-              <Search className="mr-2 h-4 w-4" />
-              Barát keresése
-            </Button>
+            {/* Pending count */}
+            <FriendRequestsDialog />
 
-            <Button asChild className="rounded-xl">
-              <Link to="/profile">Vissza</Link>
-            </Button>
+            {/* Search (placeholder) */}
+            <UserSearchDialog />
+
           </div>
         </div>
 
+        {/* FRIEND LIST */}
         <Card className="rounded-2xl border-border/60 bg-card/60 shadow-xl backdrop-blur">
           <CardContent className="space-y-3">
+
+            {friends.length === 0 && (
+              <div className="text-sm text-muted-foreground">
+                Még nincsenek barátaid.
+              </div>
+            )}
+
             {friends.map((f, idx) => (
-              <div key={f.id}>
-                <div className="flex flex-col gap-3 rounded-2xl border border-border/60 bg-background/40 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+              <div key={f.ID}>
+                <div
+                  className={`flex flex-col gap-3 rounded-2xl border border-border/60 bg-background/40 px-4 py-3 sm:flex-row sm:items-center sm:justify-between transition-all duration-300 ${removingId === f.relationID
+                    ? "opacity-0 scale-95 translate-x-4"
+                    : "opacity-100 scale-100"
+                    }`}
+                >
                   {/* Left: avatar + name */}
                   <div className="flex items-center gap-3">
                     <Avatar className="h-10 w-10 rounded-xl ring-1 ring-border/60">
-                      <AvatarImage src={f.avatarUrl} alt={f.name} />
+                      <AvatarImage src={""} alt={f.username} />
                       <AvatarFallback className="rounded-xl">
-                        {f.name.slice(0, 2).toUpperCase()}
+                        {f.username.slice(0, 2).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
 
-                    <div className="min-w-0">
+                    <div>
                       <div className="flex items-center gap-2">
-                        <div className="truncate font-medium">{f.name}</div>
+                        <div className="font-medium">{f.username}</div>
                         {f.isAdmin && (
                           <Badge className="rounded-full">
                             <span className="inline-flex items-center gap-1">
@@ -108,18 +117,40 @@ function FriendsPage() {
                           </Badge>
                         )}
                       </div>
-                      <div className="text-xs text-muted-foreground">
-                        Státusz / utolsó aktivitás (placeholder)
-                      </div>
                     </div>
                   </div>
 
-                  {/* Right: action */}
-                  <div className="flex justify-end sm:justify-start">
-                    <Button variant="outline" className="rounded-xl">
-                      <User className="mr-2 h-4 w-4" />
-                      Profil megtekintése
+                  {/* Right: actions */}
+                  <div className="flex gap-2">
+
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="rounded-xl transition-all duration-200 hover:scale-[1.03] hover:shadow-md active:scale-[0.98]"
+                    >
+                      <Link
+                        to="/profile/$userID"
+                        params={{ userID: f.ID }}
+                      >
+                        <User className="mr-2 h-4 w-4" />
+                        Profil
+                      </Link>
                     </Button>
+
+                    <Button
+                      variant="destructive"
+                      className="rounded-xl transition-all duration-200 hover:scale-[1.05] hover:shadow-lg active:scale-[0.95] cursor-pointer"
+                      onClick={() => {
+                        setRemovingId(f.relationID)
+                        setTimeout(() => {
+                          terminateRequest(f.relationID)
+                        }, 250)
+                      }}
+                    >
+                      <UserX className="mr-2 h-4 w-4" />
+                      Törlés
+                    </Button>
+
                   </div>
                 </div>
 
@@ -128,6 +159,7 @@ function FriendsPage() {
                 )}
               </div>
             ))}
+
           </CardContent>
         </Card>
       </div>

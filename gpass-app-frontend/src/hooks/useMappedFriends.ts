@@ -21,7 +21,8 @@ type SimpleUser = {
   ID: string
   username: string
   isAdmin: boolean
-  status: string
+  status: string,
+  relationID: string
 }
 
 export function useMappedFriends(
@@ -56,7 +57,8 @@ export function useMappedFriends(
           ID: otherUser.ID,
           username: otherUser.username,
           isAdmin: otherUser.isAdmin,
-          status: relation.status
+          status: relation.status,
+          relationID: relation.id
         })
       }
     }
