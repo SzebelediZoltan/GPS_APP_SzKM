@@ -38,11 +38,13 @@ export default function FriendRequestsDialog() {
     } = useFriends(user?.userID ?? "", !!user)
 
     const requests = pendingRequests.data?.data ?? []
-
+    
+    
+    
     const received = requests.filter(
         (r) => r.receiver_id === user?.userID
     )
-
+    
     const sent = requests.filter(
         (r) => r.sender_id === user?.userID
     )
@@ -143,7 +145,10 @@ export default function FriendRequestsDialog() {
                             {sent.map((r) => (
                                 <div
                                     key={r.id}
-                                    className="flex items-center justify-between rounded-xl border p-3"
+                                    className={`flex items-center justify-between rounded-xl border p-3 transition-all duration-300 ${removingId === r.id
+                                            ? "opacity-0 scale-95 translate-x-4"
+                                            : "opacity-100 scale-100"
+                                        }`}
                                 >
                                     <div className="flex items-center gap-3">
                                         <Avatar>
