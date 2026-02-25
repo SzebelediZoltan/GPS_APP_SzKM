@@ -10,16 +10,27 @@ class ClanRepository {
     async getClans() {
         try {
             return await this.Clan.scope("public").findAll({
-                attributes: [fn("COUNT", col("member_id")), "member_count"],
+                attributes: {
+                    include: [
+                        [
+                            fn("COUNT", col("members.clan_id")),
+                            "member_count"
+                        ]
+                    ]
+                },
                 include: [{
                     association: "leader",
                     attributes: ["username"],
                     required: false,
                 },
                 {
-                    association: "members"
+                    association: "members",
+                    attributes: [],
+                    required: false,
                 }
-            ]
+            ],
+                group: ["Clan.id", "leader.id"],
+                subQuery: false,
             });
         }
         catch (error) {

@@ -24,6 +24,21 @@ namespace gpass_app_wpf.ViewModels
             set { _name = value; OnPropertyChanged(); ValidateName(); ClearGeneralError(); }
         }
 
+        private string _description;
+        public string Description
+        {
+            get => _description;
+            set { _description = value; OnPropertyChanged(); ValidateDescription(); ClearGeneralError(); }
+        }
+
+        private string _descriptionError;
+        public string DescriptionError
+        {
+            get => _descriptionError;
+            set { _descriptionError = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasDescriptionError)); }
+        }
+        public bool HasDescriptionError => !string.IsNullOrEmpty(_descriptionError);
+
         private string _nameError;
         public string NameError
         {
@@ -112,6 +127,14 @@ namespace gpass_app_wpf.ViewModels
 
         private void ClearGeneralError() => ErrorMessage = null;
 
+        private void ValidateDescription()
+        {
+            if (Description != null && Description.Length > 200)
+                DescriptionError = "A leírás legfeljebb 200 karakter lehet!";
+            else
+                DescriptionError = null;
+        }
+
         private void ValidateName()
         {
             if (string.IsNullOrWhiteSpace(Name))
@@ -132,8 +155,9 @@ namespace gpass_app_wpf.ViewModels
         private bool Validate()
         {
             ValidateName();
+            ValidateDescription();
             ValidateLeader();
-            return !HasNameError && !HasLeaderError;
+            return !HasNameError && !HasDescriptionError && !HasLeaderError;
         }
 
         // ── Debounced search ───────────────────────────────────────────────────
@@ -193,8 +217,9 @@ namespace gpass_app_wpf.ViewModels
             {
                 await _api.PostAsync<object>("clans", new
                 {
-                    name      = Name.Trim(),
-                    leader_id = SelectedLeader.ID
+                    name        = Name.Trim(),
+                    description = string.IsNullOrWhiteSpace(Description) ? null : Description.Trim(),
+                    leader_id   = SelectedLeader.ID
                 });
                 Confirmed = true;
                 _window.Close();

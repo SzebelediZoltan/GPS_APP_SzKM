@@ -128,9 +128,11 @@
                               GridLinesVisibility="Horizontal" HeadersVisibility="Column"
                               AlternatingRowBackground="#fafafa" BorderBrush="#ddd" BorderThickness="1">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID"          Binding="{Binding id}"          Width="55"/>
-                            <DataGridTextColumn Header="Klán neve"   Binding="{Binding name}"        Width="200"/>
-                            <DataGridTextColumn Header="Vezető"      Binding="{Binding leader_name}" Width="150"/>
+                            <DataGridTextColumn Header="ID"          Binding="{Binding id}"           Width="50"/>
+                            <DataGridTextColumn Header="Klán neve"   Binding="{Binding name}"         Width="170"/>
+                            <DataGridTextColumn Header="Vezető"      Binding="{Binding leader_name}"  Width="120"/>
+                            <DataGridTextColumn Header="Tagok"       Binding="{Binding member_count}" Width="60"/>
+                            <DataGridTextColumn Header="Leírás"      Binding="{Binding description}"  Width="150"/>
                             <DataGridTextColumn Header="Létrehozva"  Binding="{Binding created_at, Converter={StaticResource IsoDate}}" Width="*"/>
                         </DataGrid.Columns>
                     </DataGrid>

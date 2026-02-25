@@ -82,7 +82,7 @@ module.exports = (sequelize) => {
 
             scopes: {
                 public: {
-                    attributes: ["id", "name", "created_at", "leader_id"],
+                    attributes: ["id", "name", "created_at", "leader_id", "description"],
                 },
                 minimal: {
                     attributes: ["id", "name"],

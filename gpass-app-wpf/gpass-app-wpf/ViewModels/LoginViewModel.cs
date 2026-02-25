@@ -114,7 +114,7 @@ namespace gpass_app_wpf.ViewModels
             }
             catch (System.Net.Http.HttpRequestException ex)
             {
-                ErrorMessage = $"Nem sikerült csatlakozni:\n{SelectedServer.Label}";
+                ErrorMessage = $"Nem sikerült csatlakozni: {SelectedServer.Label}\n{ex.Message}";
             }
             catch (Exception ex)
             {

@@ -1,7 +1,7 @@
 <Window x:Class="gpass_app_wpf.Views.ClanFormWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Új klán létrehozása" Height="450" Width="440"
+        Title="Új klán létrehozása" Height="510" Width="440"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner">
 
@@ -40,6 +40,15 @@
             <TextBlock Text="{Binding NameError}" Foreground="#c0392b" FontSize="11"
                        Margin="2,0,0,12"
                        Visibility="{Binding HasNameError, Converter={StaticResource BoolToVisibility}}"/>
+
+            <!-- Leírás -->
+            <TextBlock Text="Leírás (opcionális)" Foreground="#555" Margin="0,0,0,3"/>
+            <TextBox Padding="6,5" Margin="0,0,0,2" MaxLength="200"
+                     Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
+                     IsEnabled="{Binding Saving, Converter={StaticResource InverseBool}}"/>
+            <TextBlock Text="{Binding DescriptionError}" Foreground="#c0392b" FontSize="11"
+                       Margin="2,0,0,12"
+                       Visibility="{Binding HasDescriptionError, Converter={StaticResource BoolToVisibility}}"/>
 
             <!-- Vezető keresés label -->
             <TextBlock Text="Vezető keresése *" Foreground="#555" Margin="0,0,0,3"/>

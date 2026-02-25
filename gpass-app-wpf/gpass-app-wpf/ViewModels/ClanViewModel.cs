@@ -71,31 +71,7 @@ namespace gpass_app_wpf.ViewModels
                     ? "clans"
                     : $"clans/search?query={Uri.EscapeDataString(ClanSearch.Trim())}";
 
-                var raw = await _api.GetRawAsync(endpoint);
-                var list = new List<ClanWithMembers>();
-                var doc = System.Text.Json.JsonDocument.Parse(raw);
-                foreach (var elem in doc.RootElement.EnumerateArray())
-                {
-                    var c = new ClanWithMembers();
-                    foreach (var p in elem.EnumerateObject())
-                    {
-                        if (p.Name.Equals("id", StringComparison.OrdinalIgnoreCase) && p.Value.ValueKind == System.Text.Json.JsonValueKind.Number)
-                            c.id = p.Value.GetInt32();
-                        else if (p.Name.Equals("name", StringComparison.OrdinalIgnoreCase))
-                            c.name = p.Value.GetString();
-                        else if (p.Name.Equals("leader_id", StringComparison.OrdinalIgnoreCase) && p.Value.ValueKind == System.Text.Json.JsonValueKind.Number)
-                            c.leader_id = p.Value.GetInt32();
-                        else if (p.Name.Equals("created_at", StringComparison.OrdinalIgnoreCase))
-                            c.created_at = p.Value.GetString();
-                        else if (p.Name.Equals("leader", StringComparison.OrdinalIgnoreCase) && p.Value.ValueKind == System.Text.Json.JsonValueKind.Object)
-                        {
-                            foreach (var lp in p.Value.EnumerateObject())
-                                if (lp.Name.Equals("username", StringComparison.OrdinalIgnoreCase))
-                                    c.leader = new ClanLeaderInfo { username = lp.Value.GetString() };
-                        }
-                    }
-                    if (c.id > 0) list.Add(c);
-                }
+                var list = await _api.GetAsync<List<ClanWithMembers>>(endpoint);
 
                 Application.Current.Dispatcher.Invoke(() =>
                 {

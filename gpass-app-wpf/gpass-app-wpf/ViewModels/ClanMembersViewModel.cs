@@ -32,6 +32,21 @@ namespace gpass_app_wpf.ViewModels
             set { _clanName = value; OnPropertyChanged(); ValidateClanName(); }
         }
 
+        private string _clanDescription;
+        public string ClanDescription
+        {
+            get => _clanDescription;
+            set { _clanDescription = value; OnPropertyChanged(); ValidateClanDescription(); }
+        }
+
+        private string _clanDescriptionError;
+        public string ClanDescriptionError
+        {
+            get => _clanDescriptionError;
+            set { _clanDescriptionError = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasClanDescriptionError)); }
+        }
+        public bool HasClanDescriptionError => !string.IsNullOrEmpty(_clanDescriptionError);
+
         private string _clanNameError;
         public string ClanNameError
         {
@@ -115,10 +130,11 @@ namespace gpass_app_wpf.ViewModels
         {
             _clan    = clan;
             _api     = SessionService.Api;
-            ClanName = clan.name;
+            ClanName        = clan.name;
+            ClanDescription = clan.description;
             ClanInfo = $"ID: {_clan.id}  •  Vezető: {_clan.leader_name}";
 
-            SaveNameCommand      = new RelayCommand(async _ => await SaveName(),      _ => !NameSaving && !HasClanNameError);
+            SaveNameCommand      = new RelayCommand(async _ => await SaveName(),      _ => !NameSaving && !HasClanNameError && !HasClanDescriptionError);
             RemoveMemberCommand  = new RelayCommand(async _ => await RemoveMember(),  _ => SelectedMember != null);
             ChangeLeaderCommand  = new RelayCommand(async _ => await ChangeLeader(),  _ => SelectedMember != null && SelectedMember.user_id != _clan.leader_id);
             AddMemberCommand     = new RelayCommand(async _ => await AddMember(),     _ => HasUserToAdd);
@@ -128,6 +144,14 @@ namespace gpass_app_wpf.ViewModels
         }
 
         // ── Validáció ──────────────────────────────────────────────────────────
+        private void ValidateClanDescription()
+        {
+            if (ClanDescription != null && ClanDescription.Length > 200)
+                ClanDescriptionError = "A leírás legfeljebb 200 karakter lehet!";
+            else
+                ClanDescriptionError = null;
+        }
+
         private void ValidateClanName()
         {
             if (string.IsNullOrWhiteSpace(ClanName))
@@ -143,10 +167,14 @@ namespace gpass_app_wpf.ViewModels
         // ── Név mentése ────────────────────────────────────────────────────────
         private async Task SaveName()
         {
-            if (HasClanNameError) return;
-            if (ClanName.Trim() == _clan.name)
+            if (HasClanNameError || HasClanDescriptionError) return;
+
+            bool nameChanged = ClanName.Trim() != _clan.name;
+            bool descChanged = (ClanDescription?.Trim() ?? "") != (_clan.description ?? "");
+
+            if (!nameChanged && !descChanged)
             {
-                NameSaveResult = "ℹ Nem változott a név.";
+                NameSaveResult = "ℹ Nem történt változás.";
                 return;
             }
 
@@ -154,8 +182,13 @@ namespace gpass_app_wpf.ViewModels
             NameSaveResult = null;
             try
             {
-                await _api.PutAsync<object>($"clans/{_clan.id}", new { name = ClanName.Trim() });
-                _clan.name = ClanName.Trim();
+                await _api.PutAsync<object>($"clans/{_clan.id}", new
+                {
+                    name        = ClanName.Trim(),
+                    description = string.IsNullOrWhiteSpace(ClanDescription) ? null : ClanDescription.Trim()
+                });
+                _clan.name        = ClanName.Trim();
+                _clan.description = ClanDescription?.Trim();
                 OnPropertyChanged(nameof(Title));
                 ClanInfo = $"ID: {_clan.id}  •  Vezető: {_clan.leader_name}";
                 NameSaveResult = "✔ Név sikeresen mentve!";
