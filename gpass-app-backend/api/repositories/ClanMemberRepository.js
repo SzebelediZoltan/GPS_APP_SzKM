@@ -9,7 +9,12 @@ class ClanMemberRepository {
 
     async getMembers() {
         try {
-            return await this.ClanMember.scope("public").findAll();
+            return await this.ClanMember.scope("public").findAll({
+                include: [
+                    {association: "user", attributes: ["id", "username", "isAdmin"]},
+                    {association: "clan"}
+                ]
+            });
         }
         catch (error) {
             throw new DbError("Failed to fetch clan members",

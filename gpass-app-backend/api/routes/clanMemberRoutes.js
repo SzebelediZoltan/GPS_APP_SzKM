@@ -8,7 +8,7 @@ const authMiddleware = require("../middlewares/authMiddleware");
 router.use(authMiddleware.userIsLoggedIn);
 
 // LISTA (admin jellegű lehet, de nálad lehet simán engedett)
-router.get("/", authMiddleware.isAdmin, clanMemberController.getMembers);
+router.get("/", authMiddleware.userIsLoggedIn, clanMemberController.getMembers);
 
 // ADD (logged in)
 router.post("/", clanMemberController.addMember);
