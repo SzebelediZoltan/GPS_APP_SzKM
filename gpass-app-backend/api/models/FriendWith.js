@@ -20,6 +20,8 @@ module.exports = (sequelize) => {
                     isInt: { msg: "A sender_id csak egész szám lehet." },
                     min: { args: [1], msg: "A sender_id csak pozitív szám lehet." },
                 },
+
+                onDelete: "CASCADE"
             },
 
             receiver_id: {
@@ -37,6 +39,8 @@ module.exports = (sequelize) => {
                         }
                     },
                 },
+
+                onDelete: "CASCADE"
             },
 
             status: {

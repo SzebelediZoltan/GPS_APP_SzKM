@@ -107,6 +107,9 @@ module.exports = (sequelize) =>
         foreignKey: "sender_id",
         as: "sentFriendRequests",
         constraints: false,
+
+        onDelete: "CASCADE",
+        hooks: true
     });
 
     FriendWith.belongsTo(User,

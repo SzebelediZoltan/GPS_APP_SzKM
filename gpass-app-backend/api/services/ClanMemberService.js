@@ -33,7 +33,11 @@ class ClanMemberService
         if(!data) throw new BadRequestError("Hiányzik a klántagság adata (payload).", { data });
         if(!data.clan_id) throw new BadRequestError("Hiányzik a klán azonosító (clan_id).", { data });
         if(!data.user_id) throw new BadRequestError("Hiányzik a felhasználó azonosító (user_id).", { data });
-        // if(this.clanRepository.getClans) throw new BadRequestError("Nincs ilyen klán.", { data })
+
+        const clans = await this.clanRepository.getClans();
+        const clanExists = clans.some(clan => clan.id === data.clan_id);
+
+        if (!clanExists) throw new BadRequestError("Nincs ilyen klán.", { data });
 
         return await this.clanMemberRepository.addMember(data);
     }
