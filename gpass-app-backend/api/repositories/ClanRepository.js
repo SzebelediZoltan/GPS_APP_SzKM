@@ -1,5 +1,5 @@
 const { DbError } = require("../errors");
-const { Op } = require("sequelize");
+const { Op, fn, col } = require("sequelize");
 
 class ClanRepository {
     constructor(db) {
@@ -10,11 +10,16 @@ class ClanRepository {
     async getClans() {
         try {
             return await this.Clan.scope("public").findAll({
+                attributes: [fn("COUNT", col("member_id")), "member_count"],
                 include: [{
                     association: "leader",
                     attributes: ["username"],
                     required: false,
-                }]
+                },
+                {
+                    association: "members"
+                }
+            ]
             });
         }
         catch (error) {
