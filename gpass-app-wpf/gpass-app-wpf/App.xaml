@@ -4,9 +4,98 @@
              xmlns:conv="clr-namespace:gpass_app_wpf.Converters"
              StartupUri="Views/Login.xaml">
     <Application.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
-        <conv:IsoDateConverter      x:Key="IsoDate"/>
-        <conv:InverseBoolConverter       x:Key="InverseBool"/>
-        <conv:IntToVisibilityConverter  x:Key="IntToVisibility"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Themes/Light.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <BooleanToVisibilityConverter  x:Key="BoolToVisibility"/>
+            <conv:IsoDateConverter         x:Key="IsoDate"/>
+            <conv:InverseBoolConverter     x:Key="InverseBool"/>
+            <conv:IntToVisibilityConverter x:Key="IntToVisibility"/>
+
+            <!-- TextBox -->
+            <Style TargetType="TextBox">
+                <Setter Property="Background"      Value="{DynamicResource InputBackground}"/>
+                <Setter Property="Foreground"      Value="{DynamicResource PrimaryText}"/>
+                <Setter Property="BorderBrush"     Value="{DynamicResource InputBorder}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="CaretBrush"      Value="{DynamicResource PrimaryText}"/>
+                <Setter Property="Padding"         Value="6,5"/>
+            </Style>
+
+            <!-- PasswordBox -->
+            <Style TargetType="PasswordBox">
+                <Setter Property="Background"      Value="{DynamicResource InputBackground}"/>
+                <Setter Property="Foreground"      Value="{DynamicResource PrimaryText}"/>
+                <Setter Property="BorderBrush"     Value="{DynamicResource InputBorder}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="CaretBrush"      Value="{DynamicResource PrimaryText}"/>
+            </Style>
+
+            <!-- ComboBox -->
+            <Style TargetType="ComboBox">
+                <Setter Property="Background"      Value="{DynamicResource InputBackground}"/>
+                <Setter Property="Foreground"      Value="{DynamicResource PrimaryText}"/>
+                <Setter Property="BorderBrush"     Value="{DynamicResource InputBorder}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+            </Style>
+
+            <!-- ListBox -->
+            <Style TargetType="ListBox">
+                <Setter Property="Background"  Value="{DynamicResource InputBackground}"/>
+                <Setter Property="Foreground"  Value="{DynamicResource PrimaryText}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource InputBorder}"/>
+            </Style>
+
+            <!-- DataGrid -->
+            <Style TargetType="DataGrid">
+                <Setter Property="Background"               Value="{DynamicResource SurfaceBrush}"/>
+                <Setter Property="Foreground"               Value="{DynamicResource PrimaryText}"/>
+                <Setter Property="BorderBrush"              Value="{DynamicResource SurfaceBorderBrush}"/>
+                <Setter Property="RowBackground"            Value="{DynamicResource SurfaceBrush}"/>
+                <Setter Property="AlternatingRowBackground" Value="{DynamicResource AlternatingRow}"/>
+                <Setter Property="HorizontalGridLinesBrush" Value="{DynamicResource SurfaceBorderBrush}"/>
+            </Style>
+            <Style TargetType="DataGridColumnHeader">
+                <Setter Property="Background"  Value="{DynamicResource ToolbarBackground}"/>
+                <Setter Property="Foreground"  Value="{DynamicResource SecondaryText}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource SurfaceBorderBrush}"/>
+                <Setter Property="Padding"     Value="8,6"/>
+                <Setter Property="FontWeight"  Value="SemiBold"/>
+            </Style>
+            <Style TargetType="DataGridRow">
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+                <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+            </Style>
+            <Style TargetType="DataGridCell">
+                <Setter Property="Foreground"      Value="{DynamicResource PrimaryText}"/>
+                <Setter Property="BorderThickness" Value="0"/>
+            </Style>
+
+            <!-- TabControl -->
+            <Style TargetType="TabControl">
+                <Setter Property="Background"  Value="{DynamicResource SurfaceBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource SurfaceBorderBrush}"/>
+            </Style>
+            <Style TargetType="TabItem">
+                <Setter Property="Background"  Value="{DynamicResource ToolbarBackground}"/>
+                <Setter Property="Foreground"  Value="{DynamicResource SecondaryText}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource SurfaceBorderBrush}"/>
+                <Setter Property="Padding"     Value="12,6"/>
+                <Style.Triggers>
+                    <Trigger Property="IsSelected" Value="True">
+                        <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+                        <Setter Property="Foreground" Value="{DynamicResource Accent}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <!-- TextBlock -->
+            <Style TargetType="TextBlock">
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+            </Style>
+
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

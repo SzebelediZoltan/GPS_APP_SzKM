@@ -1,0 +1,177 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Színek -->
+    <SolidColorBrush x:Key="AppBackground"       Color="#0F1117"/>
+    <SolidColorBrush x:Key="SurfaceBrush"        Color="#1A1A2E"/>
+    <SolidColorBrush x:Key="SurfaceBorderBrush"  Color="#2D2D4E"/>
+    <SolidColorBrush x:Key="PrimaryText"         Color="#E8EEFF"/>
+    <SolidColorBrush x:Key="SecondaryText"       Color="#B0BAD0"/>
+    <SolidColorBrush x:Key="MutedText"           Color="#6B7A99"/>
+    <SolidColorBrush x:Key="Accent"              Color="#4F9CF9"/>
+    <SolidColorBrush x:Key="AccentHover"         Color="#3B82F6"/>
+    <SolidColorBrush x:Key="InputBackground"     Color="#16213E"/>
+    <SolidColorBrush x:Key="InputBorder"         Color="#2D3A5E"/>
+    <SolidColorBrush x:Key="ToolbarBackground"   Color="#141428"/>
+    <SolidColorBrush x:Key="AlternatingRow"      Color="#141428"/>
+    <SolidColorBrush x:Key="TabBackground"       Color="#1A1A2E"/>
+    <SolidColorBrush x:Key="ToggleBtnBg"         Color="#2D2D4E"/>
+    <SolidColorBrush x:Key="ToggleBtnFg"         Color="#E8EEFF"/>
+    <SolidColorBrush x:Key="LoginOuterBg"        Color="#0F1117"/>
+    <SolidColorBrush x:Key="LoginCardBg"         Color="#1A1A2E"/>
+    <SolidColorBrush x:Key="LoginCardBorder"     Color="#2D2D4E"/>
+    <SolidColorBrush x:Key="WindowBackground"    Color="#0F1117"/>
+
+    <!-- TextBlock -->
+    <Style TargetType="TextBlock">
+        <Setter Property="Foreground" Value="#E8EEFF"/>
+    </Style>
+
+    <!-- TextBox -->
+    <Style TargetType="TextBox">
+        <Setter Property="Background"      Value="#16213E"/>
+        <Setter Property="Foreground"      Value="#E8EEFF"/>
+        <Setter Property="BorderBrush"     Value="#2D3A5E"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CaretBrush"      Value="#E8EEFF"/>
+        <Setter Property="Padding"         Value="6,5"/>
+    </Style>
+
+    <!-- PasswordBox -->
+    <Style TargetType="PasswordBox">
+        <Setter Property="Background"      Value="#16213E"/>
+        <Setter Property="Foreground"      Value="#E8EEFF"/>
+        <Setter Property="BorderBrush"     Value="#2D3A5E"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CaretBrush"      Value="#E8EEFF"/>
+    </Style>
+
+    <!-- ComboBox - teljes custom template a sötét megjelenéshez -->
+    <Style TargetType="ComboBox">
+        <Setter Property="Background"      Value="#16213E"/>
+        <Setter Property="Foreground"      Value="#E8EEFF"/>
+        <Setter Property="BorderBrush"     Value="#2D3A5E"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBox">
+                    <Grid>
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="3">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="24"/>
+                                </Grid.ColumnDefinitions>
+                                <ContentPresenter Grid.Column="0"
+                                                  Content="{TemplateBinding SelectionBoxItem}"
+                                                  ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                                  Margin="8,0,0,0"
+                                                  VerticalAlignment="Center"
+                                                  TextBlock.Foreground="{TemplateBinding Foreground}"/>
+                                <TextBlock Grid.Column="1" Text="▾" FontSize="10"
+                                           Foreground="#6B7A99"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+                                <ToggleButton Grid.ColumnSpan="2"
+                                              Opacity="0"
+                                              IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"/>
+                            </Grid>
+                        </Border>
+                        <Popup IsOpen="{TemplateBinding IsDropDownOpen}"
+                               Placement="Bottom" AllowsTransparency="True">
+                            <Border Background="#16213E"
+                                    BorderBrush="#2D3A5E" BorderThickness="1"
+                                    MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                <ScrollViewer>
+                                    <ItemsPresenter/>
+                                </ScrollViewer>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="ComboBoxItem">
+                    <Setter Property="Background" Value="#16213E"/>
+                    <Setter Property="Foreground" Value="#E8EEFF"/>
+                    <Setter Property="Padding"    Value="8,6"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsHighlighted" Value="True">
+                            <Setter Property="Background" Value="#2D3A5E"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ListBox -->
+    <Style TargetType="ListBox">
+        <Setter Property="Background"  Value="#16213E"/>
+        <Setter Property="Foreground"  Value="#E8EEFF"/>
+        <Setter Property="BorderBrush" Value="#2D3A5E"/>
+    </Style>
+    <Style TargetType="ListBoxItem">
+        <Setter Property="Foreground" Value="#E8EEFF"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#2D3A5E"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- DataGrid -->
+    <Style TargetType="DataGrid">
+        <Setter Property="Background"               Value="#1A1A2E"/>
+        <Setter Property="Foreground"               Value="#E8EEFF"/>
+        <Setter Property="BorderBrush"              Value="#2D2D4E"/>
+        <Setter Property="RowBackground"            Value="#1A1A2E"/>
+        <Setter Property="AlternatingRowBackground" Value="#141428"/>
+        <Setter Property="HorizontalGridLinesBrush" Value="#2D2D4E"/>
+    </Style>
+    <Style TargetType="DataGridRow">
+        <Setter Property="Foreground" Value="#E8EEFF"/>
+        <Setter Property="Background" Value="#1A1A2E"/>
+    </Style>
+    <Style TargetType="DataGridCell">
+        <Setter Property="Foreground"      Value="#E8EEFF"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    <Style TargetType="DataGridColumnHeader">
+        <Setter Property="Background"  Value="#141428"/>
+        <Setter Property="Foreground"  Value="#B0BAD0"/>
+        <Setter Property="BorderBrush" Value="#2D2D4E"/>
+        <Setter Property="Padding"     Value="8,6"/>
+        <Setter Property="FontWeight"  Value="SemiBold"/>
+    </Style>
+
+    <!-- TabControl / TabItem -->
+    <Style TargetType="TabControl">
+        <Setter Property="Background"  Value="#1A1A2E"/>
+        <Setter Property="BorderBrush" Value="#2D2D4E"/>
+    </Style>
+    <Style TargetType="TabItem">
+        <Setter Property="Background"  Value="#141428"/>
+        <Setter Property="Foreground"  Value="#B0BAD0"/>
+        <Setter Property="BorderBrush" Value="#2D2D4E"/>
+        <Setter Property="Padding"     Value="12,6"/>
+        <Style.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="#1A1A2E"/>
+                <Setter Property="Foreground" Value="#4F9CF9"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Toolbar Border-ek -->
+    <Style TargetType="Border">
+        <!-- Nem override-oljuk globálisan, mert eltörné a megjelenést -->
+    </Style>
+
+</ResourceDictionary>

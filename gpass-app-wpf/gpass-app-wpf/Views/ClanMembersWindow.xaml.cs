@@ -25,6 +25,5 @@ namespace gpass_app_wpf.Views
                 lb.SelectedItem = null;
             }
         }
-
     }
 }
