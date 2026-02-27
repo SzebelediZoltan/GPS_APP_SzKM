@@ -10,7 +10,9 @@ import {
   UserCheck,
   MapPin,
   Users,
-  Flag
+  Flag,
+  Crown,
+  User
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -43,6 +45,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useClans } from "@/hooks/useClans"
 
 export const Route = createFileRoute("/profile/$userID/")({
   component: RouteComponent,
@@ -74,7 +77,7 @@ function RouteComponent() {
   const { user } = useAuth()
   const params = Route.useParams()
   const queryClient = useQueryClient()
-  
+
 
   const [editOpen, setEditOpen] = useState(false)
 
@@ -134,6 +137,29 @@ function RouteComponent() {
     accepted
   )
 
+  /* ===== CLANS ===== */
+
+  const {
+    clansQuery,
+    membershipsQuery: myClanMembershipsQuery,
+  } = useClans(Number(userData?.ID))
+
+  const allClans = clansQuery.data ?? []
+  const myMemberships = myClanMembershipsQuery.data ?? []
+
+  const userClans = allClans.filter(
+    (clan) =>
+      clan.leader_id === Number(userData?.ID) ||
+      myMemberships.some((m) => m.clan_id === clan.id)
+  )
+
+  const totalClanCount =
+    allClans.filter(
+      (clan) =>
+        clan.leader_id === Number(userData?.ID) ||
+        myMemberships.some((m) => m.clan_id === clan.id)
+    ).length
+
   /* ---------------- NOT LOGGED ---------------- */
 
   if (!user) return <NotLoggedIn />
@@ -146,7 +172,9 @@ function RouteComponent() {
     acceptedRequests.isLoading ||
     isTerminating ||
     isAdding ||
-    isAccepting
+    isAccepting ||
+    clansQuery.isLoading ||
+    myClanMembershipsQuery.isLoading
   ) {
     return <LoadingPage />
   }
@@ -381,7 +409,7 @@ function RouteComponent() {
                 <div className="grid grid-cols-3 gap-3">
                   <StatBox icon={<MapPin className="h-4 w-4" />} label="Tripek" value="0" />
                   <StatBox icon={<Users className="h-4 w-4" />} label="Barátok" value={"" + friends.filter((e) => e.status === "accepted").length} />
-                  <StatBox icon={<Flag className="h-4 w-4" />} label="Klánok" value="0" />
+                  <StatBox icon={<Flag className="h-4 w-4" />} label="Klánok" value={"" + totalClanCount} />
                 </div>
               </CardContent>
             </Card>
@@ -428,6 +456,72 @@ function RouteComponent() {
                         </div>
                       </Link>
                     ))}
+                </CardContent>
+              </Card>
+              {/* CLANS CARD */}
+              <Card className="rounded-2xl border-border/60 bg-card/60 shadow-xl backdrop-blur">
+                <CardHeader>
+                  <CardTitle className="text-lg">Klánok</CardTitle>
+                  <CardDescription>
+                    {userClans.length === 0
+                      ? "Nem csatlakozott még klánba :("
+                      : "Klánok száma " + userClans.length}
+                  </CardDescription>
+                </CardHeader>
+
+                <CardContent className="grid gap-3 sm:grid-cols-2">
+                  {userClans.length === 0 && (
+                    <div className="text-sm text-muted-foreground py-6">
+                      Nem csatlakozott még klánba :(
+                    </div>
+                  )}
+
+                  {userClans.map((clan) => (
+                    <Link
+                      key={clan.id}
+                      to="/clans/$clanId"
+                      params={{ clanId: String(clan.id) }}
+                      className="
+                        flex flex-col gap-1
+                        rounded-2xl
+                        border border-border/60
+                        bg-background/40
+                        px-4 py-3
+                        hover:bg-muted/50
+                        hover:scale-[1.02]
+                        transition
+                      "
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="font-medium text-base">
+                          {clan.name}
+                        </div>
+
+                        {clan.leader_id === Number(userData.ID) ?
+                          <Badge
+                            className="
+                              rounded-full
+                              bg-yellow-100 text-yellow-800
+                              dark:bg-yellow-500/20 dark:text-yellow-300
+                              border border-yellow-300/50
+                              dark:border-yellow-500/30
+                            "
+                          >
+                            <Crown />
+                            Vezető
+                          </Badge> :
+                          <Badge className="rounded-full">
+                            <User />
+                            Tag
+                          </Badge>
+                        }
+                      </div>
+
+                      <div className="text-sm text-muted-foreground text-justify break-words">
+                        {clan.description ?? "Nincs leírás"}
+                      </div>
+                    </Link>
+                  ))}
                 </CardContent>
               </Card>
             </div>
