@@ -225,6 +225,7 @@ function RouteComponent() {
             <DialogFooter>
               <Button
                 type="button"
+                className="cursor-pointer"
                 variant="outline"
                 onClick={() => setEditOpen(false)}
                 disabled={isUpdating}
@@ -232,7 +233,7 @@ function RouteComponent() {
                 Mégse
               </Button>
 
-              <Button type="submit" disabled={isUpdating}>
+              <Button type="submit" className="cursor-pointer" disabled={isUpdating}>
                 {isUpdating ? "Mentés..." : "Mentés"}
               </Button>
             </DialogFooter>
@@ -243,7 +244,7 @@ function RouteComponent() {
         <div className="mx-auto w-full max-w-6xl px-4 py-8">
 
           {/* Header */}
-          <div className="mb-6 flex items-start justify-between gap-3">
+          <div className="mb-6 flex items-start justify-between gap-3 cursor-default">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/40 px-3 py-1 text-xs text-muted-foreground">
                 <Compass className="h-3.5 w-3.5" />
@@ -261,7 +262,7 @@ function RouteComponent() {
                 theirRelation.status === "sent" ? (
                   isReceiver ? (
                     <Button
-                      className="rounded-xl"
+                      className="rounded-xl cursor-pointer"
                       onClick={() => terminateRequest(theirRelation.id)}
                     >
                       <UserX />
@@ -270,14 +271,14 @@ function RouteComponent() {
                   ) : (
                     <div>
                       <Button
-                        className="rounded-xl mr-2 bg-green-500"
+                        className="rounded-xl mr-2 bg-green-500 cursor-pointer"
                         onClick={() => accept(theirRelation.id)}
                       >
                         <UserCheck />
                         Elfogadás
                       </Button>
                       <Button
-                        className="rounded-xl bg-red-400"
+                        className="rounded-xl bg-red-400 cursor-pointer"
                         onClick={() => terminateRequest(theirRelation.id)}
                       >
                         <UserX />
@@ -287,7 +288,7 @@ function RouteComponent() {
                   )
                 ) : (
                   <Button
-                    className="rounded-xl"
+                    className="rounded-xl cursor-pointer"
                     onClick={() => terminateRequest(theirRelation.id)}
                   >
                     <UserX />
@@ -296,7 +297,7 @@ function RouteComponent() {
                 )
               ) : (
                 <Button
-                  className="rounded-xl"
+                  className="rounded-xl cursor-pointer"
                   onClick={() =>
                     add({
                       sender_id: user.userID,
@@ -309,14 +310,14 @@ function RouteComponent() {
                 </Button>
               )
             ) : (
-              <div>
+              <div >
                 <Link to="/profile/friends">
-                  <Button variant="outline" className="rounded-xl mr-2">
+                  <Button variant="outline" className="rounded-xl mr-2 cursor-pointer">
                     <Users />
                     Barátok
                   </Button>
                 </Link>
-                <Button className="rounded-xl" onClick={() => setEditOpen(true)}>
+                <Button className="rounded-xl cursor-pointer" onClick={() => setEditOpen(true)}>
                   <Pencil />
                   Szerkesztés
                 </Button>

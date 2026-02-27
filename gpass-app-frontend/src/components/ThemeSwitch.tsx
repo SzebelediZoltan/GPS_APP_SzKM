@@ -25,7 +25,7 @@ export default function ThemeSwitch({
       aria-label="Téma váltása"
       className={cn(
         "rounded-xl border-border/70 bg-card/50 text-muted-foreground shadow-sm hover:bg-card/70 hover:text-foreground",
-        "focus-visible:ring-2 focus-visible:ring-ring",
+        "focus-visible:ring-2 focus-visible:ring-ring cursor-pointer",
         className
       )}
     >

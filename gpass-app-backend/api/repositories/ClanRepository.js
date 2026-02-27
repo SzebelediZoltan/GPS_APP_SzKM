@@ -26,9 +26,8 @@ class ClanRepository {
                 {
                     association: "members",
                     attributes: [],
-                    required: false,
                 }
-            ],
+                ],
                 group: ["Clan.id", "leader.id"],
                 subQuery: false,
             });
@@ -53,6 +52,11 @@ class ClanRepository {
                                 { name: clanId }
                             ],
                     },
+                    include: [{
+                        association: "leader",
+                        attributes: ["username", "isAdmin"],
+                        required: false,
+                    }],
                 });
         }
         catch (error) {
@@ -83,7 +87,6 @@ class ClanRepository {
                 {
                     where: { id: clanId }
                 });
-
             return await this.Clan.scope("public").findByPk(clanId);
         }
         catch (error) {

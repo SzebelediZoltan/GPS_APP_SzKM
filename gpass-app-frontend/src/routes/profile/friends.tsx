@@ -126,7 +126,7 @@ function FriendsPage() {
                     <Button
                       asChild
                       variant="outline"
-                      className="rounded-xl transition-all duration-200 hover:scale-[1.03] hover:shadow-md active:scale-[0.98]"
+                      className="rounded-xl transition-all duration-200 hover:scale-[1.03] hover:shadow-md active:scale-[0.98] cursor-pointer"
                     >
                       <Link
                         to="/profile/$userID"

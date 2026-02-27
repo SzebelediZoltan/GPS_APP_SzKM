@@ -1,5 +1,13 @@
-import { createFileRoute } from "@tanstack/react-router"
-import { Crown, Users, UserPlus, ShieldCheck } from "lucide-react"
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
+import { useEffect, useMemo, useState } from "react"
+import { Crown, Shield, Users, Trash2, Pencil, UserX } from "lucide-react"
+
+import { useAuth } from "@/hooks/useAuth"
+import { useClans } from "@/hooks/useClans"
+
+import NotLoggedIn from "@/components/NotLoggedIn"
+import LoadingPage from "@/components/LoadingPage"
+import ServerErrorPage from "@/components/ServerErrorPage"
 
 import {
   Card,
@@ -10,190 +18,354 @@ import {
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
 
-/* ================= ROUTE ================= */
+import z from "zod"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Textarea } from "@/components/ui/textarea"
+import { toast } from "sonner"
+import axios, { AxiosError } from "axios"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 export const Route = createFileRoute("/clans/$clanId/")({
   component: ClanDetailPage,
 })
 
-/* ================= TYPES ================= */
+/* ================= ZOD ================= */
 
-type Member = {
-  name: string
-  isAdmin: boolean
-}
+const EditClanSchema = z.object({
+  name: z.string().min(3).max(30),
+  description: z.string().max(50).optional(),
+})
 
-type Clan = {
-  id: number
-  name: string
-  description: string
-  leader_id: number
-  leader_name: string
-  members: Member[]
-}
-
-/* ================= DUMMY DATA ================= */
-
-const dummyClan: Clan = {
-  id: 1,
-  name: "GP Legends",
-  description:
-    "Egy elit közösség azoknak, akik komolyan veszik az utazást és a navigációt.",
-  leader_id: 1,
-  leader_name: "Csabi",
-  members: [
-    { name: "Csabi", isAdmin: true },
-    { name: "Miki", isAdmin: false },
-    { name: "Zoli", isAdmin: false },
-    { name: "Andris", isAdmin: true },
-    { name: "Levi", isAdmin: false },
-    { name: "Dominik", isAdmin: false },
-  ],
-}
+type EditClanValues = z.infer<typeof EditClanSchema>
 
 /* ================= COMPONENT ================= */
 
 function ClanDetailPage() {
-  const clan = dummyClan
-  const memberCount = clan.members.length
+  const { clanId } = Route.useParams()
+  const { user } = useAuth()
+  const navigate = useNavigate()
+
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [confirmName, setConfirmName] = useState("")
+  const [editOpen, setEditOpen] = useState(false)
+
+  /* 🔥 HOOK */
+
+  const {
+    clanQuery,
+    clanMembersQuery,
+    membershipsQuery,
+    joinClan,
+    leaveClan,
+    deleteClan,
+    updateClan,
+    updateClanLoading,
+  } = useClans(Number(user?.userID), Number(clanId))
+
+  const clan = clanQuery.data
+  const members = clanMembersQuery.data ?? []
+  const memberships = membershipsQuery.data ?? []
+
+  const isMember = useMemo(() => {
+    return memberships.some(
+      (m: any) => m.clan_id === Number(clanId)
+    )
+  }, [memberships, clanId])
+
+  const isLeader = clan?.leader_id === Number(user?.userID)
+
+  /* ===== EDIT FORM ===== */
+
+  const editForm = useForm<EditClanValues>({
+    resolver: zodResolver(EditClanSchema),
+    defaultValues: {
+      name: clan?.name ?? "",
+      description: clan?.description ?? "",
+    },
+  })
+
+  useEffect(() => {
+    if (clan) {
+      editForm.reset({
+        name: clan.name ?? "",
+        description: clan.description ?? "",
+      })
+    }
+  }, [clan])
+
+
+  /* ================= GUARDS ================= */
+
+  if (!user) return <NotLoggedIn />
+
+  if (
+    clanQuery.isLoading ||
+    clanMembersQuery.isLoading ||
+    membershipsQuery.isLoading
+  )
+    return <LoadingPage />
+
+  if (clanQuery.isError) return <ServerErrorPage />
+
+  /* ================= RENDER ================= */
 
   return (
     <main className="min-h-[calc(100vh-64px)] bg-background text-foreground">
-      {/* Glow háttér */}
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-44 left-1/2 h-130 w-130 -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,hsl(var(--primary)/0.14),transparent_60%)] blur-2xl" />
-      </div>
+      <div className="mx-auto max-w-6xl px-4 py-8 grid gap-8 lg:grid-cols-12">
 
-      <div className="mx-auto w-full max-w-6xl px-4 py-10 space-y-10">
+        {/* LEFT SIDE */}
+        <div className="lg:col-span-4 space-y-6">
 
-        {/* ======= HEADER CARD ======= */}
-        <Card className="rounded-2xl border-border/60 bg-card/60 shadow-2xl backdrop-blur">
-          <CardHeader className="space-y-4">
+          <Card>
+            <CardHeader className="cursor-default">
+              <CardTitle>{clan?.name}</CardTitle>
+              <CardDescription>
+                {clan?.description ?? "Nincs leírás"}
+              </CardDescription>
+            </CardHeader>
 
-            <div className="flex items-start justify-between flex-wrap gap-4">
-              <div>
-                <CardTitle className="text-3xl">
-                  {clan.name}
-                </CardTitle>
-                <CardDescription className="mt-2 max-w-2xl">
-                  {clan.description}
-                </CardDescription>
-              </div>
+            <CardContent className="space-y-4">
 
-              <Button className="rounded-xl flex items-center gap-2">
-                <UserPlus className="h-4 w-4" />
-                Csatlakozás
-              </Button>
-            </div>
-
-            <div className="flex items-center gap-4 pt-2">
-              <Badge
-                variant="secondary"
-                className="rounded-full flex items-center gap-1 px-3 py-1"
-              >
-                <Users className="h-4 w-4" />
-                {memberCount} tag
+              <Badge variant="secondary">
+                <Users className="h-4 w-4 mr-1" />
+                {members.length + 1} tag
               </Badge>
-            </div>
-          </CardHeader>
-        </Card>
 
-        {/* ======= LEADER SECTION ======= */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-            <Crown className="h-5 w-5 text-primary" />
-            Vezető
-          </h2>
+              <Separator />
 
-          <Card className="rounded-2xl border-2 border-primary bg-primary/5 backdrop-blur shadow-xl transition hover:scale-[1.01]">
-            <CardContent className="flex items-center gap-4 p-6">
+              {isLeader ? (
+                <div className="space-y-2">
+                  <Button
+                    variant="destructive"
+                    className="w-full cursor-pointer"
+                    onClick={() => setDeleteOpen(true)}
+                  >
+                    <Trash2 className="w-3 h-3" />
+                    Klán törlése
+                  </Button>
 
-              <Avatar className="h-14 w-14 rounded-xl ring-2 ring-primary/40">
-                <AvatarFallback className="rounded-xl text-lg font-semibold">
-                  {clan.leader_name.slice(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
+                  <Button
+                    variant="outline"
+                    className="w-full cursor-pointer"
+                    onClick={() => setEditOpen(true)}
+                  >
+                    <Pencil className="h-4 w-4 mr-1" />
+                    Szerkesztés
+                  </Button>
+                </div>
+              ) : isMember ? (
+                <Button
+                  variant="outline"
+                  className="w-full cursor-pointer"
+                  onClick={() => leaveClan({clanId: Number(clanId), userId: Number(user.userID)})}
+                >
+                  Kilépés
+                </Button>
+              ) : (
+                <Button
+                  className="w-full cursor-pointer"
+                  onClick={() => joinClan(Number(clanId))}
+                >
+                  Csatlakozás
+                </Button>
+              )}
 
-              <div className="flex-1">
+            </CardContent>
+          </Card>
+
+          {/* LEADER */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Vezető</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Link
+                to="/profile/$userID"
+                params={{ userID: String(clan?.leader_id) }}
+                className="flex items-center justify-between p-3 rounded-xl border hover:bg-muted cursor-pointer"
+              >
                 <div className="flex items-center gap-2">
-                  <div className="text-lg font-semibold">
-                    {clan.leader_name}
-                  </div>
-
-                  <Badge className="rounded-full bg-primary text-primary-foreground flex items-center gap-1">
-                    <Crown className="h-3.5 w-3.5" />
-                    Leader
-                  </Badge>
+                  <Crown className="h-4 w-4 text-yellow-500" />
+                  {clan?.leader.username}
                 </div>
 
-                <div className="text-sm text-muted-foreground">
-                  A klán alapítója és irányítója.
+                <div className="flex gap-2">
+                  <Badge>Vezető</Badge>
+                  {clan?.leader.isAdmin && (
+                    <Badge variant="secondary">
+                      <Shield className="h-3 w-3 mr-1" />
+                      Admin
+                    </Badge>
+                  )}
                 </div>
-              </div>
+              </Link>
             </CardContent>
           </Card>
         </div>
 
-        <Separator />
+        {/* RIGHT SIDE - MEMBERS */}
+        <div className="lg:col-span-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Tagok</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
 
-        {/* ======= MEMBERS SECTION ======= */}
-        <div>
-          <h2 className="text-xl font-semibold mb-6">
-            Tagok
-          </h2>
+              {members.length === 0 && (
+                <div className="text-sm text-muted-foreground text-center py-6">
+                  Még nincs tag a klánban.
+                </div>
+              )}
 
-          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-
-            {clan.members.map((member, index) => {
-              const isLeader =
-                member.name === clan.leader_name
-
-              if (isLeader) return null
-
-              return (
-                <Card
-                  key={index}
-                  className="rounded-2xl border-border/60 bg-card/60 shadow-lg backdrop-blur transition hover:scale-[1.03] hover:shadow-2xl cursor-pointer"
+              {members.map((member) => (
+                <Link
+                  to="/profile/$userID"
+                  params={{ userID: String(member.user_id) }}
                 >
-                  <CardContent className="flex items-center gap-4 p-5">
+                  <div
+                    key={member.user_id}
+                    className="flex items-center justify-between p-3 rounded-xl border hover:bg-muted"
+                  >
+                    {member.user?.username}
 
-                    <Avatar className="h-12 w-12 rounded-xl ring-1 ring-border/60">
-                      <AvatarFallback className="rounded-xl font-semibold">
-                        {member.name.slice(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
+                    {isLeader && (
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        className="cursor-pointer"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          leaveClan({clanId: Number(clanId), userId: Number(member.user_id)})
+                        }}
+                      >
+                        <UserX className="h-3 w-3" />
+                        Kirúgás
+                      </Button>
+                    )}
+                  </div>
+                </Link>
+              ))}
 
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <div className="font-medium">
-                          {member.name}
-                        </div>
-
-                        {member.isAdmin && (
-                          <Badge
-                            variant="secondary"
-                            className="rounded-full flex items-center gap-1"
-                          >
-                            <ShieldCheck className="h-3.5 w-3.5" />
-                            Admin
-                          </Badge>
-                        )}
-                      </div>
-
-                      <div className="text-xs text-muted-foreground">
-                        Klántag
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              )
-            })}
-          </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
+
+      {/* DELETE DIALOG */}
+      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <DialogContent className="border-2 border-red-500 animate-pulse">
+          <DialogHeader>
+            <DialogTitle>Klán törlése</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Írd be pontosan a klán nevét:
+            </p>
+
+            <div className="font-semibold">
+              {clan?.name}
+            </div>
+
+            <Input
+              value={confirmName}
+              onChange={(e) => setConfirmName(e.target.value)}
+            />
+
+            <Button
+              variant="destructive"
+              className="w-full cursor-pointer"
+              disabled={confirmName !== clan?.name}
+              onClick={() => {
+                deleteClan(Number(clanId))
+                navigate({ to: "/clans" })
+              }}
+            >
+              Végleges törlés
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* EDIT DIALOG */}
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Klán szerkesztése</DialogTitle>
+          </DialogHeader>
+
+          <Form {...editForm}>
+            <form
+              onSubmit={editForm.handleSubmit((values) =>
+                updateClan({
+                  clanId: Number(clanId),
+                  values,
+                  onSuccessCallback: () => {
+                    setEditOpen(false)
+                  }
+                })
+              )}
+              className="space-y-4 mt-4"
+            >
+              <FormField
+                control={editForm.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Név</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={editForm.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Leírás</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button
+                type="submit"
+                className="w-full mt-2 cursor-pointer"
+                disabled={updateClanLoading}
+              >
+                Mentés
+              </Button>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
     </main>
   )
 }

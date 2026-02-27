@@ -106,7 +106,7 @@ function RegisterPage() {
 
             <div className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-4 py-10">
                 <Link to="/">
-                    <Button variant="ghost" size="sm" className="mb-4">
+                    <Button variant="ghost" size="sm" className="mb-4 cursor-pointer">
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Főoldal
                     </Button>
@@ -206,7 +206,7 @@ function RegisterPage() {
                                     )}
                                 />
 
-                                <Button type="submit" className="w-full">
+                                <Button type="submit" className="w-full cursor-pointer">
                                     Fiók létrehozása
                                 </Button>
 

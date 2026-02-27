@@ -52,7 +52,7 @@ export default function FriendRequestsDialog() {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant="outline" className="rounded-xl">
+                <Button variant="outline" className="rounded-xl cursor-pointer">
                     <Users className="mr-2 h-4 w-4" />
                     Barátkérelmek
                     {requests.length > 0 && (
@@ -105,7 +105,7 @@ export default function FriendRequestsDialog() {
                                     <div className="flex gap-2">
                                         <Button
                                             size="sm"
-                                            className="rounded-lg"
+                                            className="rounded-lg cursor-pointer"
                                             onClick={() => handleAction(r.id, accept)}
                                         >
                                             <UserCheck className="h-4 w-4 mr-1" />
@@ -115,7 +115,7 @@ export default function FriendRequestsDialog() {
                                         <Button
                                             size="sm"
                                             variant="destructive"
-                                            className="rounded-lg"
+                                            className="rounded-lg cursor-poiner"
                                             onClick={() => handleAction(r.id, terminateRequest)}
                                         >
                                             <UserX className="h-4 w-4 mr-1" />
@@ -164,7 +164,7 @@ export default function FriendRequestsDialog() {
                                     <Button
                                         size="sm"
                                         variant="destructive"
-                                        className="rounded-lg"
+                                        className="rounded-lg cursor-pointer"
                                         onClick={() => handleAction(r.id, terminateRequest)}
                                     >
                                         <UserX className="h-4 w-4 mr-1" />

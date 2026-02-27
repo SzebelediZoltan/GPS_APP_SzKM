@@ -6,6 +6,7 @@ class ClanMemberService
     {
         this.clanMemberRepository = require("../repositories")(db).clanMemberRepository;
         this.clanRepository = require("../repositories")(db).clanRepository;
+        this.userRepository = require("../repositories")(db).userRepository;
     }
 
     async getMembers()
@@ -34,10 +35,20 @@ class ClanMemberService
         if(!data.clan_id) throw new BadRequestError("Hiányzik a klán azonosító (clan_id).", { data });
         if(!data.user_id) throw new BadRequestError("Hiányzik a felhasználó azonosító (user_id).", { data });
 
+        
         const clans = await this.clanRepository.getClans();
         const clanExists = clans.some(clan => clan.id === data.clan_id);
-
         if (!clanExists) throw new BadRequestError("Nincs ilyen klán.", { data });
+
+        const user = await this.userRepository.getUser(data.user_id)
+
+        if(!user) throw new BadRequestError("Nincs ilyen felhasználó.", { data })
+
+        const clan = await this.clanRepository.getClan(data.clan_id)
+        const leaderId = clan.leader_id
+
+        if(leaderId === data.user_id) throw new BadRequestError("Leaderként nem lehetsz tag is.", {data})
+
 
         return await this.clanMemberRepository.addMember(data);
     }

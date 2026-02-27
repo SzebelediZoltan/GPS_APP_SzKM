@@ -147,9 +147,9 @@ function UserDropdown({ username }: { username: string }) {
         mutationFn: logOut,
         onSuccess: () => {
             queryClient.setQueryData(["user"], null),
-            nav({
-                to: "/auth/login"
-            })
+                nav({
+                    to: "/auth/login"
+                })
         }
     })
 
@@ -157,7 +157,7 @@ function UserDropdown({ username }: { username: string }) {
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <button
-                    className="group inline-flex items-center gap-2 rounded-xl border border-border/70 bg-card/50 px-3 py-2 text-sm font-medium text-foreground shadow-sm transition hover:bg-card/70 focus:outline-none focus:ring-2 focus:ring-ring"
+                    className="group inline-flex items-center gap-2 rounded-xl border border-border/70 bg-card/50 px-3 py-2 text-sm font-medium text-foreground shadow-sm transition hover:bg-card/70 focus:outline-none focus:ring-2 focus:ring-ring cursor-pointer"
                     aria-label="User menu"
                 >
                     <span className="grid h-7 w-7 place-items-center rounded-lg border border-border/70 bg-background/60 text-xs text-muted-foreground">
@@ -170,7 +170,7 @@ function UserDropdown({ username }: { username: string }) {
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem onClick={() => {
+                <DropdownMenuItem className="cursor-pointer" onClick={() => {
                     nav({
                         to: "/profile/$userID",
                         params: { userID: userID },
@@ -180,7 +180,7 @@ function UserDropdown({ username }: { username: string }) {
                     Profil
                 </DropdownMenuItem>
 
-                <DropdownMenuItem onClick={() => {
+                <DropdownMenuItem className="cursor-pointer" onClick={() => {
                     nav({
                         to: "/profile/friends"
                     })
@@ -189,7 +189,7 @@ function UserDropdown({ username }: { username: string }) {
                     Barátok
                 </DropdownMenuItem>
 
-                <DropdownMenuItem onClick={() => { 
+                <DropdownMenuItem className="cursor-pointer" onClick={() => {
                     nav({
                         to: "/profile/settings"
                     })
@@ -202,13 +202,13 @@ function UserDropdown({ username }: { username: string }) {
 
                 <DropdownMenuItem
                     onClick={() => { logout() }}
-                    className="text-destructive focus:text-destructive"
+                    className="text-destructive focus:text-destructive cursor-pointer"
                 >
                     <LogOut className="mr-2 h-4 w-4" />
                     Kijelentkezés
                 </DropdownMenuItem>
             </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu >
     )
 }
 
@@ -220,9 +220,9 @@ function MobileMenu({ user }: { user: User | null }) {
         mutationFn: logOut,
         onSuccess: () => {
             queryClient.setQueryData(["user"], null),
-            nav({
-                to: "/auth/login"
-            })
+                nav({
+                    to: "/auth/login"
+                })
         }
     })
 

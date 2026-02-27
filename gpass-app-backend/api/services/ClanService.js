@@ -35,13 +35,17 @@ class ClanService {
         const UserExists = await this.userRepository.getUser(data.leader_id)
 
         if (!UserExists) throw new BadRequestError("Nincs ilyen felhasználó a megadott ID-val.", { data: data.leader_id })
-            
+
         return await this.clanRepository.createClan(data);
     }
 
     async updateClan(data, clanId) {
         if (!clanId) throw new BadRequestError("Hiányzik a klán azonosító (clanId).");
         if (!data) throw new BadRequestError("Hiányzik a módosításhoz szükséges adat (payload).", { data });
+
+        const nameTaken = await this.clanRepository.getClan(data.name);
+
+        if (nameTaken) throw new BadRequestError("Ez a klán név már foglalt.", { data: data.name });
 
         const exists = await this.clanRepository.getClan(clanId);
         if (!exists) throw new NotFoundError("Nem található klán ezzel az azonosítóval.", { data: clanId });
