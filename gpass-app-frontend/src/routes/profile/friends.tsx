@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
-import { Users, ShieldCheck, UserX, User, Search } from "lucide-react"
+import { Users, ShieldCheck, UserX, User} from "lucide-react"
 
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -32,7 +32,6 @@ function FriendsPage() {
 
   /* SAFE DEFAULTS */
   const accepted = acceptedRequests.data?.data ?? []
-  const pending = pendingRequests.data?.data ?? []
 
   const { mappedFriends: friends } = useMappedFriends(
     user?.username ?? "",

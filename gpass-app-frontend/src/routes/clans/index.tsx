@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { useState, useMemo } from "react"
-import { Crown, Users, Star, Plus } from "lucide-react"
+import { Users, Star, Plus } from "lucide-react"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"

@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/accordion"
 
 import { MapPin, Compass, Star, Mail } from "lucide-react"
-import CountUp from "@/components/CountUp"
 
 export const Route = createFileRoute("/about")({
   component: AboutPage,

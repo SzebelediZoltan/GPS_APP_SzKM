@@ -39,9 +39,6 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Textarea } from "@/components/ui/textarea"
-import { toast } from "sonner"
-import axios, { AxiosError } from "axios"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 export const Route = createFileRoute("/clans/$clanId/")({
   component: ClanDetailPage,
