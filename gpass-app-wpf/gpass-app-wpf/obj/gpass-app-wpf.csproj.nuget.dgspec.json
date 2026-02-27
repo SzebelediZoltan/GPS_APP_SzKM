@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\User\\Downloads\\gpass-app-wpf-desc-fix\\gpass-app-wpf\\gpass-app-wpf.csproj": {}
+    "C:\\Users\\User\\Downloads\\gpass-app-wpf-darkfix2\\gpass-app-wpf\\gpass-app-wpf.csproj": {}
   },
   "projects": {
-    "C:\\Users\\User\\Downloads\\gpass-app-wpf-desc-fix\\gpass-app-wpf\\gpass-app-wpf.csproj": {
+    "C:\\Users\\User\\Downloads\\gpass-app-wpf-darkfix2\\gpass-app-wpf\\gpass-app-wpf.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\User\\Downloads\\gpass-app-wpf-desc-fix\\gpass-app-wpf\\gpass-app-wpf.csproj",
+        "projectUniqueName": "C:\\Users\\User\\Downloads\\gpass-app-wpf-darkfix2\\gpass-app-wpf\\gpass-app-wpf.csproj",
         "projectName": "gpass-app-wpf",
-        "projectPath": "C:\\Users\\User\\Downloads\\gpass-app-wpf-desc-fix\\gpass-app-wpf\\gpass-app-wpf.csproj",
+        "projectPath": "C:\\Users\\User\\Downloads\\gpass-app-wpf-darkfix2\\gpass-app-wpf\\gpass-app-wpf.csproj",
         "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\User\\Downloads\\gpass-app-wpf-desc-fix\\gpass-app-wpf\\obj\\",
+        "outputPath": "C:\\Users\\User\\Downloads\\gpass-app-wpf-darkfix2\\gpass-app-wpf\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

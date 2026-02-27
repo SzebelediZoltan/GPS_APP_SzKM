@@ -13,4 +13,8 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.16.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Resource Include="Themes\Light.xaml"/>
+    <Resource Include="Themes\Dark.xaml"/>
+  </ItemGroup>
 </Project>

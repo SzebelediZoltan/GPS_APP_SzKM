@@ -5,18 +5,56 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="GPass Admin" Height="620" Width="1000"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource AppBackground}">
 
     <DockPanel Margin="16">
 
         <!-- Fejléc -->
-        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
-            <TextBlock FontSize="22" FontWeight="Bold" Text="Admin Dashboard" VerticalAlignment="Center"/>
-            <TextBlock Margin="20,0,0,0" FontSize="14" Foreground="#555"
-                       Text="{Binding WelcomeText}" VerticalAlignment="Center"/>
-            <Button Content="Kijelentkezés" Padding="12,5" Margin="20,0,0,0"
-                    VerticalAlignment="Center" Command="{Binding LogoutCommand}"/>
-        </StackPanel>
+        <Border DockPanel.Dock="Top"
+                Background="{DynamicResource SurfaceBrush}"
+                BorderBrush="{DynamicResource SurfaceBorderBrush}"
+                BorderThickness="0,0,0,1" Padding="16,10" Margin="0,0,0,12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Logo -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="⬡" FontSize="20" Foreground="{DynamicResource Accent}"
+                               VerticalAlignment="Center" Margin="0,0,7,0"/>
+                    <TextBlock Text="GPASS" FontSize="18" FontWeight="Bold"
+                               Foreground="{DynamicResource Accent}" VerticalAlignment="Center"/>
+                    <TextBlock Text=" Admin" FontSize="14" Foreground="{DynamicResource MutedText}"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Üdvözlés -->
+                <TextBlock Grid.Column="1" FontSize="13"
+                           Foreground="{DynamicResource MutedText}"
+                           Text="{Binding WelcomeText}"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                <!-- Jobb oldal: téma + kijelentkezés -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button x:Name="themeToggleBtn" Content="🌙" FontSize="15"
+                            Width="34" Height="34" Padding="0" Margin="0,0,8,0"
+                            Background="{DynamicResource ToggleBtnBg}"
+                            Foreground="{DynamicResource ToggleBtnFg}"
+                            BorderThickness="1" BorderBrush="{DynamicResource SurfaceBorderBrush}"
+                            Click="ThemeToggle_Click"
+                            ToolTip="Téma váltása"/>
+                    <Button Content="Kijelentkezés" Padding="12,6"
+                            Background="{DynamicResource ToolbarBackground}"
+                            Foreground="{DynamicResource PrimaryText}"
+                            BorderBrush="{DynamicResource SurfaceBorderBrush}" BorderThickness="1"
+                            Command="{Binding LogoutCommand}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
 
         <TabControl>
 
@@ -24,7 +62,7 @@
             <TabItem Header="👥 Felhasználók">
                 <DockPanel>
                     <!-- Toolbar -->
-                    <Border DockPanel.Dock="Top" Background="#f0f0f0" CornerRadius="4"
+                    <Border DockPanel.Dock="Top" Background="{DynamicResource ToolbarBackground}" CornerRadius="4"
                             Padding="10,8" Margin="0,0,0,8">
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -49,13 +87,14 @@
 
                             <!-- Keresősáv -->
                             <Border Grid.Column="1" HorizontalAlignment="Right"
-                                    Background="White" BorderBrush="#ccc" BorderThickness="1"
+                                    Background="{DynamicResource InputBackground}" BorderBrush="{DynamicResource InputBorder}" BorderThickness="1"
                                     CornerRadius="4" Padding="8,0" Width="230">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <TextBlock Text="🔍" Foreground="#999" FontSize="12"
+                                    <TextBlock Text="🔍" Foreground="{DynamicResource MutedText}" FontSize="12"
                                                VerticalAlignment="Center" Margin="0,0,5,0"/>
                                     <TextBox Text="{Binding UserSearch, UpdateSourceTrigger=PropertyChanged}"
                                              BorderThickness="0" Background="Transparent"
+                                             Foreground="{DynamicResource PrimaryText}"
                                              VerticalAlignment="Center" Width="185" Padding="0,5"
                                              ToolTip="Keresés felhasználónév vagy email alapján"/>
                                 </StackPanel>
@@ -69,7 +108,7 @@
                               AutoGenerateColumns="False" IsReadOnly="True"
                               SelectionMode="Single" CanUserAddRows="False"
                               GridLinesVisibility="Horizontal" HeadersVisibility="Column"
-                              AlternatingRowBackground="#fafafa" BorderBrush="#ddd" BorderThickness="1">
+                              AlternatingRowBackground="{DynamicResource AlternatingRow}" BorderBrush="{DynamicResource SurfaceBorderBrush}" BorderThickness="1">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID"             Binding="{Binding ID}"       Width="55"/>
                             <DataGridTextColumn Header="Felhasználónév" Binding="{Binding username}" Width="200"/>
@@ -84,7 +123,7 @@
             <TabItem Header="🛡 Klánok">
                 <DockPanel DataContext="{Binding ClanVM}">
                     <!-- Toolbar -->
-                    <Border DockPanel.Dock="Top" Background="#f0f0f0" CornerRadius="4"
+                    <Border DockPanel.Dock="Top" Background="{DynamicResource ToolbarBackground}" CornerRadius="4"
                             Padding="10,8" Margin="0,0,0,8">
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -106,13 +145,14 @@
 
                             <!-- Keresősáv -->
                             <Border Grid.Column="1" HorizontalAlignment="Right"
-                                    Background="White" BorderBrush="#ccc" BorderThickness="1"
+                                    Background="{DynamicResource InputBackground}" BorderBrush="{DynamicResource InputBorder}" BorderThickness="1"
                                     CornerRadius="4" Padding="8,0" Width="230">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <TextBlock Text="🔍" Foreground="#999" FontSize="12"
+                                    <TextBlock Text="🔍" Foreground="{DynamicResource MutedText}" FontSize="12"
                                                VerticalAlignment="Center" Margin="0,0,5,0"/>
                                     <TextBox Text="{Binding ClanSearch, UpdateSourceTrigger=PropertyChanged}"
                                              BorderThickness="0" Background="Transparent"
+                                             Foreground="{DynamicResource PrimaryText}"
                                              VerticalAlignment="Center" Width="185" Padding="0,5"
                                              ToolTip="Keresés klán neve alapján"/>
                                 </StackPanel>
@@ -126,7 +166,7 @@
                               AutoGenerateColumns="False" IsReadOnly="True"
                               SelectionMode="Single" CanUserAddRows="False"
                               GridLinesVisibility="Horizontal" HeadersVisibility="Column"
-                              AlternatingRowBackground="#fafafa" BorderBrush="#ddd" BorderThickness="1">
+                              AlternatingRowBackground="{DynamicResource AlternatingRow}" BorderBrush="{DynamicResource SurfaceBorderBrush}" BorderThickness="1">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID"          Binding="{Binding id}"           Width="50"/>
                             <DataGridTextColumn Header="Klán neve"   Binding="{Binding name}"         Width="170"/>

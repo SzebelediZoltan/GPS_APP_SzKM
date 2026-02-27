@@ -21,6 +21,7 @@ namespace gpass_app_wpf.ViewModels
     {
         public string UserIdentifier { get; set; }
         public string Password       { get; set; }
+        public System.Func<string> PasswordProvider { get; set; }
 
         // ── Szerver választó ───────────────────────────────────────────────────
         public ObservableCollection<ServerOption> Servers { get; } = new()
@@ -65,7 +66,8 @@ namespace gpass_app_wpf.ViewModels
         {
             ErrorMessage = null;
 
-            if (string.IsNullOrWhiteSpace(UserIdentifier) || string.IsNullOrWhiteSpace(Password))
+            var pw = PasswordProvider?.Invoke() ?? Password;
+            if (string.IsNullOrWhiteSpace(UserIdentifier) || string.IsNullOrWhiteSpace(pw))
             {
                 ErrorMessage = "Add meg a felhasználónevet és a jelszót!";
                 return;
@@ -83,7 +85,7 @@ namespace gpass_app_wpf.ViewModels
                     new LoginRequest
                     {
                         userID   = UserIdentifier,
-                        password = Password
+                        password = pw
                     });
 
                 var handler = new JwtSecurityTokenHandler();

@@ -3,6 +3,7 @@ using gpass_app_wpf.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -35,7 +36,19 @@ namespace gpass_app_wpf.ViewModels
         public Marker SelectedMarker
         {
             get => _selectedMarker;
-            set { _selectedMarker = value; OnPropertyChanged(); }
+            set
+            {
+                _selectedMarker = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasSelectedMarker));
+                if (value != null)
+                {
+                    EditMarkerType  = value.marker_type;
+                    EditMarkerScore = value.score.ToString();
+                    MarkerEditError  = null;
+                    MarkerEditResult = null;
+                }
+            }
         }
         public FriendWith SelectedFriend
         {
@@ -46,8 +59,49 @@ namespace gpass_app_wpf.ViewModels
         // Parancsok
         public RelayCommand DeleteTripCommand    { get; }
         public RelayCommand DeleteMarkerCommand  { get; }
+        public RelayCommand EditMarkerCommand    { get; }
         public RelayCommand ToggleFriendCommand  { get; }
         public RelayCommand DeleteFriendCommand  { get; }
+
+        // ── Marker szerkesztés ────────────────────────────────────────────────
+        private string _editMarkerType;
+        public string EditMarkerType
+        {
+            get => _editMarkerType;
+            set { _editMarkerType = value; OnPropertyChanged(); ValidateMarkerEdit(); }
+        }
+
+        private string _editMarkerScore;
+        public string EditMarkerScore
+        {
+            get => _editMarkerScore;
+            set { _editMarkerScore = value; OnPropertyChanged(); ValidateMarkerEdit(); }
+        }
+
+        private string _markerEditError;
+        public string MarkerEditError
+        {
+            get => _markerEditError;
+            set { _markerEditError = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasMarkerEditError)); }
+        }
+        public bool HasMarkerEditError => !string.IsNullOrEmpty(_markerEditError);
+
+        private string _markerEditResult;
+        public string MarkerEditResult
+        {
+            get => _markerEditResult;
+            set { _markerEditResult = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasMarkerEditResult)); }
+        }
+        public bool HasMarkerEditResult => !string.IsNullOrEmpty(_markerEditResult);
+
+        private bool _markerSaving;
+        public bool MarkerSaving
+        {
+            get => _markerSaving;
+            set { _markerSaving = value; OnPropertyChanged(); }
+        }
+
+        public bool HasSelectedMarker => _selectedMarker != null;
 
         private string _errors = "";
         public string Errors
@@ -70,6 +124,7 @@ namespace gpass_app_wpf.ViewModels
             _api  = SessionService.Api;
 
             DeleteTripCommand   = new RelayCommand(async _ => await DeleteTrip(),   _ => SelectedTrip   != null);
+            EditMarkerCommand   = new RelayCommand(async _ => await EditMarker(),   _ => SelectedMarker != null && !MarkerSaving && !HasMarkerEditError);
             DeleteMarkerCommand = new RelayCommand(async _ => await DeleteMarker(), _ => SelectedMarker != null);
             ToggleFriendCommand = new RelayCommand(async _ => await ToggleFriend(), _ => SelectedFriend != null);
             DeleteFriendCommand = new RelayCommand(async _ => await DeleteFriend(), _ => SelectedFriend != null);
@@ -185,6 +240,52 @@ namespace gpass_app_wpf.ViewModels
                 await LoadTripPoints();
             }
             catch (Exception ex) { MessageBox.Show(ex.Message, "Hiba", MessageBoxButton.OK, MessageBoxImage.Error); }
+        }
+
+        // ── MARKER VALIDATE ──────────────────────────────────────────────────
+        public static readonly string[] AllowedMarkerTypes =
+        {
+            "danger", "police", "accident", "traffic", "roadblock", "speedtrap", "other"
+        };
+
+        private void ValidateMarkerEdit()
+        {
+            if (string.IsNullOrWhiteSpace(EditMarkerType))
+                MarkerEditError = "A típus kiválasztása kötelező!";
+            else if (!AllowedMarkerTypes.Contains(EditMarkerType))
+                MarkerEditError = "Érvénytelen marker típus!";
+            else if (!int.TryParse(EditMarkerScore, out int s) || s < 0)
+                MarkerEditError = "A pont értéke nem negatív egész szám kell legyen!";
+            else
+                MarkerEditError = null;
+        }
+
+        // ── MARKER EDIT ───────────────────────────────────────────────────────
+        private async Task EditMarker()
+        {
+            if (SelectedMarker == null) return;
+            if (!int.TryParse(EditMarkerScore, out int score)) return;
+
+            MarkerSaving     = true;
+            MarkerEditResult = null;
+            try
+            {
+                await _api.PutAsync<Marker>($"markers/{SelectedMarker.id}", new
+                {
+                    marker_type = EditMarkerType.Trim(),
+                    score       = score
+                });
+
+                SelectedMarker.marker_type = EditMarkerType.Trim();
+                SelectedMarker.score       = score;
+                MarkerEditResult = "✔ Sikeresen mentve!";
+                await LoadMarkers();
+            }
+            catch (Exception ex)
+            {
+                MarkerEditResult = $"⚠ {ex.Message}";
+            }
+            finally { MarkerSaving = false; }
         }
 
         // ── MARKER DELETE ─────────────────────────────────────────────────────

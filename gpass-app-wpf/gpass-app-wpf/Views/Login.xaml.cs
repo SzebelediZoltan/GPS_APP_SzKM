@@ -1,5 +1,7 @@
-﻿using gpass_app_wpf.ViewModels;
+using gpass_app_wpf.DAL;
+using gpass_app_wpf.ViewModels;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace gpass_app_wpf.Views
 {
@@ -8,15 +10,26 @@ namespace gpass_app_wpf.Views
         public Login()
         {
             InitializeComponent();
-
             var vm = new LoginViewModel();
             DataContext = vm;
+            vm.PasswordProvider = () => passwordBox.Password;
+            ThemeService.Apply();
+            UpdateToggleBtn();
+            ThemeService.ThemeChanged += UpdateToggleBtn;
+        }
 
-            passwordBox.PasswordChanged += (s, e) =>
+        private void ThemeToggle_Click(object sender, RoutedEventArgs e)
+        {
+            ThemeService.Toggle();
+        }
+
+        private void UpdateToggleBtn()
+        {
+            Dispatcher.Invoke(() =>
             {
-                vm.Password = passwordBox.Password;
-            };
+                themeToggleBtn.Content = ThemeService.IsDark ? "☀" : "🌙";
+                Background = (System.Windows.Media.Brush)FindResource("LoginOuterBg");
+            });
         }
     }
-
 }
