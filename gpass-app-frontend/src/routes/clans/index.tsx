@@ -293,15 +293,15 @@ function ClanPage() {
                 params={{ clanId: String(clan.id) }}
                 className="block"
               >
-                <Card className="cursor-pointer rounded-2xl border-border/60 bg-card/60 shadow-xl transition hover:scale-[1.02]">
+                <Card className="cursor-pointer rounded-2xl border-border/60 bg-card/60 shadow-xl transition hover:scale-[1.02] h-full">
                   <CardHeader>
                     <CardTitle>{clan.name}</CardTitle>
-                    <CardDescription>
-                      {clan.description ?? "Nincs leírás"}
+                    <CardDescription className="text-justify break-all">
+                      {clan.description ? clan.description : "Nincs leírás"}
                     </CardDescription>
                   </CardHeader>
 
-                  <CardContent className="space-y-2">
+                  <CardContent className="space-y-2 mt-auto">
                     <div className="text-sm text-muted-foreground">
                       Vezető: {clan.leader.username}
                     </div>

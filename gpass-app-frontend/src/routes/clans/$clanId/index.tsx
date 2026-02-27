@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
 import { useEffect, useMemo, useState } from "react"
-import { Crown, Shield, Users, Trash2, Pencil, UserX } from "lucide-react"
+import { Crown,  Users, Trash2, Pencil, UserX, ShieldCheck } from "lucide-react"
 
 import { useAuth } from "@/hooks/useAuth"
 import { useClans } from "@/hooks/useClans"
@@ -134,7 +134,7 @@ function ClanDetailPage() {
           <Card>
             <CardHeader className="cursor-default">
               <CardTitle>{clan?.name}</CardTitle>
-              <CardDescription>
+              <CardDescription className="text-justify break-all">
                 {clan?.description ?? "Nincs leírás"}
               </CardDescription>
             </CardHeader>
@@ -205,10 +205,9 @@ function ClanDetailPage() {
                 </div>
 
                 <div className="flex gap-2">
-                  <Badge>Vezető</Badge>
                   {clan?.leader.isAdmin && (
-                    <Badge variant="secondary">
-                      <Shield className="h-3 w-3 mr-1" />
+                    <Badge>
+                      <ShieldCheck className="h-3 w-3 mr-1" />
                       Admin
                     </Badge>
                   )}
@@ -236,6 +235,7 @@ function ClanDetailPage() {
                 <Link
                   to="/profile/$userID"
                   params={{ userID: String(member.user_id) }}
+                  className="mb-2 last:mb-0 block"
                 >
                   <div
                     key={member.user_id}
