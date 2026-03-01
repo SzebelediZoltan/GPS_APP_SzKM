@@ -43,6 +43,11 @@ module.exports = (sequelize) => {
         },
       },
 
+      status: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+
       isAdmin: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
@@ -68,7 +73,7 @@ module.exports = (sequelize) => {
 
       scopes: {
         public: {
-          attributes: ["ID", "username", "email", "isAdmin", "latitude", "longitude"],
+          attributes: ["ID", "username", "email", "status", "isAdmin", "latitude", "longitude"],
         },
 
         auth: {
