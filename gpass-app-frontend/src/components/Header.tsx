@@ -40,7 +40,7 @@ export default function Header({ user }: HeaderProps) {
     const nav = useNavigate()
 
     return (
-        <header className="sticky top-0 z-50 w-full border-b border-border/70 bg-background/70 backdrop-blur">
+        <header className="sticky top-0 w-full border-b border-border/70 bg-background/70 backdrop-blur z-9998">
             <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4">
                 {/* Left: Logo + Brand */}
                 <div className="flex items-center">
@@ -79,11 +79,11 @@ export default function Header({ user }: HeaderProps) {
 
 
                 {/* Right side */}
-                <div className="flex items-center gap-2 sm:gap-3">
+                <div className="relative flex items-center gap-2 sm:gap-3">
                     {/* Desktop nav */}
                     <nav className="hidden items-center gap-1 md:flex">
                         <ThemeSwitch />
-                        <NavLink label="Térkép" to="/map" />
+                        <NavLink label="Térkép" to="/map/mapPage" />
                         <NavLink label="Rólunk" to="/about" />
                         <NavLink label="Kapcsolat" to="/contact" />
                         <NavLink label="Klánok" to="/clans" />
@@ -154,7 +154,7 @@ function UserDropdown({ username }: { username: string }) {
     })
 
     return (
-        <DropdownMenu>
+        <DropdownMenu >
             <DropdownMenuTrigger asChild>
                 <button
                     className="group inline-flex items-center gap-2 rounded-xl border border-border/70 bg-card/50 px-3 py-2 text-sm font-medium text-foreground shadow-sm transition hover:bg-card/70 focus:outline-none focus:ring-2 focus:ring-ring cursor-pointer"
@@ -169,7 +169,7 @@ function UserDropdown({ username }: { username: string }) {
                 </button>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuContent align="end" className="w-56 z-9999">
                 <DropdownMenuItem className="cursor-pointer" onClick={() => {
                     nav({
                         to: "/profile/$userID",
@@ -237,7 +237,7 @@ function MobileMenu({ user }: { user: User | null }) {
             {/* Compact sheet */}
             <SheetContent
                 side="right"
-                className="w-75 sm:w-85 p-0"
+                className="w-75 sm:w-85 p-0 z-9999"
             >
                 <ThemeSwitch className="absolute left-2 bottom-2" />
                 {/* Top bar (minimal) */}
@@ -272,7 +272,7 @@ function MobileMenu({ user }: { user: User | null }) {
                                 Fiók
                             </p>
 
-                            <div className="rounded-xl border border-border/70 bg-card/30">
+                            <div className="rounded-xl border border-border/70 bg-card/30 z-9999">
                                 <MobileActionItem
                                     icon={<User className="h-4 w-4" />}
                                     label="Profil"
@@ -322,7 +322,7 @@ function MobileMenu({ user }: { user: User | null }) {
                         <div className="rounded-xl border border-border/70 bg-card/30 overflow-hidden">
                             <div className="rounded-xl border border-border/70 bg-card/30 overflow-hidden">
                                 <SheetClose asChild>
-                                    <MobileNavItem label="Térkép" to="/map" />
+                                    <MobileNavItem label="Térkép" to="/map/mapPage" />
                                 </SheetClose>
 
                                 <SheetClose asChild>

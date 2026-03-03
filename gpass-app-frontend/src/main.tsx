@@ -1,3 +1,4 @@
+import "leaflet/dist/leaflet.css"
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
@@ -10,6 +11,7 @@ import { routeTree } from './routeTree.gen'
 import './styles.css'
 import reportWebVitals from './reportWebVitals.ts'
 import NotFoundPage from './components/NotFoundPage.tsx'
+
 
 // Create a new router instance
 

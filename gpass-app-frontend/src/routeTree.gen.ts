@@ -9,7 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as MapRouteImport } from './routes/map'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
@@ -17,16 +16,12 @@ import { Route as ProfileIndexRouteImport } from './routes/profile/index'
 import { Route as ClansIndexRouteImport } from './routes/clans/index'
 import { Route as ProfileSettingsRouteImport } from './routes/profile/settings'
 import { Route as ProfileFriendsRouteImport } from './routes/profile/friends'
+import { Route as MapMapPageRouteImport } from './routes/map/mapPage'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as ProfileUserIDIndexRouteImport } from './routes/profile/$userID/index'
 import { Route as ClansClanIdIndexRouteImport } from './routes/clans/$clanId/index'
 
-const MapRoute = MapRouteImport.update({
-  id: '/map',
-  path: '/map',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
@@ -62,6 +57,11 @@ const ProfileFriendsRoute = ProfileFriendsRouteImport.update({
   path: '/profile/friends',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MapMapPageRoute = MapMapPageRouteImport.update({
+  id: '/map/mapPage',
+  path: '/map/mapPage',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
   id: '/auth/register',
   path: '/auth/register',
@@ -87,9 +87,9 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
-  '/map': typeof MapRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/map/mapPage': typeof MapMapPageRoute
   '/profile/friends': typeof ProfileFriendsRoute
   '/profile/settings': typeof ProfileSettingsRoute
   '/clans/': typeof ClansIndexRoute
@@ -101,9 +101,9 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
-  '/map': typeof MapRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/map/mapPage': typeof MapMapPageRoute
   '/profile/friends': typeof ProfileFriendsRoute
   '/profile/settings': typeof ProfileSettingsRoute
   '/clans': typeof ClansIndexRoute
@@ -116,9 +116,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
-  '/map': typeof MapRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/map/mapPage': typeof MapMapPageRoute
   '/profile/friends': typeof ProfileFriendsRoute
   '/profile/settings': typeof ProfileSettingsRoute
   '/clans/': typeof ClansIndexRoute
@@ -132,9 +132,9 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/contact'
-    | '/map'
     | '/auth/login'
     | '/auth/register'
+    | '/map/mapPage'
     | '/profile/friends'
     | '/profile/settings'
     | '/clans/'
@@ -146,9 +146,9 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/contact'
-    | '/map'
     | '/auth/login'
     | '/auth/register'
+    | '/map/mapPage'
     | '/profile/friends'
     | '/profile/settings'
     | '/clans'
@@ -160,9 +160,9 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/contact'
-    | '/map'
     | '/auth/login'
     | '/auth/register'
+    | '/map/mapPage'
     | '/profile/friends'
     | '/profile/settings'
     | '/clans/'
@@ -175,9 +175,9 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   ContactRoute: typeof ContactRoute
-  MapRoute: typeof MapRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
+  MapMapPageRoute: typeof MapMapPageRoute
   ProfileFriendsRoute: typeof ProfileFriendsRoute
   ProfileSettingsRoute: typeof ProfileSettingsRoute
   ClansIndexRoute: typeof ClansIndexRoute
@@ -188,13 +188,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/map': {
-      id: '/map'
-      path: '/map'
-      fullPath: '/map'
-      preLoaderRoute: typeof MapRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/contact': {
       id: '/contact'
       path: '/contact'
@@ -244,6 +237,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileFriendsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/map/mapPage': {
+      id: '/map/mapPage'
+      path: '/map/mapPage'
+      fullPath: '/map/mapPage'
+      preLoaderRoute: typeof MapMapPageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/register': {
       id: '/auth/register'
       path: '/auth/register'
@@ -279,9 +279,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   ContactRoute: ContactRoute,
-  MapRoute: MapRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
+  MapMapPageRoute: MapMapPageRoute,
   ProfileFriendsRoute: ProfileFriendsRoute,
   ProfileSettingsRoute: ProfileSettingsRoute,
   ClansIndexRoute: ClansIndexRoute,
