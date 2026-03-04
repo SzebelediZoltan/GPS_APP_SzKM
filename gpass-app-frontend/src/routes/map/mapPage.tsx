@@ -1,19 +1,25 @@
 import { createFileRoute } from "@tanstack/react-router"
 import MapView from "@/components/map/MapView"
 import { useGeolocation } from "@/hooks/useGeolocation"
-import NotLoggedIn from "@/components/NotLoggedIn"
 import LoadingPage from "@/components/LoadingPage"
-import { useAuth } from "@/hooks/useAuth"
+import { useEffect } from "react"
 
 export const Route = createFileRoute("/map/mapPage")({
   component: MapPage,
 })
 
 function MapPage() {
-  const { user } = useAuth()
   const { position, error, loading } = useGeolocation()
 
+  useEffect(() => {
+  document.body.style.overflow = "hidden"
+  return () => {
+    document.body.style.overflow = "auto"
+  }
+}, [])
+
   if (loading) return <LoadingPage />
+
 
   if (error) {
     return (
