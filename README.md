@@ -1,78 +1,135 @@
-# 🚗📍 GPS_APP_SzKM
+# GPASS
 
-Egy **modern, webalapú GPS alkalmazás**, amelynek célja egy valós életben is elképzelhető navigációs rendszer működésének bemutatása.  
-A projekt **tanulmányi / vizsgafeladat** keretében készült, elsősorban oktatási és demonstrációs céllal.
+Webes GPS/Navigacios alkalmazas szakmai vizsgaprojektkent.
 
----
+A projekt oktatasi es demonstracios celra keszult, nem eles forgalomra.
+Fokusz: terkepes navigacio, felhasznaloi rendszer, kozossegi funkciok (baratok, klanok), valamint marker/trip alapok.
 
-## 👥 Készítők
+## Keszitok
 
-- **Szebeledi Zoltán**
-- **Miskolczi Levente**
-- **Kiss Dominik**
+- Szebeledi Zoltan
+- Miskolczi Levente
+- Kiss Dominik
 
----
+## Projekt cel
 
-## 🎯 A projekt célja
+A GPASS celja, hogy egy modern, jol strukturalt full-stack alkalmazasban mutassa be egy GPS app alapjait:
 
-A GPS_APP_SzKM célja egy olyan alkalmazás megvalósítása, amely:
-- bemutatja egy **GPS-alapú navigációs rendszer** alapvető működését,
-- modern frontend és backend technológiákat használ,
-- jól strukturált, átlátható kódbázissal rendelkezik,
-- megfelel egy **informatikai vizsga** szakmai elvárásainak.
+- pozicio alapu terkepes megjelenites
+- utvonaltervezes es utvonal-elozet
+- hitelesites es session kezeles
+- kozossegi funkciok (baratok, klanok)
+- marker/trip API-k alapjai
 
-A projekt **nem éles használatra** készült, hanem tanulási és értékelési célokat szolgál.
+## Fobb funkciok (jelenlegi allapot)
 
----
+- bejelentkezes, regisztracio, kijelentkezes
+- cookie alapu auth status kezeles
+- profil, baratok, klan oldalak
+- map oldal Leaflet alapon
+- utvonaltervezes (OSRM), alternativ utvonalak kezelese
+- dark/light tema
+- mobil + desktop reszponziv UI
+- komponens alapu frontend shadcn/ui + Tailwind stilussal
 
-## 🧭 Fő funkciók
+## Tervben levo funkciok
 
-- 📍 **Felhasználó azonosítása (login / logout)**
-- 🔐 **Session-alapú hitelesítés cookie segítségével**
-- 🗺️ **Navigációs felület (térkép alapú megjelenítés – fejlesztés alatt)**
-- 👤 **Felhasználói állapot globális kezelése**
-- 🌙 **Világos / sötét téma váltás**
-- 📱 **Reszponzív megjelenés (mobil + desktop)**
-- ⚡ **Betöltési állapotok, animációk**
-- 🧩 **Komponens-alapú felépítés**
+- live baratok megjelenitese a terkepen
+- Waze-szeru marker lerakas (veszely, ellenorzes, stb.)
+- valos ideju terkepes interakciok tovabbi bovitese
 
----
+## Technologiai stack
 
-## 🛠️ Felhasznált technológiák
+### Frontend (`gpass-app-frontend`)
+
+- React 19 + TypeScript
+- Vite
+- TanStack Router (file-based routing)
+- TanStack Query
+- Tailwind CSS 4
+- shadcn/ui
+- Leaflet + React Leaflet
+
+### Backend (`gpass-app-backend`)
+
+- Node.js + Express
+- Sequelize + MySQL
+- JWT + cookie alapu hitelesites
+- Swagger/OpenAPI (`/api-docs`, `/api/openapi.json`)
+- Jest + Supertest tesztek
+
+### Egyeb
+
+- `gpass-app-wpf`: kulon WPF kliens/prototipus mappa
+- Docker Compose konfiguracio deploy celra
+
+## Monorepo struktura
+
+```text
+gpass-app/
+|- gpass-app-frontend/
+|- gpass-app-backend/
+|- gpass-app-wpf/
+|- docker-compose.yml
+|- start.bat
+`- README.md
+```
+
+## Lokal futtatas (ajanlott dev)
+
+### 1) Backend
+
+```bash
+cd gpass-app-backend
+npm install
+npm start
+```
+
+Alapertelmezett port a kod alapjan: `8000` (ha a `.env` maskent nem allitja).
+
+### 2) Frontend
+
+```bash
+cd gpass-app-frontend
+npm install
+npm run dev
+```
+
+Frontend dev szerver: `http://localhost:3000`
+
+## Tesztek es build
 
 ### Frontend
-- ⚛️ **React + TypeScript**
-- ⚡ **Vite**
-- 🧭 **TanStack Router (file-based routing)**
-- 🔄 **TanStack Query (React Query)**
-- 🎨 **Tailwind CSS**
-- 🧩 **shadcn/ui**
-- 🌗 Saját **ThemeProvider** (dark / light mode)
+
+```bash
+cd gpass-app-frontend
+npm run test
+npm run build
+```
 
 ### Backend
-- 🟢 **Node.js**
-- 🚀 **Express**
-- 🔐 **Cookie-alapú autentikáció**
-- 🧾 REST API
 
----
+```bash
+cd gpass-app-backend
+npm test
+npm run test:coverage
+```
 
-## 🧠 Architektúra – röviden
+## Kornyezeti valtozok (backend)
 
-- A frontend és backend **elkülönülten** működik
-- A felhasználói állapot (`User`) globálisan elérhető **React Query cache-en keresztül**
-- A bejelentkezési állapotot a backend egy **HTTP-only cookie-ban** tárolja
-- Oldalak védelme **route-szinten** történik
-- A témakezelés **globális React Context** segítségével valósul meg
+A backend `.env` fajlbol olvas. A kod alapjan ezek kulcsfontossaguak:
 
----
+- `PORT`
+- `DB_HOST`
+- `DB_NAME`
+- `DB_USER`
+- `DB_PASSWORD`
+- `DB_DIALECT`
+- `JWT_SECRET`
+- `MAIL_USER`
+- `MAIL_PASS`
+- `NODE_ENV`
 
-## 🔐 Hitelesítés logikája
+## Megjegyzes a projektrol
 
-- Bejelentkezés után a backend cookie-t állít be
-- Az alkalmazás indulásakor az API `/auth/status` végpontja visszaadja:
-  - a felhasználó adatait (ha be van jelentkezve)
-  - vagy `null`-t (ha nincs aktív session)
-- Kijelentkezéskor:
-  - a cookie törlésre kerül
-  - a kliens oldalon a cache azonnal frissül
+Ez a repository iskolai/szakmai vizsgaprojekt celra keszult. A hangsuly a fejlesztesi folyamaton, architekturan es a funkcionalis prototipuson van.

@@ -1,17 +1,14 @@
 import React from "react"
 import {
+  Navigation,
   Route as RouteIcon,
-  Clock,
-  ShieldCheck,
+  Users,
+  ShieldAlert,
   Smartphone,
   MapPinned,
-  Zap,
-  ParkingCircle,
-  CloudSun,
-  Volume2,
-  AlertTriangle,
-  Fuel,
-  Navigation,
+  Flag,
+  Copy,
+  Car,
 } from "lucide-react"
 
 export type Feature = {
@@ -20,96 +17,63 @@ export type Feature = {
   desc: string
 }
 
-export type Plan = {
-  name: string
-  price: string
-  highlight?: boolean
-  items: string[]
+export type DeliveryItem = {
+  icon: React.ReactNode
+  title: string
+  desc: string
+  state: "Popular" | "New" | "Hot"
 }
 
 export const FEATURES: Feature[] = [
   {
     icon: <Navigation className="h-5 w-5" />,
-    title: "Valós idejű navigáció",
-    desc: "Tiszta útmutatás, jól olvasható instrukciók – telefonon és gépen is.",
+    title: "Valos ideju navigacio",
+    desc: "Tiszta utvonalelonezet, tavolsag es erkezesi ido mar indulaskor.",
   },
   {
     icon: <RouteIcon className="h-5 w-5" />,
-    title: "Alternatív útvonalak",
-    desc: "Gyors, rövid vagy kényelmes: válassz a helyzethez illően.",
-  },
-  {
-    icon: <Clock className="h-5 w-5" />,
-    title: "ETA és érkezési idő",
-    desc: "Megbízható becslések, hogy tudd, mikor érsz oda.",
-  },
-  {
-    icon: <AlertTriangle className="h-5 w-5" />,
-    title: "Forgalmi figyelmeztetések",
-    desc: "Jelzések torlódásról, lezárásról és várható késésekről.",
-  },
-  {
-    icon: <MapPinned className="h-5 w-5" />,
-    title: "Kedvenc helyek",
-    desc: "Mentsd el a gyakori úti célokat, és indíts 1 gombnyomással.",
-  },
-  {
-    icon: <ParkingCircle className="h-5 w-5" />,
-    title: "Parkolás megjegyzése",
-    desc: "Emlékezz, hol hagytad az autót – gyors visszatalálás.",
-  },
-  {
-    icon: <Volume2 className="h-5 w-5" />,
-    title: "Hangutasítások",
-    desc: "Kéz nélküli navigáció: a lényeg mindig hallható marad.",
-  },
-  {
-    icon: <Fuel className="h-5 w-5" />,
-    title: "Költségbecslés",
-    desc: "Becsült fogyasztás és költség az útvonal alapján.",
-  },
-  {
-    icon: <CloudSun className="h-5 w-5" />,
-    title: "Időjárás jelzések",
-    desc: "Egyszerű előrejelzés az út során – készülj fel előre.",
+    title: "Alternativ utvonalak",
+    desc: "Valassz gyors, kenyelmes vagy biztonsagosabb utvonalak kozott egy mozdulattal.",
   },
   {
     icon: <Smartphone className="h-5 w-5" />,
-    title: "Reszponzív élmény",
-    desc: "Ujjbarát felület mobilon, tágas elrendezés desktopon.",
+    title: "Mobilra tervezve",
+    desc: "Ujjbarat kezeles, gyors panelnyitas es attekintheto terkepelmeny.",
   },
   {
-    icon: <ShieldCheck className="h-5 w-5" />,
-    title: "Stabil és átlátható",
-    desc: "Modern UI, konzisztens komponensek, könnyen követhető felület.",
+    icon: <Users className="h-5 w-5" />,
+    title: "Baratok a terkepen",
+    desc: "Nezd, merre jar a csapatod, es tervezzetek egyutt valos idoben.",
   },
   {
-    icon: <Zap className="h-5 w-5" />,
-    title: "Gyors és könnyű",
-    desc: "Letisztult design, finom animáció-érzet és gyors visszajelzések.",
+    icon: <MapPinned className="h-5 w-5" />,
+    title: "Klanok es kozos mozgas",
+    desc: "Szervezzetek kozos utvonalakat, es maradjatok egy terkepen belul.",
+  },
+  {
+    icon: <ShieldAlert className="h-5 w-5" />,
+    title: "Globalis markerek",
+    desc: "Jelold a rendort, utlezarast vagy veszelyt, hogy masok is idoben lassak.",
   },
 ]
 
-export const PLANS: Plan[] = [
+export const DELIVERY: DeliveryItem[] = [
   {
-    name: "Free",
-    price: "0 Ft",
-    items: ["Alap navigáció", "Kedvenc helyek", "ETA és értesítések"],
+    icon: <Flag className="h-4 w-4" />,
+    title: "Kozossegi veszelyjelzes",
+    desc: "Egy pillanat alatt rakhatsz markert, amit masok is azonnal latnak a terkepen.",
+    state: "Popular",
   },
   {
-    name: "Pro",
-    price: "1 990 Ft / hó",
-    highlight: true,
-    items: [
-      "Haladó útvonal opciók",
-      "Parkolás megjegyzése",
-      "Költségbecslés",
-      "Prioritás támogatás",
-    ],
+    icon: <Copy className="h-4 w-4" />,
+    title: "Trip masolas",
+    desc: "Ments el egy utat, oszd meg, es barki egy erintessel kovetheti ugyanazt a nyomvonalat.",
+    state: "New",
   },
   {
-    name: "Team",
-    price: "Egyedi",
-    items: ["Csapat funkciók", "Megosztott helyek", "Admin felület", "SLA opciók"],
+    icon: <Car className="h-4 w-4" />,
+    title: "Klan konvoj mod",
+    desc: "Tokeletes valasztas kozos autozasra: egy csapat, egy cel, egy latkep.",
+    state: "Hot",
   },
 ]

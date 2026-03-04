@@ -1,3 +1,4 @@
+import "leaflet/dist/leaflet.css"
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
@@ -10,6 +11,8 @@ import { routeTree } from './routeTree.gen'
 import './styles.css'
 import reportWebVitals from './reportWebVitals.ts'
 import NotFoundPage from './components/NotFoundPage.tsx'
+import { NavigationProvider } from "./context/NavigationContext.tsx"
+
 
 // Create a new router instance
 
@@ -40,7 +43,9 @@ if (rootElement && !rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <TanStackQueryProvider.Provider {...TanStackQueryProviderContext}>
-        <RouterProvider router={router} />
+        <NavigationProvider>
+          <RouterProvider router={router} />
+        </NavigationProvider>
       </TanStackQueryProvider.Provider>
     </StrictMode>,
   )
