@@ -44,9 +44,10 @@ export default function NavigationPreviewPanel({ centerOnUser }: Props) {
     return (
 
         <div className="
-            absolute bottom-6 left-1/2 -translate-x-1/2
-            z-1000
-            w-85
+            absolute bottom-4 left-2 right-2 translate-x-0
+            md:bottom-6 md:left-1/2 md:right-auto md:-translate-x-1/2
+            z-[1000]
+            w-auto md:w-85
             animate-in fade-in slide-in-from-bottom-3 duration-200
             ">
 

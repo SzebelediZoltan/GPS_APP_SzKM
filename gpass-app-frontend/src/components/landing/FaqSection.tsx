@@ -10,44 +10,44 @@ import {
 export default function FaqSection() {
   return (
     <section className="mx-auto w-full max-w-6xl px-4 pb-16" id="faq">
-      <Card className="rounded-2xl border-border/60 bg-card/60 shadow-sm backdrop-blur">
+      <Card className="rounded-2xl border-border/70 bg-card/70 shadow-sm backdrop-blur">
         <CardHeader className="space-y-2">
           <Badge variant="outline" className="w-fit border-border/70">
             FAQ
           </Badge>
-          <CardTitle className="text-lg">Gyakori kérdések</CardTitle>
+          <CardTitle className="text-lg">Gyakori kerdesek</CardTitle>
           <p className="text-sm text-muted-foreground">
-            Rövid válaszok a legfontosabb dolgokra.
+            Minden, amit erdemes tudni indulas elott.
           </p>
         </CardHeader>
 
         <CardContent>
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="item-1">
-              <AccordionTrigger>Milyen eszközökön működik?</AccordionTrigger>
+              <AccordionTrigger>Hogyan segit a GPASS a mindennapokban?</AccordionTrigger>
               <AccordionContent>
-                Telefonon és asztali böngészőben is kényelmesen használható, reszponzív elrendezéssel.
+                Gyorsan mutat utvonalat, valaszthatsz alternativat, es menet kozben is tiszta marad a kep.
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem value="item-2">
-              <AccordionTrigger>Van alternatív útvonal?</AccordionTrigger>
+              <AccordionTrigger>Mi az a globalis marker?</AccordionTrigger>
               <AccordionContent>
-                Igen, több útvonal opció közül választhatsz, a helyzetedhez igazítva.
+                Egy kozossegi jelzes a terkepen, amivel jelezheted peldaul a rendori ellenorzest vagy utlezarast.
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem value="item-3">
-              <AccordionTrigger>Kapok forgalmi jelzéseket?</AccordionTrigger>
+              <AccordionTrigger>Hogyan mukodik a trip mentes es masolas?</AccordionTrigger>
               <AccordionContent>
-                Igen, a felület jelzi a fontosabb torlódásokat és a várható késéseket.
+                Elmented a sajat utadat, megosztod, masok pedig egy koppintassal ugyanazt az utvonalat kovethetik.
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem value="item-4">
-              <AccordionTrigger>Menthetek kedvenc helyeket?</AccordionTrigger>
+              <AccordionTrigger>Miben kulonleges a klan rendszer?</AccordionTrigger>
               <AccordionContent>
-                Igen, a gyakori úti célokat elmentheted, és gyorsan indíthatod a navigációt.
+                A klanod tagjaival egy terkepen maradtok, es konnyebb egyutt utazni vagy talalkozni.
               </AccordionContent>
             </AccordionItem>
           </Accordion>

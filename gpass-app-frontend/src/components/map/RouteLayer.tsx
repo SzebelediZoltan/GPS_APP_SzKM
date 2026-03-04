@@ -9,15 +9,21 @@ export default function RouteLayer() {
 
     useEffect(() => {
         if (mode === "preview" && routes.length > 0) {
+            const activeRoute = routes[selectedRouteIndex] ?? routes[0]
             const bounds = L.latLngBounds(
-                routes[0].geometry.map(([lat, lng]) =>
+                activeRoute.geometry.map(([lat, lng]) =>
                     L.latLng(lat, lng)
                 )
             )
 
-            map.fitBounds(bounds, { padding: [60, 60] })
+            const isMobile = map.getSize().x < 768
+
+            map.fitBounds(bounds, {
+                paddingTopLeft: isMobile ? [20, 110] : [60, 60],
+                paddingBottomRight: isMobile ? [20, 300] : [60, 60],
+            })
         }
-    }, [mode, routes, map])
+    }, [mode, routes, selectedRouteIndex, map])
 
     if (mode === "idle" || routes.length === 0) return null
 
