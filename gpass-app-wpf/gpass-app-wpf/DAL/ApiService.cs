@@ -31,7 +31,7 @@ namespace gpass_app_wpf.DAL
             if (response.IsSuccessStatusCode) return;
 
             var body = await response.Content.ReadAsStringAsync();
-            string message = null;
+            string? message = null;
             try
             {
                 var doc = JsonSerializer.Deserialize<JsonElement>(body);
@@ -64,7 +64,7 @@ namespace gpass_app_wpf.DAL
                         var msgs = new System.Collections.Generic.List<string>();
                         foreach (var e in errArr.EnumerateArray())
                             if (e.TryGetProperty("message", out var em))
-                                msgs.Add(em.GetString());
+                                msgs.Add(em.GetString() ?? "");
                         if (msgs.Count > 0) message = string.Join("\n", msgs);
                     }
                 }
@@ -77,7 +77,7 @@ namespace gpass_app_wpf.DAL
             throw new Exception(message ?? $"{(int)response.StatusCode} {response.ReasonPhrase}");
         }
 
-        private async Task<string> SendAndRead(HttpMethod method, string endpoint, object data = null)
+        private async Task<string> SendAndRead(HttpMethod method, string endpoint, object? data = null)
         {
             var request = new HttpRequestMessage(method, endpoint);
             AttachCookie(request);
@@ -88,17 +88,17 @@ namespace gpass_app_wpf.DAL
             return await response.Content.ReadAsStringAsync();
         }
 
-        public async Task<T> GetAsync<T>(string endpoint)
+        public async Task<T?> GetAsync<T>(string endpoint)
             => JsonSerializer.Deserialize<T>(await SendAndRead(HttpMethod.Get, endpoint), _jsonOptions);
 
         // Raw JSON lekérés — ha a scope hibás és null mezőket küld
         public async Task<string> GetRawAsync(string endpoint)
             => await SendAndRead(HttpMethod.Get, endpoint);
 
-        public async Task<T> PostAsync<T>(string endpoint, object data)
+        public async Task<T?> PostAsync<T>(string endpoint, object data)
             => JsonSerializer.Deserialize<T>(await SendAndRead(HttpMethod.Post, endpoint, data), _jsonOptions);
 
-        public async Task<T> PutAsync<T>(string endpoint, object data)
+        public async Task<T?> PutAsync<T>(string endpoint, object data)
             => JsonSerializer.Deserialize<T>(await SendAndRead(HttpMethod.Put, endpoint, data), _jsonOptions);
 
         public async Task DeleteAsync(string endpoint)

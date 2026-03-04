@@ -71,7 +71,7 @@
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Grid.Column="0" Orientation="Horizontal">
-                                <Button Content="＋  Új" Padding="12,6" Margin="0,0,8,0"
+                                <Button Content="+  Létrehozás" Padding="12,6" Margin="0,0,8,0"
                                         Background="#27ae60" Foreground="White"
                                         Command="{Binding AddUserCommand}"/>
                                 <Button Content="✎  Szerkesztés" Padding="12,6" Margin="0,0,8,0"
@@ -132,7 +132,7 @@
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Grid.Column="0" Orientation="Horizontal">
-                                <Button Content="＋  Új klán" Padding="12,6" Margin="0,0,8,0"
+                                <Button Content="+  Létrehozás" Padding="12,6" Margin="0,0,8,0"
                                         Background="#27ae60" Foreground="White"
                                         Command="{Binding CreateClanCommand}"/>
                                 <Button Content="✎  Szerkesztés" Padding="12,6" Margin="0,0,8,0"

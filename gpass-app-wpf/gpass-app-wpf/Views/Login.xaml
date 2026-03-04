@@ -35,17 +35,20 @@
             <TextBlock Text="Admin Panel" FontSize="12"
                        Foreground="{DynamicResource MutedText}" Margin="0,0,0,20"/>
 
-            <!-- Hibasáv - fix magasság, mindig ott van a helye -->
-            <Border Height="36"
-                    Background="#3D1515" BorderBrush="#C53030" BorderThickness="1"
-                    CornerRadius="5" Padding="10,0" Margin="0,0,0,12"
+            <!-- Hibasáv -->
+            <Border Background="#3D1515" BorderBrush="#C53030" BorderThickness="1"
+                    CornerRadius="5" Padding="10,8" Margin="0,0,0,12"
                     Visibility="{Binding HasError, Converter={StaticResource BoolToVisibility}}">
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="⚠ " Foreground="#FC8181" FontWeight="Bold" VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding ErrorMessage}" Foreground="#FC8181"
-                               FontSize="12" VerticalAlignment="Center"
-                               TextTrimming="CharacterEllipsis"/>
-                </StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="⚠ " Foreground="#FC8181"
+                               FontWeight="Bold" Margin="0,1,6,0"/>
+                    <TextBlock Grid.Column="1" Text="{Binding ErrorMessage}" Foreground="#FC8181"
+                               FontSize="12" TextWrapping="Wrap"/>
+                </Grid>
             </Border>
 
             <!-- Felhasználó -->
@@ -61,16 +64,95 @@
             <PasswordBox x:Name="passwordBox" Height="36" FontSize="13" Margin="0,0,0,12"
                          IsEnabled="{Binding Loading, Converter={StaticResource InverseBool}}"/>
 
-            <!-- Szerver -->
+            <!-- Szerver választó - két toggle gomb -->
             <TextBlock Text="Szerver" FontSize="12" FontWeight="SemiBold"
-                       Foreground="{DynamicResource SecondaryText}" Margin="0,0,0,4"/>
-            <ComboBox x:Name="serverCombo" Height="36" FontSize="13" Margin="0,0,0,20"
-                      ItemsSource="{Binding Servers}"
-                      SelectedItem="{Binding SelectedServer, Mode=TwoWay}"
-                      IsEnabled="{Binding Loading, Converter={StaticResource InverseBool}}"
-                      Foreground="{DynamicResource PrimaryText}"
-                      Background="{DynamicResource InputBackground}"
-                      BorderBrush="{DynamicResource InputBorder}"/>
+                       Foreground="{DynamicResource SecondaryText}" Margin="0,0,0,6"/>
+            <Grid Margin="0,0,0,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0" Height="44" Margin="0,0,4,0"
+                        Command="{Binding SelectServerCommand}"
+                        CommandParameter="localhost"
+                        IsEnabled="{Binding Loading, Converter={StaticResource InverseBool}}">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background"      Value="{DynamicResource ToolbarBackground}"/>
+                            <Setter Property="Foreground"      Value="{DynamicResource MutedText}"/>
+                            <Setter Property="BorderBrush"     Value="{DynamicResource InputBorder}"/>
+                            <Setter Property="BorderThickness" Value="1"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                CornerRadius="6">
+                                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <TextBlock Text="💻  Localhost" FontSize="12"
+                                                           Foreground="{TemplateBinding Foreground}"
+                                                           HorizontalAlignment="Center"/>
+                                                <TextBlock Text="localhost:4000" FontSize="10"
+                                                           Foreground="{TemplateBinding Foreground}"
+                                                           HorizontalAlignment="Center" Opacity="0.65"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsLocalhostSelected}" Value="True">
+                                    <Setter Property="Background"  Value="{DynamicResource Accent}"/>
+                                    <Setter Property="Foreground"  Value="White"/>
+                                    <Setter Property="BorderBrush" Value="{DynamicResource Accent}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <Button Grid.Column="1" Height="44" Margin="4,0,0,0"
+                        Command="{Binding SelectServerCommand}"
+                        CommandParameter="gpass"
+                        IsEnabled="{Binding Loading, Converter={StaticResource InverseBool}}">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background"      Value="{DynamicResource ToolbarBackground}"/>
+                            <Setter Property="Foreground"      Value="{DynamicResource MutedText}"/>
+                            <Setter Property="BorderBrush"     Value="{DynamicResource InputBorder}"/>
+                            <Setter Property="BorderThickness" Value="1"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                CornerRadius="6">
+                                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <TextBlock Text="🌐  Éles szerver" FontSize="12"
+                                                           Foreground="{TemplateBinding Foreground}"
+                                                           HorizontalAlignment="Center"/>
+                                                <TextBlock Text="gpass.site" FontSize="10"
+                                                           Foreground="{TemplateBinding Foreground}"
+                                                           HorizontalAlignment="Center" Opacity="0.65"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsGpassSelected}" Value="True">
+                                    <Setter Property="Background"  Value="{DynamicResource Accent}"/>
+                                    <Setter Property="Foreground"  Value="White"/>
+                                    <Setter Property="BorderBrush" Value="{DynamicResource Accent}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </Grid>
 
             <!-- Bejelentkezés gomb -->
             <Button Height="40" FontSize="14" FontWeight="SemiBold"

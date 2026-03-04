@@ -1,212 +1,352 @@
 <Window x:Class="gpass_app_wpf.Views.ClanMembersWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="{Binding Title}" Height="680" Width="700"
+        Title="{Binding Title}"
+        Height="680"
+        Width="700"
         WindowStartupLocation="CenterOwner"
-        ResizeMode="CanResize">
+        ResizeMode="CanResize"
+        Background="{DynamicResource AppBackground}">
 
     <DockPanel Margin="16">
 
-        <!-- Fejléc -->
+
+        <!-- FEJLÉC -->
         <StackPanel DockPanel.Dock="Top" Margin="0,0,0,12">
-            <TextBlock Text="{Binding Title}" FontSize="17" FontWeight="Bold" Foreground="#2c3e50"/>
-            <TextBlock Text="{Binding ClanInfo}" FontSize="12" Foreground="#777" Margin="0,3,0,0"/>
-            <TextBlock Text="⏳ Betöltés..." FontStyle="Italic" Foreground="#999" Margin="0,4,0,0"
+            <TextBlock Text="{Binding Title}"
+                       FontSize="17"
+                       FontWeight="Bold"
+                       Foreground="{DynamicResource PrimaryText}"/>
+
+            <TextBlock Text="{Binding ClanInfo}"
+                       FontSize="12"
+                       Foreground="{DynamicResource MutedText}"
+                       Margin="0,3,0,0"/>
+
+            <TextBlock Text="⏳ Betöltés..."
+                       FontStyle="Italic"
+                       Foreground="{DynamicResource MutedText}"
+                       Margin="0,4,0,0"
                        Visibility="{Binding Loading, Converter={StaticResource BoolToVisibility}}"/>
         </StackPanel>
 
-        <!-- ═══ Klán adatok szekció ═══ -->
-        <Border DockPanel.Dock="Top" Background="#f7f9fc" CornerRadius="5"
-                BorderBrush="#d0d7e2" BorderThickness="1" Padding="14,12" Margin="0,0,0,10">
+
+        <!-- KLÁN ADATOK -->
+        <Border DockPanel.Dock="Top"
+                Background="{DynamicResource SurfaceBrush}"
+                CornerRadius="5"
+                BorderBrush="{DynamicResource SurfaceBorderBrush}"
+                BorderThickness="1"
+                Padding="14,12"
+                Margin="0,0,0,10">
+
             <StackPanel>
 
-                <TextBlock Text="Klán adatok" FontSize="12" FontWeight="SemiBold"
-                           Foreground="#2c3e50" Margin="0,0,0,10"/>
+                <TextBlock Text="Klán adatok"
+                           FontSize="12"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource PrimaryText}"
+                           Margin="0,0,0,10"/>
 
-                <!-- Két oszlop: Név | Leírás -->
+
                 <Grid>
+
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="16"/>
                         <ColumnDefinition Width="2*"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- Név -->
+
+                    <!-- KLÁN NÉV -->
                     <StackPanel Grid.Column="0">
-                        <TextBlock Text="Klán neve *" Foreground="#555" FontSize="12" Margin="0,0,0,4"/>
-                        <TextBox Padding="6,5"
-                                 Text="{Binding ClanName, UpdateSourceTrigger=PropertyChanged}"
+
+                        <TextBlock Text="Klán neve *"
+                                   Foreground="{DynamicResource SecondaryText}"
+                                   FontSize="12"
+                                   Margin="0,0,0,4"/>
+
+                        <TextBox Text="{Binding ClanName, UpdateSourceTrigger=PropertyChanged}"
                                  IsEnabled="{Binding NameSaving, Converter={StaticResource InverseBool}}"/>
-                        <TextBlock Text="{Binding ClanNameError}" Foreground="#c0392b" FontSize="11"
+
+                        <TextBlock Text="{Binding ClanNameError}"
+                                   Foreground="{DynamicResource Accent}"
+                                   FontSize="11"
                                    Margin="2,3,0,0"
                                    Visibility="{Binding HasClanNameError, Converter={StaticResource BoolToVisibility}}"/>
+
                     </StackPanel>
 
-                    <!-- Leírás -->
+
+                    <!-- LEÍRÁS -->
                     <StackPanel Grid.Column="2">
-                        <TextBlock Text="Leírás (opcionális)" Foreground="#555" FontSize="12" Margin="0,0,0,4"/>
-                        <TextBox Padding="6,5" MaxLength="200"
+
+                        <TextBlock Text="Leírás (opcionális)"
+                                   Foreground="{DynamicResource SecondaryText}"
+                                   FontSize="12"
+                                   Margin="0,0,0,4"/>
+
+                        <TextBox MaxLength="200"
                                  Text="{Binding ClanDescription, UpdateSourceTrigger=PropertyChanged}"
                                  IsEnabled="{Binding NameSaving, Converter={StaticResource InverseBool}}"/>
-                        <TextBlock Text="{Binding ClanDescriptionError}" Foreground="#c0392b" FontSize="11"
+
+                        <TextBlock Text="{Binding ClanDescriptionError}"
+                                   Foreground="{DynamicResource Accent}"
+                                   FontSize="11"
                                    Margin="2,3,0,0"
                                    Visibility="{Binding HasClanDescriptionError, Converter={StaticResource BoolToVisibility}}"/>
+
                     </StackPanel>
+
                 </Grid>
 
-                <!-- Mentés gomb + visszajelzés -->
+
+                <!-- MENTÉS -->
                 <Grid Margin="0,10,0,0">
+
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Column="0" Text="{Binding NameSaveResult}"
-                               VerticalAlignment="Center" FontSize="12" Margin="2,0,0,0"
-                               Visibility="{Binding HasNameSaveResult, Converter={StaticResource BoolToVisibility}}">
-                        <TextBlock.Style>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="Foreground" Value="#27ae60"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding NameSaveResult[0]}" Value="⚠">
-                                        <Setter Property="Foreground" Value="#c0392b"/>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding NameSaveResult[0]}" Value="ℹ">
-                                        <Setter Property="Foreground" Value="#888"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
+                    <TextBlock Grid.Column="0"
+                               Text="{Binding NameSaveResult}"
+                               VerticalAlignment="Center"
+                               FontSize="12"
+                               Margin="2,0,0,0"
+                               Foreground="{DynamicResource Accent}"
+                               Visibility="{Binding HasNameSaveResult, Converter={StaticResource BoolToVisibility}}"/>
 
-                    <Button Grid.Column="1" Padding="14,6"
-                            Background="#2980b9" Foreground="White" FontWeight="SemiBold"
+                    <Button Grid.Column="1"
+                            Padding="14,6"
+                            Background="{DynamicResource Accent}"
+                            Foreground="White"
+                            FontWeight="SemiBold"
                             Command="{Binding SaveNameCommand}">
+
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="⏳ " Visibility="{Binding NameSaving, Converter={StaticResource BoolToVisibility}}"/>
+                            <TextBlock Text="⏳ "
+                                       Visibility="{Binding NameSaving, Converter={StaticResource BoolToVisibility}}"/>
                             <TextBlock Text="Mentés"/>
                         </StackPanel>
+
                     </Button>
+
                 </Grid>
 
             </StackPanel>
+
         </Border>
 
-        <!-- ═══ Tag hozzáadása szekció ═══ -->
-        <Border DockPanel.Dock="Top" Background="#f7f9fc" CornerRadius="5"
-                BorderBrush="#d0d7e2" BorderThickness="1" Padding="14,12" Margin="0,0,0,10">
+
+        <!-- TAG HOZZÁADÁSA -->
+        <Border DockPanel.Dock="Top"
+                Background="{DynamicResource SurfaceBrush}"
+                CornerRadius="5"
+                BorderBrush="{DynamicResource SurfaceBorderBrush}"
+                BorderThickness="1"
+                Padding="14,12"
+                Margin="0,0,0,10">
+
             <StackPanel>
 
-                <TextBlock Text="Tag hozzáadása" FontSize="12" FontWeight="SemiBold"
-                           Foreground="#2c3e50" Margin="0,0,0,10"/>
+                <TextBlock Text="Tag hozzáadása"
+                           FontSize="12"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource PrimaryText}"
+                           Margin="0,0,0,10"/>
+
 
                 <Grid>
+
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox Grid.Column="0" Padding="6,5" Margin="0,0,8,0"
+
+                    <TextBox Grid.Column="0"
+                             Margin="0,0,8,0"
                              Text="{Binding AddSearch, UpdateSourceTrigger=PropertyChanged}"
                              ToolTip="Keresés felhasználónév vagy email alapján"/>
-                    <TextBlock Grid.Column="1" Text="⏳" FontSize="14"
-                               VerticalAlignment="Center" Margin="0,0,8,0"
+
+                    <TextBlock Grid.Column="1"
+                               Text="⏳"
+                               FontSize="14"
+                               VerticalAlignment="Center"
+                               Margin="0,0,8,0"
+                               Foreground="{DynamicResource MutedText}"
                                Visibility="{Binding AddSearching, Converter={StaticResource BoolToVisibility}}"/>
-                    <Button Grid.Column="2" Content="＋  Hozzáadás" Padding="12,5"
-                            Background="#27ae60" Foreground="White" FontWeight="SemiBold"
+
+                    <Button Grid.Column="2"
+                            Content="＋  Hozzáadás"
+                            Padding="12,5"
+                            Background="{DynamicResource Accent}"
+                            Foreground="White"
+                            FontWeight="SemiBold"
                             Command="{Binding AddMemberCommand}"/>
+
                 </Grid>
 
-                <!-- Találati lista -->
+
+                <!-- TALÁLATI LISTA -->
                 <ListBox x:Name="addSearchListBox"
                          ItemsSource="{Binding AddSearchResults}"
-                         MaxHeight="90" Margin="0,6,0,0"
-                         BorderBrush="#ccc" BorderThickness="1"
+                         MaxHeight="90"
+                         Margin="0,6,0,0"
+                         BorderBrush="{DynamicResource SurfaceBorderBrush}"
+                         BorderThickness="1"
                          SelectionChanged="AddSearchListBox_SelectionChanged"
                          Visibility="{Binding AddSearchResults.Count, Converter={StaticResource IntToVisibility}}">
+
                     <ListBox.ItemTemplate>
+
                         <DataTemplate>
+
                             <StackPanel Orientation="Horizontal" Margin="2,3">
-                                <TextBlock Text="{Binding username}" FontWeight="SemiBold"/>
+
+                                <TextBlock Text="{Binding username}"
+                                           FontWeight="SemiBold"
+                                           Foreground="{DynamicResource PrimaryText}"/>
+
                                 <TextBlock Text="  "/>
-                                <TextBlock Text="{Binding email}" Foreground="#666" FontSize="11"/>
+
+                                <TextBlock Text="{Binding email}"
+                                           Foreground="{DynamicResource MutedText}"
+                                           FontSize="11"/>
+
                             </StackPanel>
+
                         </DataTemplate>
+
                     </ListBox.ItemTemplate>
-                    <ListBox.ItemContainerStyle>
-                        <Style TargetType="ListBoxItem">
-                            <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#e8f4fd"/>
-                                    <Setter Property="Cursor" Value="Hand"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ListBox.ItemContainerStyle>
+
                 </ListBox>
 
-                <!-- Kiválasztott user -->
-                <Border Background="#eafaf1" BorderBrush="#27ae60" BorderThickness="1"
-                        CornerRadius="3" Padding="8,5" Margin="0,6,0,0"
+
+                <!-- KIVÁLASZTOTT USER -->
+                <Border Background="{DynamicResource SurfaceBrush}"
+                        BorderBrush="{DynamicResource Accent}"
+                        BorderThickness="1"
+                        CornerRadius="3"
+                        Padding="8,5"
+                        Margin="0,6,0,0"
                         Visibility="{Binding HasUserToAdd, Converter={StaticResource BoolToVisibility}}">
+
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="✔ Kiválasztva: " Foreground="#27ae60" FontWeight="Bold"/>
-                        <TextBlock Text="{Binding UserToAddText}" Foreground="#1e8449"/>
+
+                        <TextBlock Text="✔ Kiválasztva: "
+                                   Foreground="{DynamicResource Accent}"
+                                   FontWeight="Bold"/>
+
+                        <TextBlock Text="{Binding UserToAddText}"
+                                   Foreground="{DynamicResource PrimaryText}"/>
+
                     </StackPanel>
+
                 </Border>
 
             </StackPanel>
+
         </Border>
 
-        <!-- ═══ Toolbar (alul) ═══ -->
-        <Border DockPanel.Dock="Bottom" Background="#f8f8f8" Padding="10,7"
-                BorderBrush="#ddd" BorderThickness="0,1,0,0">
+
+        <!-- TOOLBAR -->
+        <Border DockPanel.Dock="Bottom"
+                Background="{DynamicResource ToolbarBackground}"
+                Padding="10,7"
+                BorderBrush="{DynamicResource SurfaceBorderBrush}"
+                BorderThickness="0,1,0,0">
+
             <Grid>
+
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0" VerticalAlignment="Center" Foreground="#555"
+                <TextBlock Grid.Column="0"
+                           VerticalAlignment="Center"
+                           Foreground="{DynamicResource SecondaryText}"
                            Text="{Binding Members.Count, StringFormat='Összesen: {0} tag'}"/>
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
-                    <Button Content="👑  Vezető kinevezése" Padding="10,5" Margin="0,0,8,0"
-                            Background="#e67e22" Foreground="White"
-                            Command="{Binding ChangeLeaderCommand}"
-                            ToolTip="Kijelölt tag legyen az új vezető"/>
-                    <Button Content="✕  Tag eltávolítása" Padding="10,5"
-                            Background="#e74c3c" Foreground="White"
+
+                    <Button Content="👑  Vezető kinevezése"
+                            Padding="10,5"
+                            Margin="0,0,8,0"
+                            Background="#e67e22"
+                            Foreground="White"
+                            Command="{Binding ChangeLeaderCommand}"/>
+
+                    <Button Content="✕  Tag eltávolítása"
+                            Padding="10,5"
+                            Background="#e74c3c"
+                            Foreground="White"
                             Command="{Binding RemoveMemberCommand}"/>
+
                 </StackPanel>
+
             </Grid>
+
         </Border>
 
-        <!-- ═══ Tagok táblázat ═══ -->
+
+        <!-- TAGOK TÁBLÁZAT -->
         <DataGrid ItemsSource="{Binding Members}"
                   SelectedItem="{Binding SelectedMember, Mode=TwoWay}"
-                  AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
-                  GridLinesVisibility="Horizontal" AlternatingRowBackground="#fafafa"
-                  BorderBrush="#d0d7e2" BorderThickness="1">
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  CanUserAddRows="False"
+                  GridLinesVisibility="Horizontal"
+                  HeadersVisibility="Column"
+                  BorderBrush="{DynamicResource SurfaceBorderBrush}"
+                  BorderThickness="1">
+
             <DataGrid.RowStyle>
+
                 <Style TargetType="DataGridRow">
+
                     <Style.Triggers>
+
                         <DataTrigger Binding="{Binding is_leader}" Value="True">
-                            <Setter Property="Background" Value="#fff9e6"/>
                             <Setter Property="FontWeight" Value="SemiBold"/>
                         </DataTrigger>
+
                     </Style.Triggers>
+
                 </Style>
+
             </DataGrid.RowStyle>
+
+
             <DataGrid.Columns>
-                <DataGridTextColumn Header="User ID"      Binding="{Binding user_id}"        Width="70"/>
-                <DataGridTextColumn Header="Felhasználó"  Binding="{Binding display_name}"   Width="150"/>
-                <DataGridTextColumn Header="Email"        Binding="{Binding display_email}"  Width="*"/>
-                <DataGridTextColumn Header="Szerep"       Binding="{Binding role_label}"     Width="80"/>
-                <DataGridTextColumn Header="Csatlakozott" Binding="{Binding joined_at, Converter={StaticResource IsoDate}}" Width="135"/>
+
+                <DataGridTextColumn Header="User ID"
+                                    Binding="{Binding user_id}"
+                                    Width="70"/>
+
+                <DataGridTextColumn Header="Felhasználó"
+                                    Binding="{Binding display_name}"
+                                    Width="150"/>
+
+                <DataGridTextColumn Header="Email"
+                                    Binding="{Binding display_email}"
+                                    Width="*"/>
+
+                <DataGridTextColumn Header="Szerep"
+                                    Binding="{Binding role_label}"
+                                    Width="80"/>
+
+                <DataGridTextColumn Header="Csatlakozott"
+                                    Binding="{Binding joined_at, Converter={StaticResource IsoDate}}"
+                                    Width="135"/>
+
             </DataGrid.Columns>
+
         </DataGrid>
+
 
     </DockPanel>
 </Window>
