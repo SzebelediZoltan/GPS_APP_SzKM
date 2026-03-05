@@ -24,7 +24,7 @@ export default function NotFoundPage() {
           </Button>
 
           <Button variant="outline" asChild>
-            <Link to="/map">Térkép</Link>
+            <Link to="/map/mapPage">Térkép</Link>
           </Button>
         </div>
       </div>

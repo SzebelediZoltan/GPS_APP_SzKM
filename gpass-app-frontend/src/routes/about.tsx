@@ -19,7 +19,7 @@ function AboutPage() {
   return (
     <main className="relative min-h-[calc(100vh-64px)] overflow-hidden bg-background text-foreground">
       <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -top-44 left-1/2 h-[28rem] w-[28rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,hsl(var(--primary)/0.16),transparent_70%)] blur-3xl" />
+        <div className="absolute -top-44 left-1/2 h-112 w-md -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,hsl(var(--primary)/0.16),transparent_70%)] blur-3xl" />
       </div>
 
       <div className="mx-auto w-full max-w-6xl px-4 py-16">

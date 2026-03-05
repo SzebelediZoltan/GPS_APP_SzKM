@@ -46,7 +46,7 @@ export default function NavigationPanel({ currentPosition }: Props) {
 
   return (
     <>
-      <div className="absolute top-4 left-4 z-[1000] hidden md:block">
+      <div className="absolute top-4 left-4 z-1000 hidden md:block">
         {!isDesktopOpen && (
           <Button
             onClick={() => setIsDesktopOpen(true)}
@@ -103,7 +103,7 @@ export default function NavigationPanel({ currentPosition }: Props) {
         )}
       </div>
 
-      <div className="absolute top-5 left-1/2 z-[1000] -translate-x-1/2 md:hidden">
+      <div className="absolute top-5 left-1/2 z-1000 -translate-x-1/2 md:hidden">
         <Button
           onClick={() => setIsMobileOpen(true)}
           className="rounded-full border border-border bg-card/95 px-4 text-foreground shadow-lg backdrop-blur hover:bg-muted"
@@ -116,7 +116,7 @@ export default function NavigationPanel({ currentPosition }: Props) {
       <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
         <SheetContent
           side="bottom"
-          className="z-[1200] md:hidden rounded-t-2xl border-t border-border/80 bg-background/95 px-0 pb-[max(env(safe-area-inset-bottom),1rem)] backdrop-blur"
+          className="z-1200 md:hidden rounded-t-2xl border-t border-border/80 bg-background/95 px-0 pb-[max(env(safe-area-inset-bottom),1rem)] backdrop-blur"
         >
           <SheetHeader className="pb-2">
             <SheetTitle>Útvonaltervezés</SheetTitle>

@@ -1,5 +1,5 @@
 const express = require("express")
-const rateLimit = require("express-rate-limit")
+const { rateLimit, ipKeyGenerator } = require("express-rate-limit")
 
 const router = express.Router()
 
@@ -14,7 +14,7 @@ const guestLimiter = rateLimit({
   message: {
     message: "Vendégként óránként csak 1 üzenet küldhető.",
   },
-  keyGenerator: (req) => `guest_${req.ip}`,
+  keyGenerator: (req) => `guest_${ipKeyGenerator(req)}`,
 })
 
 const userLimiter = rateLimit({
@@ -23,7 +23,7 @@ const userLimiter = rateLimit({
   message: {
     message: "10 percenként csak 1 üzenet küldhető.",
   },
-  keyGenerator: (req) => `user_${req.user?.ID}`,
+  keyGenerator: (req) => `user_${req.user?.ID ?? ipKeyGenerator(req)}`,
 })
 
 const dynamicContactLimiter = (req, res, next) => {
