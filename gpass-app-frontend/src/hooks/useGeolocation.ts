@@ -20,69 +20,53 @@ export function useGeolocation() {
 
     const watcher = navigator.geolocation.watchPosition(
       (pos) => {
-        setPosition({
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-        })
-        // GPS heading (mozgás alapú – külső eszközön működik)
-        if (pos.coords.heading !== null && !isNaN(pos.coords.heading)) {
-          setHeading(pos.coords.heading)
-        }
+        setPosition({ lat: pos.coords.latitude, lng: pos.coords.longitude })
         setLoading(false)
       },
       (err) => {
         setError(err.message)
         setLoading(false)
       },
-      {
-        enableHighAccuracy: true,
-        maximumAge: 0,
-        timeout: 10000,
-      }
+      { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
     )
 
-    return () => {
-      navigator.geolocation.clearWatch(watcher)
-    }
+    return () => navigator.geolocation.clearWatch(watcher)
   }, [])
 
-  // DeviceOrientation API – kompasz alapú heading (mobilon pontosabb)
   useEffect(() => {
     const handleOrientation = (e: DeviceOrientationEvent) => {
-      // iOS: webkitCompassHeading, Android: 360 - alpha
-      const compassHeading =
-        (e as any).webkitCompassHeading ??
-        (e.alpha !== null ? (360 - e.alpha) % 360 : null)
-
-      if (compassHeading !== null) {
-        setHeading(compassHeading)
+      // iOS: webkitCompassHeading már helyes észak-alapú fokszám (0-360, CW)
+      // Android: alpha = 0 ha észak, de matematikai CCW → 360-alpha adja a CW irányt
+      const ios = (e as any).webkitCompassHeading
+      if (typeof ios === "number" && !isNaN(ios)) {
+        setHeading(ios)
+        return
+      }
+      if (e.alpha !== null) {
+        // Android absolute orientation esetén is ez a helyes képlet
+        setHeading((360 - e.alpha) % 360)
       }
     }
 
-    // iOS 13+ requires permission
-    const requestPermission = async () => {
-      const DevOrEvent = DeviceOrientationEvent as any
-      if (typeof DevOrEvent.requestPermission === "function") {
-        try {
-          const result = await DevOrEvent.requestPermission()
-          if (result === "granted") {
-            window.addEventListener("deviceorientationabsolute", handleOrientation as any, true)
-            window.addEventListener("deviceorientation", handleOrientation as any, true)
-          }
-        } catch {
-          // silently ignore – no compass available
-        }
-      } else {
-        window.addEventListener("deviceorientationabsolute", handleOrientation as any, true)
-        window.addEventListener("deviceorientation", handleOrientation as any, true)
-      }
+    const attach = () => {
+      // deviceorientationabsolute pontosabb Androidon (gravitációtól független)
+      window.addEventListener("deviceorientationabsolute", handleOrientation as EventListener, true)
+      window.addEventListener("deviceorientation", handleOrientation as EventListener, true)
     }
 
-    requestPermission()
+    const DevOrEvent = DeviceOrientationEvent as any
+    if (typeof DevOrEvent.requestPermission === "function") {
+      // iOS 13+ – engedélyt csak user gesture-re lehet kérni,
+      // ezt a MapView-ban a heading lock gomb megnyomásakor kell triggerelni
+      // itt csak feliratkozunk ha már megvan
+      attach()
+    } else {
+      attach()
+    }
 
     return () => {
-      window.removeEventListener("deviceorientationabsolute", handleOrientation as any, true)
-      window.removeEventListener("deviceorientation", handleOrientation as any, true)
+      window.removeEventListener("deviceorientationabsolute", handleOrientation as EventListener, true)
+      window.removeEventListener("deviceorientation", handleOrientation as EventListener, true)
     }
   }, [])
 

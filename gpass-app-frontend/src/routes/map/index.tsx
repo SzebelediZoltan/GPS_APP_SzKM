@@ -12,9 +12,15 @@ function MapPage() {
   const { position, heading, error, loading } = useGeolocation()
 
   useEffect(() => {
+    // Megakadályozza a scroll-t a térkép oldalon
     document.body.style.overflow = "hidden"
+    // iOS Safari – megakadályozza a bounce scroll-t ami felcsúsztatja az UI-t
+    document.body.style.position = "fixed"
+    document.body.style.width = "100%"
     return () => {
       document.body.style.overflow = "auto"
+      document.body.style.position = ""
+      document.body.style.width = ""
     }
   }, [])
 
@@ -24,9 +30,7 @@ function MapPage() {
     return (
       <div className="h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-lg font-semibold">
-            Nem sikerült lekérni a pozíciót
-          </h2>
+          <h2 className="text-lg font-semibold">Nem sikerült lekérni a pozíciót</h2>
           <p className="text-muted-foreground mt-2">{error}</p>
         </div>
       </div>
