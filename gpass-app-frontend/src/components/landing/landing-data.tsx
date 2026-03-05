@@ -27,53 +27,53 @@ export type DeliveryItem = {
 export const FEATURES: Feature[] = [
   {
     icon: <Navigation className="h-5 w-5" />,
-    title: "Valos ideju navigacio",
-    desc: "Tiszta utvonalelonezet, tavolsag es erkezesi ido mar indulaskor.",
+    title: "Valós idejű navigáció",
+    desc: "Tiszta útvonal-előnézet, távolság és érkezési idő már induláskor.",
   },
   {
     icon: <RouteIcon className="h-5 w-5" />,
-    title: "Alternativ utvonalak",
-    desc: "Valassz gyors, kenyelmes vagy biztonsagosabb utvonalak kozott egy mozdulattal.",
+    title: "Alternatív útvonalak",
+    desc: "Válassz gyors, kényelmes vagy biztonságosabb útvonalak között egy mozdulattal.",
   },
   {
     icon: <Smartphone className="h-5 w-5" />,
     title: "Mobilra tervezve",
-    desc: "Ujjbarat kezeles, gyors panelnyitas es attekintheto terkepelmeny.",
+    desc: "Ujjbarát kezelés, gyors panelnyitás és áttekinthető térképélmény.",
   },
   {
     icon: <Users className="h-5 w-5" />,
-    title: "Baratok a terkepen",
-    desc: "Nezd, merre jar a csapatod, es tervezzetek egyutt valos idoben.",
+    title: "Barátok a térképen",
+    desc: "Nézd, merre jár a csapatod, és tervezzetek együtt valós időben.",
   },
   {
     icon: <MapPinned className="h-5 w-5" />,
-    title: "Klanok es kozos mozgas",
-    desc: "Szervezzetek kozos utvonalakat, es maradjatok egy terkepen belul.",
+    title: "Klánok és közös mozgás",
+    desc: "Szervezzetek közös útvonalakat, és maradjatok egy térképen belül.",
   },
   {
     icon: <ShieldAlert className="h-5 w-5" />,
-    title: "Globalis markerek",
-    desc: "Jelold a rendort, utlezarast vagy veszelyt, hogy masok is idoben lassak.",
+    title: "Globális markerek",
+    desc: "Jelöld a rendőrt, útlezárást vagy veszélyt, hogy mások is időben lássák.",
   },
 ]
 
 export const DELIVERY: DeliveryItem[] = [
   {
     icon: <Flag className="h-4 w-4" />,
-    title: "Kozossegi veszelyjelzes",
-    desc: "Egy pillanat alatt rakhatsz markert, amit masok is azonnal latnak a terkepen.",
+    title: "Közösségi veszélyjelzés",
+    desc: "Egy pillanat alatt rakhatsz markert, amit mások is azonnal látnak a térképen.",
     state: "Popular",
   },
   {
     icon: <Copy className="h-4 w-4" />,
-    title: "Trip masolas",
-    desc: "Ments el egy utat, oszd meg, es barki egy erintessel kovetheti ugyanazt a nyomvonalat.",
+    title: "Trip másolás",
+    desc: "Ments el egy utat, oszd meg, és bárki egy érintéssel követheti ugyanazt a nyomvonalat.",
     state: "New",
   },
   {
     icon: <Car className="h-4 w-4" />,
-    title: "Klan konvoj mod",
-    desc: "Tokeletes valasztas kozos autozasra: egy csapat, egy cel, egy latkep.",
+    title: "Klán konvoj mód",
+    desc: "Tökéletes választás közös autózásra: egy csapat, egy cél, egy látképi rálátás.",
     state: "Hot",
   },
 ]

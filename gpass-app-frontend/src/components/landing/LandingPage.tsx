@@ -7,16 +7,32 @@ import CtaSection from "./CtaSection"
 
 export default function LandingPage() {
   return (
-    <main className="min-h-screen bg-background text-foreground">
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-40 left-1/2 h-[32rem] w-[32rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,hsl(var(--primary)/0.18),transparent_60%)] blur-2xl" />
-        <div className="absolute -bottom-48 -right-8 h-[32rem] w-[32rem] rounded-full bg-[radial-gradient(circle_at_center,hsl(var(--ring)/0.18),transparent_60%)] blur-2xl" />
-      </div>
+    <main className="min-h-screen bg-background text-foreground overflow-x-hidden">
+      {/* Base dark gradient background */}
+      <div className="pointer-events-none fixed inset-0 -z-20"
+        style={{ background: "radial-gradient(ellipse 80% 60% at 50% 0%, hsl(var(--primary)/0.06) 0%, transparent 70%)" }}
+      />
 
       <HeroSection />
+
+      {/* Section divider */}
+      <div className="mx-auto max-w-6xl px-4">
+        <div className="h-px bg-linear-to-r from-transparent via-border/60 to-transparent" />
+      </div>
+
       <FeaturesSection />
+
+      <div className="mx-auto max-w-6xl px-4">
+        <div className="h-px bg-linear-to-r from-transparent via-border/60 to-transparent" />
+      </div>
+
       <BentoSection />
       <PricingSection />
+
+      <div className="mx-auto max-w-6xl px-4">
+        <div className="h-px bg-linear-to-r from-transparent via-border/60 to-transparent" />
+      </div>
+
       <FaqSection />
       <CtaSection />
     </main>

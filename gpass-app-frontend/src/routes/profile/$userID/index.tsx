@@ -517,7 +517,7 @@ function RouteComponent() {
                         }
                       </div>
 
-                      <div className="text-sm text-muted-foreground text-justify break-words">
+                      <div className="text-sm text-muted-foreground text-justify wrap-break-word">
                         {clan.description ?? "Nincs leírás"}
                       </div>
                     </Link>

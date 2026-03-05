@@ -35,10 +35,10 @@ exports.createUser = async (req, res, next) => {
 
 exports.updateUser = async (req, res, next) => {
     const userID = req.userID;
-    const { username, email, password, isAdmin } = req.body || {};
+    const { username, email, password, isAdmin, status } = req.body || {};
     
     try {
-        const newUser = await userService.updateUser({ username, email, password, isAdmin }, userID);
+        const newUser = await userService.updateUser({ username, email, password, isAdmin, status }, userID);
         // user frissítés után
 
         const newToken = authUtils.generateUserToken({

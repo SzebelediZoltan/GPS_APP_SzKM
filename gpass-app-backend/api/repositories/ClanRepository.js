@@ -1,5 +1,5 @@
 const { DbError } = require("../errors");
-const { Op, fn, col } = require("sequelize");
+const { Op, literal } = require("sequelize");
 
 class ClanRepository {
     constructor(db) {
@@ -13,23 +13,22 @@ class ClanRepository {
                 attributes: {
                     include: [
                         [
-                            fn("COUNT", col("members.clan_id")),
+                            literal(`(
+                                SELECT COUNT(*)
+                                FROM clan_members AS cm
+                                WHERE cm.clan_id = \`Clan\`.\`id\`
+                            )`),
                             "member_count"
                         ]
                     ]
                 },
-                include: [{
-                    association: "leader",
-                    attributes: ["username"],
-                    required: false,
-                },
-                {
-                    association: "members",
-                    attributes: [],
-                }
+                include: [
+                    {
+                        association: "leader",
+                        attributes: ["username"],
+                        required: false,
+                    }
                 ],
-                group: ["Clan.id", "leader.id"],
-                subQuery: false,
             });
         }
         catch (error) {

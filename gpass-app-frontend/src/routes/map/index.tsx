@@ -4,7 +4,7 @@ import { useGeolocation } from "@/hooks/useGeolocation"
 import LoadingPage from "@/components/LoadingPage"
 import { useEffect } from "react"
 
-export const Route = createFileRoute("/map/mapPage")({
+export const Route = createFileRoute("/map/")({
   component: MapPage,
 })
 
