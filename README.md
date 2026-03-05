@@ -1,83 +1,91 @@
 # GPASS
 
-Webes GPS/Navigacios alkalmazas szakmai vizsgaprojektkent.
+> Webes GPS/navigációs alkalmazás — szakmai vizsgaprojekt
 
-A projekt oktatasi es demonstracios celra keszult, nem eles forgalomra.
-Fokusz: terkepes navigacio, felhasznaloi rendszer, kozossegi funkciok (baratok, klanok), valamint marker/trip alapok.
+**Oktatási és demonstrációs célra készült, nem éles forgalomra.**
 
-## Keszitok
+---
 
-- Szebeledi Zoltan
+## Készítők
+
+- Szebeledi Zoltán
 - Miskolczi Levente
 - Kiss Dominik
 
-## Projekt cel
+---
 
-A GPASS celja, hogy egy modern, jol strukturalt full-stack alkalmazasban mutassa be egy GPS app alapjait:
+## A projektről
 
-- pozicio alapu terkepes megjelenites
-- utvonaltervezes es utvonal-elozet
-- hitelesites es session kezeles
-- kozossegi funkciok (baratok, klanok)
-- marker/trip API-k alapjai
+A GPASS egy modern, full-stack GPS alkalmazás prototípus. Célunk bemutatni egy valós navigációs rendszer alapjait: pozíció alapú térképes megjelenítés, útvonaltervezés, közösségi funkciók (barátok, klánok), valamint marker- és trip-kezelés.
 
-## Fobb funkciok (jelenlegi allapot)
+---
 
-- bejelentkezes, regisztracio, kijelentkezes
-- cookie alapu auth status kezeles
-- profil, baratok, klan oldalak
-- map oldal Leaflet alapon
-- utvonaltervezes (OSRM), alternativ utvonalak kezelese
-- dark/light tema
-- mobil + desktop reszponziv UI
-- komponens alapu frontend shadcn/ui + Tailwind stilussal
+## Főbb funkciók
 
-## Tervben levo funkciok
+- Bejelentkezés, regisztráció, kijelentkezés (cookie alapú auth)
+- Térkép oldal Leaflet alapon, valós pozícióval
+- Útvonaltervezés (OSRM), alternatív útvonalak
+- Barátok, klánok, profil oldalak
+- Globális markerek lerakása (veszély, ellenőrzés stb.)
+- Trip rögzítés és kezelés
+- Dark/light téma, mobil + desktop reszponzív UI
+- Admin panel (WPF) felhasználók és tartalmak kezeléséhez
 
-- live baratok megjelenitese a terkepen
-- Waze-szeru marker lerakas (veszely, ellenorzes, stb.)
-- valos ideju terkepes interakciok tovabbi bovitese
+---
 
-## Technologiai stack
+## Tech stack
 
-### Frontend (`gpass-app-frontend`)
+| Réteg | Technológia |
+|---|---|
+| Frontend | React 19 + TypeScript, Vite, TanStack Router/Query, Tailwind CSS 4, shadcn/ui, Leaflet |
+| Backend | Node.js + Express, Sequelize + MySQL, JWT + cookie auth |
+| Admin | WPF (.NET) |
+| API docs | Swagger — `/api-docs`, `/api/openapi.json` |
+| Tesztek | Jest + Supertest |
 
-- React 19 + TypeScript
-- Vite
-- TanStack Router (file-based routing)
-- TanStack Query
-- Tailwind CSS 4
-- shadcn/ui
-- Leaflet + React Leaflet
+---
 
-### Backend (`gpass-app-backend`)
+## Struktúra
 
-- Node.js + Express
-- Sequelize + MySQL
-- JWT + cookie alapu hitelesites
-- Swagger/OpenAPI (`/api-docs`, `/api/openapi.json`)
-- Jest + Supertest tesztek
-
-### Egyeb
-
-- `gpass-app-wpf`: kulon WPF kliens/prototipus mappa
-- Docker Compose konfiguracio deploy celra
-
-## Monorepo struktura
-
-```text
+```
 gpass-app/
-|- gpass-app-frontend/
-|- gpass-app-backend/
-|- gpass-app-wpf/
-|- docker-compose.yml
-|- start.bat
-`- README.md
+├── gpass-app-frontend/
+├── gpass-app-backend/
+├── gpass-app-wpf/
+├── docker-compose.yml
+├── start.bat
+└── README.md
 ```
 
-## Lokal futtatas (ajanlott dev)
+---
 
-### 1) Backend
+## Setup & futtatás
+
+### Előfeltételek
+
+- [XAMPP](https://www.apachefriends.org/) telepítve (Apache + MySQL)
+- [Node.js](https://nodejs.org/) telepítve
+- `gpass_db` adatbázis létrehozva phpMyAdmin-ban vagy MySQL CLI-ben:
+
+```sql
+CREATE DATABASE gpass_db;
+```
+
+---
+
+### Gyors indítás (ajánlott)
+
+A repo gyökerében lévő `start.bat` egyszerre elindítja az Apache-ot, MySQL-t, a backendet és a frontendet:
+
+```
+start.bat
+```
+
+> Ha valami nem indul el, kézzel is futtatható az alábbiak szerint.
+
+---
+
+### Backend (kézi)
 
 ```bash
 cd gpass-app-backend
@@ -85,27 +93,57 @@ npm install
 npm start
 ```
 
-Alapertelmezett port a kod alapjan: `8000` (ha a `.env` maskent nem allitja).
+Szükséges: XAMPP fusson (Apache + MySQL), `gpass_db` adatbázis létezzen.
+Backend alapértelmezett portja: **8000**
 
-### 2) Frontend
+Környezeti változók (`.env` fájl a backend mappában):
+
+```
+PORT=
+DB_HOST=
+DB_NAME=gpass_db
+DB_USER=
+DB_PASSWORD=
+DB_DIALECT=mysql
+JWT_SECRET=
+MAIL_USER=
+MAIL_PASS=
+NODE_ENV=
+```
+
+---
+
+### Frontend (kézi)
 
 ```bash
 cd gpass-app-frontend
 npm install
-npm run dev
+npm run dev          # fejlesztői szerver
 ```
-
-Frontend dev szerver: `http://localhost:3000`
-
-## Tesztek es build
-
-### Frontend
 
 ```bash
-cd gpass-app-frontend
-npm run test
-npm run build
+npm run build        # production build
+npm run preview      # build előnézet
 ```
+
+Frontend dev szerver: **http://localhost:3000**
+
+---
+
+### Admin panel (WPF)
+
+**1. lehetőség — Visual Studio:**
+Nyisd meg a `.sln` fájlt a `gpass-app-wpf` mappából, majd futtasd.
+
+**2. lehetőség — Telepítő:**
+```
+gpass-app-wpf/setup.exe
+```
+Telepítés után az alkalmazás közvetlenül futtatható.
+
+---
+
+## Tesztek
 
 ### Backend
 
@@ -115,21 +153,15 @@ npm test
 npm run test:coverage
 ```
 
-## Kornyezeti valtozok (backend)
+---
 
-A backend `.env` fajlbol olvas. A kod alapjan ezek kulcsfontossaguak:
+## API dokumentáció
 
-- `PORT`
-- `DB_HOST`
-- `DB_NAME`
-- `DB_USER`
-- `DB_PASSWORD`
-- `DB_DIALECT`
-- `JWT_SECRET`
-- `MAIL_USER`
-- `MAIL_PASS`
-- `NODE_ENV`
+A backend futása közben elérhető:
 
-## Megjegyzes a projektrol
+- Swagger UI: `http://localhost:8000/api-docs`
+- OpenAPI JSON: `http://localhost:8000/api/openapi.json`
 
-Ez a repository iskolai/szakmai vizsgaprojekt celra keszult. A hangsuly a fejlesztesi folyamaton, architekturan es a funkcionalis prototipuson van.
+---
+
+> Ez a repository iskolai/szakmai vizsgaprojekt célra készült. A hangsúly a fejlesztési folyamaton, architektúrán és a funkcionális prototípuson van.
