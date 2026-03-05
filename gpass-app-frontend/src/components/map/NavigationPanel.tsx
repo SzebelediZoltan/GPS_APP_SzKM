@@ -148,7 +148,7 @@ export default function NavigationPanel({ currentPosition, onOpenMobile }: Panel
   return (
     <>
       {/* Desktop */}
-      <div className="absolute top-4 left-4 z-[1000] hidden md:block">
+      <div className="absolute top-4 left-4 z-1000 hidden md:block">
         {!isDesktopOpen && (
           <Button
             onClick={() => setIsDesktopOpen(true)}
@@ -211,7 +211,7 @@ export default function NavigationPanel({ currentPosition, onOpenMobile }: Panel
       </div>
 
       {/* Mobil trigger gomb */}
-      <div className="absolute top-5 left-1/2 z-[1000] -translate-x-1/2 md:hidden">
+      <div className="absolute top-5 left-1/2 z-1000 -translate-x-1/2 md:hidden">
         <Button
           onClick={onOpenMobile}
           className="rounded-full border border-border bg-card/95 px-4 text-foreground shadow-lg backdrop-blur hover:bg-muted"
@@ -253,7 +253,7 @@ export function NavigationMobileSheet({ open, onOpenChange, currentPosition }: M
     <Sheet open={open} onOpenChange={(v) => { onOpenChange(v); if (!v) reset() }}>
       <SheetContent
         side="bottom"
-        className="z-[1200] rounded-t-2xl border-t border-border/80 bg-background/95 px-0 backdrop-blur"
+        className="z-1200 rounded-t-2xl border-t border-border/80 bg-background/95 px-0 backdrop-blur"
         style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 1rem)" }}
       >
         <SheetHeader className="pb-3 px-4">

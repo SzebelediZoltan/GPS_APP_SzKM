@@ -189,8 +189,6 @@ export default function MapView({ position, heading }: Props) {
 // DOM-on direkt frissíti a kúpot – Leaflet nem regenerálja az ikont minden rendernél
 function ConeUpdater({ coneAngle }: { coneAngle: number | null }) {
   useEffect(() => {
-    const cone = document.querySelector(".leaflet-marker-icon .gps-cone") as HTMLElement | null
-      ?? document.getElementById("gps-cone-el")
 
     // querySelector fallback – keressük a cone div-et a marker ikonban
     const allMarkers = document.querySelectorAll(".leaflet-marker-icon div[style*='border-bottom']")
