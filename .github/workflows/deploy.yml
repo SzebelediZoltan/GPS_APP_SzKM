@@ -11,13 +11,16 @@ jobs:
 
     steps:
       - name: Deploy to VPS
-        uses: appleboy/ssh-action@v1
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: 204.168.158.148
           username: root
+          port: 22
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
+            echo "CONNECTED"
             cd /root/project/GPS_APP_SzKM
             git pull origin main
-            docker system prune -f
+            docker compose down
             docker compose up -d --build
+            echo "DEPLOY DONE"
