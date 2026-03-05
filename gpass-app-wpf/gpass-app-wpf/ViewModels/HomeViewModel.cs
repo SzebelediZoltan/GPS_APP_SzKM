@@ -1,12 +1,14 @@
 using gpass_app_wpf.DAL;
 using gpass_app_wpf.Models;
 using gpass_app_wpf.Views;
+using gpass_app_wpf.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Linq;
 
 namespace gpass_app_wpf.ViewModels
 {
@@ -42,7 +44,9 @@ namespace gpass_app_wpf.ViewModels
         }
 
         private CancellationTokenSource _userSearchCts;
+#pragma warning disable CS1998
         private async void DebounceUserSearch()
+#pragma warning restore CS1998
         {
             _userSearchCts?.Cancel();
             _userSearchCts = new CancellationTokenSource();
@@ -76,14 +80,24 @@ namespace gpass_app_wpf.ViewModels
             try
             {
                 await _api.DeleteAsync("auth/logout");
-                SessionService.Token    = null;
-                SessionService.IsAdmin  = false;
-                SessionService.UserId   = 0;
+
+                SessionService.Token = null;
+                SessionService.IsAdmin = false;
+                SessionService.UserId = 0;
                 SessionService.Username = null;
 
                 var login = new Login();
                 login.Show();
-                Application.Current.Windows[0].Close();
+
+                // jelenlegi ablak bezárása
+                foreach (Window w in Application.Current.Windows)
+                {
+                    if (w.DataContext == this)
+                    {
+                        w.Close();
+                        break;
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -116,7 +130,8 @@ namespace gpass_app_wpf.ViewModels
         private async Task AddUser()
         {
             var dialog = new UserFormWindow();
-            dialog.Owner = Application.Current.MainWindow;
+            dialog.Owner = WindowHelper.GetActiveWindow();
+
             dialog.ShowDialog();
 
             if (dialog.VM.Confirmed)
@@ -129,7 +144,8 @@ namespace gpass_app_wpf.ViewModels
             if (SelectedUser == null) return;
 
             var dialog = new UserFormWindow(SelectedUser);
-            dialog.Owner = Application.Current.MainWindow;
+            dialog.Owner = WindowHelper.GetActiveWindow();
+
             dialog.ShowDialog();
 
             if (dialog.VM.Confirmed)
@@ -166,7 +182,8 @@ namespace gpass_app_wpf.ViewModels
             if (SelectedUser == null) return;
 
             var w = new UserDetailWindow(SelectedUser);
-            w.Owner = Application.Current.MainWindow;
+            w.Owner = WindowHelper.GetActiveWindow();
+
             w.ShowDialog();
         }
     }

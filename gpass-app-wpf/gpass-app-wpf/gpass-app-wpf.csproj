@@ -14,7 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Themes\Light.xaml"/>
-    <Resource Include="Themes\Dark.xaml"/>
+    <Resource Include="Themes\Light.xaml" />
+    <Resource Include="Themes\Dark.xaml" />
+    <Resource Include="Themes\Controls.xaml" />
   </ItemGroup>
 </Project>

@@ -230,7 +230,7 @@ namespace gpass_app_wpf.ViewModels
         private async Task DeleteTrip()
         {
             if (SelectedTrip == null) return;
-            var r = MessageBox.Show($"Biztosan törlöd a Trip #{SelectedTrip.trip_number} tripet?",
+            var r = MessageBox.Show($"Biztosan törlöd a Trip #{SelectedTrip.name} tripet?",
                 "Törlés", MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if (r != MessageBoxResult.Yes) return;
             try

@@ -1,4 +1,6 @@
 <Solution>
-  <Project Path="gpass-app-setup/gpass-app-setup.vdproj" Type="Installer" />
+  <Project Path="gpass-app-setup/gpass-app-setup.vdproj" Type="Installer">
+    <Build />
+  </Project>
   <Project Path="gpass-app-wpf/gpass-app-wpf.csproj" />
 </Solution>

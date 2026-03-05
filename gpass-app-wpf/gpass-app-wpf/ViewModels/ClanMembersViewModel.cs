@@ -296,7 +296,9 @@ namespace gpass_app_wpf.ViewModels
         }
 
         // ── Tag eltávolítás ────────────────────────────────────────────────────
+#pragma warning disable CS1998
         private async void DebounceAddSearch()
+#pragma warning restore CS1998
         {
             _addSearchCts?.Cancel();
             _addSearchCts = new CancellationTokenSource();

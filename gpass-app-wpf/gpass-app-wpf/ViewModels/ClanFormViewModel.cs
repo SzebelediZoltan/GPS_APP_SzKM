@@ -161,7 +161,9 @@ namespace gpass_app_wpf.ViewModels
         }
 
         // ── Debounced search ───────────────────────────────────────────────────
+#pragma warning disable CS1998
         private async void DebounceSearch()
+#pragma warning restore CS1998
         {
             _searchCts?.Cancel();
             _searchCts = new CancellationTokenSource();
