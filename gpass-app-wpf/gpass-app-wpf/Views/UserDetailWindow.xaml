@@ -87,9 +87,9 @@
                                                 Binding="{Binding id}"
                                                 Width="60"/>
 
-                            <DataGridTextColumn Header="Trip #"
-                                                Binding="{Binding trip_number}"
-                                                Width="80"/>
+                            <DataGridTextColumn Header="Név"
+                                                Binding="{Binding DisplayName}"
+                                                Width="*"/>
 
                             <DataGridTextColumn Header="Létrehozva"
                                                 Binding="{Binding created_at, Converter={StaticResource IsoDate}}"

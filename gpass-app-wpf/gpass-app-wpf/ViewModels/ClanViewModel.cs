@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using gpass_app_wpf.Helpers;
 
 namespace gpass_app_wpf.ViewModels
 {
@@ -32,7 +33,9 @@ namespace gpass_app_wpf.ViewModels
         }
 
         private CancellationTokenSource _clanSearchCts;
+#pragma warning disable CS1998
         private async void DenounceClanSearch()
+#pragma warning restore CS1998
         {
             _clanSearchCts?.Cancel();
             _clanSearchCts = new CancellationTokenSource();
@@ -89,7 +92,7 @@ namespace gpass_app_wpf.ViewModels
         private async Task CreateClan()
         {
             var dialog = new ClanFormWindow();
-            dialog.Owner = Application.Current.MainWindow;
+            dialog.Owner = WindowHelper.GetActiveWindow();
             dialog.ShowDialog();
 
             if (dialog.VM.Confirmed)
@@ -99,9 +102,11 @@ namespace gpass_app_wpf.ViewModels
         private async Task ViewMembers()
         {
             if (SelectedClan == null) return;
+
             var w = new ClanMembersWindow(SelectedClan);
-            w.Owner = Application.Current.MainWindow;
+            w.Owner = WindowHelper.GetActiveWindow();
             w.ShowDialog();
+
             await LoadClans();
         }
 

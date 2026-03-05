@@ -171,7 +171,7 @@
 
 
             <!-- KIVÁLASZTOTT VEZETŐ -->
-            <Border Background="#1f3a2a"
+            <Border Background="{DynamicResource SurfaceBrush}"
                     BorderBrush="{DynamicResource Accent}"
                     BorderThickness="1"
                     CornerRadius="3"
