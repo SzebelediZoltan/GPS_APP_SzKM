@@ -22,7 +22,7 @@ export default function OfflinePage() {
 
         <Button
           onClick={() => window.location.reload()}
-          className="rounded-xl"
+          className="rounded-xl cursor-pointer"
         >
           Újrapróbálás
         </Button>

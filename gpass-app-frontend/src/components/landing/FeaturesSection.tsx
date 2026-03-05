@@ -1,42 +1,60 @@
-import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { FEATURES } from "./landing-data"
 
 export default function FeaturesSection() {
   return (
-    <section className="mx-auto w-full max-w-6xl px-4 py-16" id="features">
-      <div className="flex flex-col gap-3">
-        <Badge variant="outline" className="w-fit border-border/70">
-          Fokepessegek
-        </Badge>
-        <h2 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
-          Egy alkalmazas, ami tenyleg segit az utakon
+    <section className="mx-auto w-full max-w-6xl px-4 py-24" id="features">
+      <style>{`
+        @keyframes section-fade-up {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+
+      {/* Section header */}
+      <div className="mb-16 flex flex-col gap-4 max-w-2xl">
+        <span className="text-xs font-bold tracking-[0.2em] uppercase text-primary">Főképességek</span>
+        <h2 className="text-4xl font-black tracking-tight sm:text-5xl leading-none">
+          Egy alkalmazás,{" "}
+          <span className="text-muted-foreground/50">ami tényleg</span>{" "}
+          segít az utakon
         </h2>
-        <p className="max-w-2xl text-muted-foreground">
-          GPASS osszekoti a klasszikus navigaciot a kozossegi terepjelzesekkel.
+        <p className="text-base text-muted-foreground leading-relaxed">
+          A GPASS összeköti a klasszikus navigációt a közösségi terepjelzésekkel.
         </p>
       </div>
 
-      <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {FEATURES.map((f) => (
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {FEATURES.map((f, i) => (
           <Card
             key={f.title}
-            className="group relative overflow-hidden rounded-2xl border-border/70 bg-card/70 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:shadow-lg"
+            className="group relative overflow-hidden rounded-2xl border-border/50 bg-card/60 shadow-sm backdrop-blur transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/10 hover:border-primary/30"
           >
-            <div className="pointer-events-none absolute -inset-10 opacity-0 transition duration-300 group-hover:opacity-100">
-              <div className="h-full w-full bg-[radial-gradient(circle_at_center,hsl(var(--primary)/0.12),transparent_60%)] blur-2xl" />
+            {/* Hover glow */}
+            <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+              style={{ background: "radial-gradient(ellipse at top left, hsl(var(--primary)/0.08) 0%, transparent 60%)" }}
+            />
+
+            {/* Number watermark */}
+            <div
+              className="pointer-events-none absolute -right-2 -top-4 text-8xl font-black text-foreground/[0.03] select-none transition-all duration-300 group-hover:text-foreground/[0.06]"
+              aria-hidden
+            >
+              {String(i + 1).padStart(2, "0")}
             </div>
 
-            <CardHeader className="pb-3">
-              <div className="flex items-center gap-3">
-                <div className="grid h-10 w-10 place-items-center rounded-xl border border-border/70 bg-background/60 text-primary">
+            <CardHeader className="pb-3 relative">
+              <div className="flex items-start gap-4">
+                <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-border/60 bg-background/70 text-primary shadow-sm transition-all duration-300 group-hover:border-primary/40 group-hover:bg-primary/10 group-hover:shadow-primary/20">
                   {f.icon}
                 </div>
-                <CardTitle className="text-base">{f.title}</CardTitle>
+                <CardTitle className="text-base font-semibold leading-snug pt-1">{f.title}</CardTitle>
               </div>
             </CardHeader>
 
-            <CardContent className="text-sm text-muted-foreground">{f.desc}</CardContent>
+            <CardContent className="relative text-sm text-muted-foreground leading-relaxed">
+              {f.desc}
+            </CardContent>
           </Card>
         ))}
       </div>

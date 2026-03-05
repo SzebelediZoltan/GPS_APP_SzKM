@@ -1,5 +1,3 @@
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Accordion,
   AccordionContent,
@@ -7,52 +5,76 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 
+const faqs = [
+  {
+    q: "Hogyan segít a GPASS a mindennapokban?",
+    a: "Gyorsan mutat útvonalat, választhatsz alternatívát, és menet közben is tiszta marad a kép.",
+  },
+  {
+    q: "Mi az a globális marker?",
+    a: "Egy közösségi jelzés a térképen, amivel jelezheted például a rendőri ellenőrzést vagy útlezárást.",
+  },
+  {
+    q: "Hogyan működik a trip mentés és másolás?",
+    a: "Elmented a saját utadat, megosztod, mások pedig egy koppintással ugyanazt az útvonalat követhetik.",
+  },
+  {
+    q: "Miben különleges a klán rendszer?",
+    a: "A klanod tagjaival egy térképen maradtok, és könnyebb együtt utazni vagy találkozni.",
+  },
+]
+
 export default function FaqSection() {
   return (
-    <section className="mx-auto w-full max-w-6xl px-4 pb-16" id="faq">
-      <Card className="rounded-2xl border-border/70 bg-card/70 shadow-sm backdrop-blur">
-        <CardHeader className="space-y-2">
-          <Badge variant="outline" className="w-fit border-border/70">
-            FAQ
-          </Badge>
-          <CardTitle className="text-lg">Gyakori kerdesek</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Minden, amit erdemes tudni indulas elott.
+    <section className="mx-auto w-full max-w-6xl px-4 pb-24" id="faq">
+      <div className="grid gap-16 lg:grid-cols-2 items-start">
+
+        {/* Left: header */}
+        <div className="space-y-4 lg:sticky lg:top-28">
+          <span className="text-xs font-bold tracking-[0.2em] uppercase text-primary">FAQ</span>
+          <h2 className="text-4xl font-black tracking-tight sm:text-5xl leading-none">
+            Gyakori<br />
+            <span className="text-muted-foreground/50">kérdések</span>
+          </h2>
+          <p className="text-base text-muted-foreground leading-relaxed max-w-sm">
+            Minden, amit érdemes tudni indulás előtt.
           </p>
-        </CardHeader>
 
-        <CardContent>
+          {/* Decorative element */}
+          <div className="pt-4 hidden lg:block">
+            <div className="flex flex-col gap-2">
+              {[60, 40, 50].map((w, i) => (
+                <div
+                  key={i}
+                  className="h-1 rounded-full bg-primary/20"
+                  style={{ width: `${w}%` }}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Right: accordion */}
+        <div className="rounded-2xl border border-border/50 bg-card/60 backdrop-blur overflow-hidden">
           <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="item-1">
-              <AccordionTrigger>Hogyan segit a GPASS a mindennapokban?</AccordionTrigger>
-              <AccordionContent>
-                Gyorsan mutat utvonalat, valaszthatsz alternativat, es menet kozben is tiszta marad a kep.
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="item-2">
-              <AccordionTrigger>Mi az a globalis marker?</AccordionTrigger>
-              <AccordionContent>
-                Egy kozossegi jelzes a terkepen, amivel jelezheted peldaul a rendori ellenorzest vagy utlezarast.
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="item-3">
-              <AccordionTrigger>Hogyan mukodik a trip mentes es masolas?</AccordionTrigger>
-              <AccordionContent>
-                Elmented a sajat utadat, megosztod, masok pedig egy koppintassal ugyanazt az utvonalat kovethetik.
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="item-4">
-              <AccordionTrigger>Miben kulonleges a klan rendszer?</AccordionTrigger>
-              <AccordionContent>
-                A klanod tagjaival egy terkepen maradtok, es konnyebb egyutt utazni vagy talalkozni.
-              </AccordionContent>
-            </AccordionItem>
+            {faqs.map((faq, i) => (
+              <AccordionItem
+                key={i}
+                value={`item-${i}`}
+                className="border-b border-border/40 last:border-0 px-6 transition-colors"
+              >
+                <AccordionTrigger className="py-5 text-sm font-semibold text-left hover:no-underline hover:text-primary transition-colors">
+                  {faq.q}
+                </AccordionTrigger>
+                <AccordionContent className="pb-5 text-sm text-muted-foreground leading-relaxed">
+                  {faq.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
           </Accordion>
-        </CardContent>
-      </Card>
+        </div>
+
+      </div>
     </section>
   )
 }
