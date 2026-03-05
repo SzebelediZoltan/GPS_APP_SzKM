@@ -1,5 +1,5 @@
 const { DbError } = require("../errors");
-const { Op, fn, col } = require("sequelize");
+const { Op, literal } = require("sequelize");
 
 class ClanRepository {
     constructor(db) {
@@ -13,7 +13,11 @@ class ClanRepository {
                 attributes: {
                     include: [
                         [
-                            fn("COUNT", col("members.clan_id")),
+                            literal(`(
+                                SELECT COUNT(*)
+                                FROM clan_members AS cm
+                                WHERE cm.clan_id = \`Clan\`.\`id\`
+                            )`),
                             "member_count"
                         ]
                     ]
@@ -23,19 +27,8 @@ class ClanRepository {
                         association: "leader",
                         attributes: ["username"],
                         required: false,
-                    },
-                    {
-                        association: "members",
-                        attributes: [],       // semmi mező ne jöjjön
-                        required: false,
-                        // A defaultScope-ot felülírjuk, hogy ne rakja bele
-                        // a clan_id / user_id / joined_at mezőket a SELECT-be
-                        through: undefined,
-                        scope: false,
                     }
                 ],
-                group: ["Clan.id", "leader.ID", "leader.username"],
-                subQuery: false,
             });
         }
         catch (error) {
