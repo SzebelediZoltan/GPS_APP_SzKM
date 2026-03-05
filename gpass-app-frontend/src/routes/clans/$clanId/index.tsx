@@ -5,9 +5,9 @@ import { Crown, Users, Trash2, Pencil, UserX, ShieldCheck, ArrowLeft } from "luc
 import { useAuth } from "@/hooks/useAuth"
 import { useClans } from "@/hooks/useClans"
 
-import NotLoggedIn from "@/components/NotLoggedIn"
-import LoadingPage from "@/components/LoadingPage"
-import ServerErrorPage from "@/components/ServerErrorPage"
+import NotLoggedIn from "@/components/shared/NotLoggedIn"
+import LoadingPage from "@/components/shared/LoadingPage"
+import ServerErrorPage from "@/components/shared/ServerErrorPage"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"

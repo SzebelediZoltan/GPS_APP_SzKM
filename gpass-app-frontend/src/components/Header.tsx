@@ -16,7 +16,7 @@ import {
     SheetClose
 } from "@/components/ui/sheet"
 import { Link, useNavigate } from "@tanstack/react-router"
-import ThemeSwitch from "@/components/ThemeSwitch"
+import ThemeSwitch from "@/components/shared/ThemeSwitch"
 import axios from "axios"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useAuth } from "@/hooks/useAuth"

@@ -10,7 +10,7 @@ import { routeTree } from './routeTree.gen'
 
 import './styles.css'
 import reportWebVitals from './reportWebVitals.ts'
-import NotFoundPage from './components/NotFoundPage.tsx'
+import NotFoundPage from './components/shared/NotFoundPage.tsx'
 import { NavigationProvider } from "./context/NavigationContext.tsx"
 
 

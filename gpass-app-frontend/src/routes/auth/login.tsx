@@ -16,7 +16,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import ThemeSwitch from "@/components/ThemeSwitch"
+import ThemeSwitch from "@/components/shared/ThemeSwitch"
 import axios, { AxiosError } from "axios"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useAuth } from "@/hooks/useAuth"

@@ -8,9 +8,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useAuth } from "@/hooks/useAuth"
 import { useClans } from "@/hooks/useClans"
 
-import NotLoggedIn from "@/components/NotLoggedIn"
-import LoadingPage from "@/components/LoadingPage"
-import ServerErrorPage from "@/components/ServerErrorPage"
+import NotLoggedIn from "@/components/shared/NotLoggedIn"
+import LoadingPage from "@/components/shared/LoadingPage"
+import ServerErrorPage from "@/components/shared/ServerErrorPage"
 
 import {
   Card,

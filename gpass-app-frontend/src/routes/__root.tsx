@@ -2,7 +2,7 @@ import { createRootRoute, Outlet, useLocation} from "@tanstack/react-router"
 import Header from "@/components/Header"
 import { ThemeProvider } from "@/lib/ThemeProvider"
 import { useAuth } from "@/hooks/useAuth"
-import OfflineGuard from "@/components/OfflineGuard"
+import OfflineGuard from "@/components/shared/OfflineGuard"
 import { Toaster } from "sonner"
 
 export const Route = createRootRoute({

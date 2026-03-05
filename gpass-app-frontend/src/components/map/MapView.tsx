@@ -4,105 +4,88 @@ import {
   Marker,
   Popup,
   useMap,
+  useMapEvents,
 } from "react-leaflet"
 import L from "leaflet"
-import { User, MapPin, LocateFixed } from "lucide-react"
+import "leaflet-rotate"
+import { User, MapPin } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { useAuth } from "@/hooks/useAuth"
-import { useEffect, useState } from "react"
-import NavigationPanel from "./NavigationPanel"
+import { useEffect, useState, useRef } from "react"
+import LocateButton from "./LocateButton"
+import NavigationPanel, { NavigationMobileSheet } from "./NavigationPanel"
 import RouteLayer from "./RouteLayer"
 import NavigationPreviewPanel from "./NavigationPreviewPanel"
 
 type Props = {
   position: { lat: number; lng: number }
+  heading: number | null
 }
 
-/* ── User location dot ── */
-const userIcon = L.divIcon({
-  className: "",
-  html: `
-    <div style="position:relative;width:40px;height:40px;display:flex;align-items:center;justify-content:center;">
-      <span style="
-        position:absolute;width:36px;height:36px;
-        background:rgba(59,130,246,0.15);
-        border-radius:50%;
-        animation:ping 1.5s cubic-bezier(0,0,0.2,1) infinite;
-      "></span>
-      <span style="
-        position:absolute;width:20px;height:20px;
-        background:rgba(59,130,246,0.3);
-        border-radius:50%;
-      "></span>
-      <span style="
-        position:relative;width:13px;height:13px;
-        background:#3b82f6;
-        border:2.5px solid white;
-        border-radius:50%;
-        box-shadow:0 2px 8px rgba(59,130,246,0.6);
-      "></span>
-    </div>
-  `,
-  iconSize: [40, 40],
-  iconAnchor: [20, 20],
-})
+// Kúp: 40×40px ikon, iconAnchor [20,20].
+// A kúp aljának közepe = forgáspont → transform-origin: 7px 20px
+// heading lock esetén a térkép forog, a kúpnak 0 fokot adunk (mindig "fel" néz az ikonon)
+function createUserIcon(heading: number | null, headingLock: boolean): L.DivIcon {
+  // Ha heading lock be van kapcsolva, a térkép maga forog → a kúp mindig "fel" néz
+  // Ha nincs lock, a kúp forog a heading szerint a statikus térképen
+  const coneAngle = headingLock ? 0 : heading
 
-/* ── Map center controller ── */
-function CenterController({
-  position,
-  setCenterFn,
-}: {
-  position: { lat: number; lng: number }
-  setCenterFn: (fn: () => void) => void
-}) {
-  const map = useMap()
+  return L.divIcon({
+    className: "",
+    html: `
+      <div style="position:relative;width:40px;height:40px;display:flex;align-items:center;justify-content:center;">
 
-  useEffect(() => {
-    setCenterFn(() => () => {
-      map.flyTo([position.lat, position.lng], 15, { duration: 0.8 })
-    })
-  }, [map, position, setCenterFn])
+        ${coneAngle !== null ? `
+          <div style="
+            position: absolute;
+            width: 0; height: 0;
+            border-left: 7px solid transparent;
+            border-right: 7px solid transparent;
+            border-bottom: 20px solid rgba(59,130,246,0.65);
+            left: 13px;
+            bottom: 20px;
+            transform-origin: 7px 20px;
+            transform: rotate(${coneAngle}deg);
+          "></div>
+        ` : ""}
 
-  return null
-}
+        <span style="
+          position:absolute;width:40px;height:40px;
+          background:rgba(59,130,246,0.15);border-radius:50%;
+          animation:gps-ping 1.5s cubic-bezier(0,0,0.2,1) infinite;
+        "></span>
 
-/* ── Locate button (inside MapContainer) ── */
-function LocateButton({ position }: { position: { lat: number; lng: number } }) {
-  const map = useMap()
+        <span style="
+          position:absolute;width:24px;height:24px;
+          background:rgba(59,130,246,0.3);border-radius:50%;
+        "></span>
 
-  return (
-    <div className="leaflet-top leaflet-right pointer-events-none">
-      <div className="m-3 mt-4 pointer-events-auto">
-        <button
-          onClick={() => map.flyTo([position.lat, position.lng], 17, { duration: 0.8 })}
-          className="
-            group w-11 h-11 rounded-xl
-            bg-card/95 backdrop-blur
-            border border-border/60
-            shadow-lg shadow-black/20
-            flex items-center justify-center
-            hover:bg-accent hover:border-primary/30
-            hover:shadow-primary/10
-            active:scale-95
-            transition-all duration-200
-            cursor-pointer
-          "
-          title="Saját pozíció"
-        >
-          <LocateFixed className="w-4.5 h-4.5 text-primary group-hover:scale-110 transition-transform" />
-        </button>
+        <span style="
+          position:relative;width:14px;height:14px;
+          background:#2563eb;border:2.5px solid white;
+          border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.35);
+        "></span>
       </div>
-    </div>
-  )
+
+      <style>
+        @keyframes gps-ping {
+          75%,100%{transform:scale(1.7);opacity:0;}
+        }
+      </style>
+    `,
+    iconSize: [40, 40],
+    iconAnchor: [20, 20],
+  })
 }
 
-/* ── Main component ── */
-export default function MapView({ position }: Props) {
+export default function MapView({ position, heading }: Props) {
   const { user } = useAuth()
   const [isDark, setIsDark] = useState(
     document.documentElement.classList.contains("dark")
   )
-  const [centerOnUser, setCenterOnUser] = useState<() => void>(() => () => {})
+  const [headingLock, setHeadingLock] = useState(false)
+  const [mobileSheetOpen, setMobileSheetOpen] = useState(false)
+  const [centerOnUser, setCenterOnUser] = useState<() => void>(() => () => { })
 
   useEffect(() => {
     const observer = new MutationObserver(() => {
@@ -116,9 +99,10 @@ export default function MapView({ position }: Props) {
   }, [])
 
   const bounds = L.latLngBounds(L.latLng(-85, -180), L.latLng(85, 180))
+  const userIcon = createUserIcon(heading, headingLock)
 
   return (
-    <div className="relative" style={{ height: "100vh", width: "100%" }}>
+    <>
       <MapContainer
         center={[position.lat, position.lng]}
         zoom={15}
@@ -128,7 +112,10 @@ export default function MapView({ position }: Props) {
         maxBoundsViscosity={1.0}
         worldCopyJump={false}
         zoomControl={false}
-        style={{ height: "100%", width: "100%" }}
+        rotateControl={false}
+        rotate={true}
+        bearing={0}
+        style={{ height: "100vh", width: "100%" }}
       >
         <TileLayer
           key={isDark ? "dark" : "light"}
@@ -140,45 +127,133 @@ export default function MapView({ position }: Props) {
           }
         />
 
-        <CenterController position={position} setCenterFn={setCenterOnUser} />
+        <MapController
+          position={position}
+          heading={heading}
+          headingLock={headingLock}
+          onDrag={() => setHeadingLock(false)}
+          setCenterFn={setCenterOnUser}
+        />
 
-        {/* User marker */}
         <Marker icon={userIcon} position={[position.lat, position.lng]}>
           <Popup closeButton={false} className="custom-popup">
-            <div className="w-56 rounded-xl border border-border bg-card p-3.5 space-y-2.5 shadow-xl">
+            <div className="w-60 rounded-xl border border-border bg-card p-4 space-y-3">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-blue-500/15 flex items-center justify-center">
-                  <MapPin className="w-3.5 h-3.5 text-blue-400" />
-                </div>
-                <span className="text-sm font-semibold">Jelenlegi pozíció</span>
+                <MapPin className="w-4 h-4 text-primary" />
+                <span className="text-sm font-medium text-muted-foreground">
+                  Itt vagy te
+                </span>
               </div>
-
-              {user ? (
+              {!!user && (
                 <>
-                  <div className="flex items-center gap-2 rounded-lg border border-border/50 bg-background/50 px-2.5 py-1.5">
-                    <User className="w-3.5 h-3.5 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">{user.username}</span>
+                  <div className="flex items-center gap-2 text-sm text-foreground">
+                    <User className="w-4 h-4" />
+                    <span className="text-muted-foreground">{user?.username}</span>
                   </div>
                   <Link
                     to="/profile/$userID"
-                    params={{ userID: String(user.userID) }}
-                    className="w-full inline-flex items-center justify-center gap-1.5 rounded-lg border border-border/60 bg-muted hover:bg-accent py-1.5 text-xs font-semibold transition-colors"
+                    params={{ userID: String(user?.userID) }}
+                    className="w-full inline-flex justify-center rounded-lg border border-border bg-muted hover:bg-accent py-2 text-sm font-medium"
                   >
-                    Profil megnyitása
+                    Profil megnyitása →
                   </Link>
                 </>
-              ) : null}
+              )}
             </div>
           </Popup>
         </Marker>
 
-        <NavigationPanel currentPosition={position} />
+        <NavigationPanel
+          currentPosition={position}
+          onOpenMobile={() => setMobileSheetOpen(true)}
+        />
         <RouteLayer />
-        <LocateButton position={position} />
+        <LocateButton
+          position={position}
+          heading={heading}
+          headingLock={headingLock}
+          onToggleHeadingLock={() => setHeadingLock(prev => !prev)}
+        />
       </MapContainer>
 
-      {/* Navigation preview — outside MapContainer, covers the map */}
       <NavigationPreviewPanel centerOnUser={centerOnUser} />
-    </div>
+      <NavigationMobileSheet
+        open={mobileSheetOpen}
+        onOpenChange={setMobileSheetOpen}
+        currentPosition={position}
+      />
+    </>
   )
+}
+
+// ─── Belső controller – heading lock + drag figyelés ────────────────────────
+function MapController({
+  position,
+  heading,
+  headingLock,
+  onDrag,
+  setCenterFn,
+}: {
+  position: { lat: number; lng: number }
+  heading: number | null
+  headingLock: boolean
+  onDrag: () => void
+  setCenterFn: (fn: () => void) => void
+}) {
+  const map = useMap()
+  const headingRef = useRef(heading)
+  const lockRef = useRef(headingLock)
+  const positionRef = useRef(position)
+
+  useEffect(() => { headingRef.current = heading }, [heading])
+  useEffect(() => { lockRef.current = headingLock }, [headingLock])
+  useEffect(() => { positionRef.current = position }, [position])
+
+  // Recenter függvény kiajánlása felfelé
+  useEffect(() => {
+    setCenterFn(() => () => {
+      map.flyTo([position.lat, position.lng], map.getZoom(), { duration: 0.8 })
+    })
+  }, [map, position, setCenterFn])
+
+  // Drag → lock ki
+  useMapEvents({
+    dragstart: () => {
+      if (lockRef.current) onDrag()
+    },
+  })
+
+  // Heading lock: térkép forgatása + követés
+  useEffect(() => {
+    if (!headingLock || heading === null) {
+      // Lock kikapcs → bearing visszaállítás észak felé
+      if (!headingLock) {
+        map.setBearing(0)
+      }
+      return
+    }
+
+    // Azonnal beállít
+    map.setBearing(heading)
+    map.panTo([positionRef.current.lat, positionRef.current.lng], {
+      animate: true,
+      duration: 0.3,
+    })
+
+    // Folyamatos frissítés heading változásra
+    const interval = setInterval(() => {
+      if (!lockRef.current) return
+      if (headingRef.current !== null) {
+        map.setBearing(headingRef.current)
+      }
+      map.panTo([positionRef.current.lat, positionRef.current.lng], {
+        animate: true,
+        duration: 0.4,
+      })
+    }, 500)
+
+    return () => clearInterval(interval)
+  }, [headingLock, map])
+
+  return null
 }

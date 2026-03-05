@@ -24,10 +24,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAuth } from "@/hooks/useAuth"
 import { useFriends } from "@/hooks/useFriends"
 import { useMappedFriends } from "@/hooks/useMappedFriends"
-import NotLoggedIn from "@/components/NotLoggedIn"
-import LoadingPage from "@/components/LoadingPage"
-import ServerErrorPage from "@/components/ServerErrorPage"
-import { StatBox } from "@/components/StatBox"
+import NotLoggedIn from "@/components/shared/NotLoggedIn"
+import LoadingPage from "@/components/shared/LoadingPage"
+import ServerErrorPage from "@/components/shared/ServerErrorPage"
+import { StatBox } from "@/components/shared/StatBox"
 import { useState, useEffect } from "react"
 import axios from "axios"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
@@ -35,7 +35,6 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-
 import {
   Dialog,
   DialogContent,
@@ -78,7 +77,6 @@ function RouteComponent() {
   const params = Route.useParams()
   const queryClient = useQueryClient()
 
-
   const [editOpen, setEditOpen] = useState(false)
 
   const form = useForm<EditProfileValues>({
@@ -119,10 +117,7 @@ function RouteComponent() {
     currentUser,
     terminateRequest,
     add,
-    accept,
-    isTerminating,
-    isAdding,
-    isAccepting,
+    accept
   } = useFriends(params.userID, !!user)
 
   /* 🔥 SAFE DEFAULTS */
@@ -138,7 +133,6 @@ function RouteComponent() {
   )
 
   /* ===== CLANS ===== */
-
   const {
     clansQuery,
     membershipsQuery: myClanMembershipsQuery,
@@ -161,18 +155,13 @@ function RouteComponent() {
     ).length
 
   /* ---------------- NOT LOGGED ---------------- */
-
   if (!user) return <NotLoggedIn />
 
   /* ---------------- LOADING ---------------- */
-
   if (
     currentUser.isLoading ||
     pendingRequests.isLoading ||
     acceptedRequests.isLoading ||
-    isTerminating ||
-    isAdding ||
-    isAccepting ||
     clansQuery.isLoading ||
     myClanMembershipsQuery.isLoading
   ) {
@@ -180,7 +169,6 @@ function RouteComponent() {
   }
 
   /* ---------------- ERROR ---------------- */
-
   if (
     !currentUser.data ||
     !pendingRequests.data ||
@@ -193,46 +181,51 @@ function RouteComponent() {
     return <ServerErrorPage />
   }
 
-
   const isOthersProfile = Number(userData.ID) !== Number(user.userID)
 
   const theirRelation =
     pending.find(
       (e) =>
-        (e.receiver_id === user.userID || e.sender_id === user.userID) &&
+        (e.receiver_id == user.userID || e.sender_id == user.userID) &&
         isOthersProfile
     ) ||
     accepted.find(
       (e) =>
-        (e.receiver_id === user.userID || e.sender_id === user.userID) &&
+        (e.receiver_id == user.userID || e.sender_id == user.userID) &&
         isOthersProfile
     )
 
-  const isReceiver = theirRelation?.receiver_id === userData.ID
+  const isReceiver = theirRelation?.receiver_id == userData.ID
+
   /* ============================================================ */
 
   return (
     <>
+      {/* ── EDIT DIALOG ── */}
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md rounded-2xl">
           <DialogHeader>
-            <DialogTitle>Profil szerkesztése</DialogTitle>
+            <DialogTitle className="text-lg font-bold">Profil szerkesztése</DialogTitle>
           </DialogHeader>
+
+          <Separator className="bg-border/40" />
 
           <form
             onSubmit={form.handleSubmit((values) =>
               update({
-                id: user.userID, // 👈 EZ FONTOS
+                id: user.userID,
                 username: values.username,
                 email: values.email,
                 isAdmin: user.isAdmin
               })
             )}
-            className="space-y-4"
+            className="space-y-4 pt-1"
           >
             <div className="space-y-2">
-              <Label>Felhasználónév</Label>
-              <Input {...form.register("username")} />
+              <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Felhasználónév
+              </Label>
+              <Input className="rounded-xl" {...form.register("username")} />
               {form.formState.errors.username && (
                 <p className="text-sm text-destructive">
                   {form.formState.errors.username.message}
@@ -241,8 +234,10 @@ function RouteComponent() {
             </div>
 
             <div className="space-y-2">
-              <Label>Email</Label>
-              <Input type="email" {...form.register("email")} />
+              <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Email
+              </Label>
+              <Input className="rounded-xl" type="email" {...form.register("email")} />
               {form.formState.errors.email && (
                 <p className="text-sm text-destructive">
                   {form.formState.errors.email.message}
@@ -250,29 +245,30 @@ function RouteComponent() {
               )}
             </div>
 
-            <DialogFooter>
+            <DialogFooter className="gap-2 pt-1">
               <Button
                 type="button"
-                className="cursor-pointer"
+                className="cursor-pointer rounded-xl"
                 variant="outline"
                 onClick={() => setEditOpen(false)}
                 disabled={isUpdating}
               >
                 Mégse
               </Button>
-
-              <Button type="submit" className="cursor-pointer" disabled={isUpdating}>
+              <Button type="submit" className="cursor-pointer rounded-xl" disabled={isUpdating}>
                 {isUpdating ? "Mentés..." : "Mentés"}
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* ── PAGE ── */}
       <main className="min-h-[calc(100vh-64px)] bg-background text-foreground">
         <div className="mx-auto w-full max-w-6xl px-4 py-8">
 
           {/* Header */}
-          <div className="mb-6 flex items-start justify-between gap-3 cursor-default">
+          <div className="mb-6 flex items-start justify-between gap-3 cursor-default flex-wrap">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/40 px-3 py-1 text-xs text-muted-foreground">
                 <Compass className="h-3.5 w-3.5" />
@@ -283,8 +279,7 @@ function RouteComponent() {
               </h1>
             </div>
 
-            {/* ACTION BUTTONS */}
-
+            {/* ACTION BUTTONS — EREDETI LOGIKA */}
             {isOthersProfile ? (
               theirRelation ? (
                 theirRelation.status === "sent" ? (
@@ -293,23 +288,23 @@ function RouteComponent() {
                       className="rounded-xl cursor-pointer"
                       onClick={() => terminateRequest(theirRelation.id)}
                     >
-                      <UserX />
+                      <UserX className="mr-2 h-4 w-4" />
                       Barátkérelem törlése
                     </Button>
                   ) : (
-                    <div>
+                    <div className="flex gap-2">
                       <Button
                         className="rounded-xl mr-2 bg-green-500 cursor-pointer"
                         onClick={() => accept(theirRelation.id)}
                       >
-                        <UserCheck />
+                        <UserCheck className="mr-2 h-4 w-4" />
                         Elfogadás
                       </Button>
                       <Button
                         className="rounded-xl bg-red-400 cursor-pointer"
                         onClick={() => terminateRequest(theirRelation.id)}
                       >
-                        <UserX />
+                        <UserX className="mr-2 h-4 w-4" />
                         Elutasítás
                       </Button>
                     </div>
@@ -319,7 +314,7 @@ function RouteComponent() {
                     className="rounded-xl cursor-pointer"
                     onClick={() => terminateRequest(theirRelation.id)}
                   >
-                    <UserX />
+                    <UserX className="mr-2 h-4 w-4" />
                     Barát törlése
                   </Button>
                 )
@@ -333,20 +328,20 @@ function RouteComponent() {
                     })
                   }
                 >
-                  <UserPlus />
+                  <UserPlus className="mr-2 h-4 w-4" />
                   Barátnak jelölés
                 </Button>
               )
             ) : (
-              <div >
+              <div className="flex gap-2">
                 <Link to="/profile/friends">
                   <Button variant="outline" className="rounded-xl mr-2 cursor-pointer">
-                    <Users />
+                    <Users className="mr-2 h-4 w-4" />
                     Barátok
                   </Button>
                 </Link>
                 <Button className="rounded-xl cursor-pointer" onClick={() => setEditOpen(true)}>
-                  <Pencil />
+                  <Pencil className="mr-2 h-4 w-4" />
                   Szerkesztés
                 </Button>
               </div>
@@ -364,33 +359,33 @@ function RouteComponent() {
 
               <CardContent className="space-y-5">
                 <div className="flex items-center gap-4">
-                  <Avatar className="h-16 w-16 rounded-2xl ring-1 ring-border/60">
+                  <Avatar className="h-16 w-16 rounded-2xl ring-2 ring-border/60 shadow-md shrink-0">
                     <AvatarImage alt={userData.username} />
-                    <AvatarFallback className="rounded-2xl">
+                    <AvatarFallback className="rounded-2xl text-lg font-bold">
                       {userData.username.slice(0, 2).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
 
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h2 className="text-xl font-semibold">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h2 className="text-xl font-semibold truncate">
                         {userData.username}
                       </h2>
                       <Badge
                         variant={userData.isAdmin ? "default" : "secondary"}
                         className={cn(
-                          "rounded-full",
+                          "rounded-full shrink-0",
                           userData.isAdmin && "bg-primary text-primary-foreground"
                         )}
                       >
                         {userData.isAdmin ? (
                           <>
-                            <ShieldCheck className="h-3.5 w-3.5" />
+                            <ShieldCheck className="h-3.5 w-3.5 mr-1" />
                             Admin
                           </>
                         ) : (
                           <>
-                            <Shield className="h-3.5 w-3.5" />
+                            <Shield className="h-3.5 w-3.5 mr-1" />
                             User
                           </>
                         )}
@@ -398,8 +393,8 @@ function RouteComponent() {
                     </div>
 
                     <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
-                      <Mail className="h-4 w-4" />
-                      {userData.email}
+                      <Mail className="h-4 w-4 shrink-0" />
+                      <span className="truncate">{userData.email}</span>
                     </div>
                   </div>
                 </div>
@@ -414,16 +409,17 @@ function RouteComponent() {
               </CardContent>
             </Card>
 
-            {/* FRIENDS CARD */}
+            {/* RIGHT CARDS */}
             <div className="grid gap-6 lg:col-span-8">
+
+              {/* FRIENDS CARD */}
               <Card className="rounded-2xl border-border/60 bg-card/60 shadow-xl backdrop-blur">
                 <CardHeader>
                   <CardTitle className="text-lg">Barátok</CardTitle>
                   <CardDescription>
                     {friends.filter((f) => f.status === "accepted").length === 0
                       ? "Még nincsenek barátok :("
-                      : "Barátok száma " +
-                      friends.filter((f) => f.status === "accepted").length}
+                      : "Barátok száma " + friends.filter((f) => f.status === "accepted").length}
                   </CardDescription>
                 </CardHeader>
 
@@ -435,20 +431,20 @@ function RouteComponent() {
                         key={f.ID}
                         to="/profile/$userID"
                         params={{ userID: f.ID }}
-                        className="flex items-center gap-3 rounded-2xl border border-border/60 bg-background/40 px-4 py-3 hover:bg-muted/50 transition"
+                        className="flex items-center gap-3 rounded-2xl border border-border/60 bg-background/40 px-4 py-3 hover:bg-muted/50 hover:border-primary/20 transition-all duration-200"
                       >
-                        <Avatar className="h-10 w-10 rounded-xl ring-1 ring-border/60">
-                          <AvatarFallback className="rounded-xl">
+                        <Avatar className="h-10 w-10 rounded-xl ring-1 ring-border/60 shrink-0">
+                          <AvatarFallback className="rounded-xl font-semibold">
                             {f.username.slice(0, 2).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
 
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <div className="font-medium">{f.username}</div>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <div className="font-medium truncate">{f.username}</div>
                             {f.isAdmin && (
-                              <Badge className="rounded-full">
-                                <ShieldCheck className="h-3.5 w-3.5" />
+                              <Badge className="rounded-full shrink-0">
+                                <ShieldCheck className="h-3.5 w-3.5 mr-1" />
                                 Admin
                               </Badge>
                             )}
@@ -458,6 +454,7 @@ function RouteComponent() {
                     ))}
                 </CardContent>
               </Card>
+
               {/* CLANS CARD */}
               <Card className="rounded-2xl border-border/60 bg-card/60 shadow-xl backdrop-blur">
                 <CardHeader>
@@ -481,49 +478,36 @@ function RouteComponent() {
                       key={clan.id}
                       to="/clans/$clanId"
                       params={{ clanId: String(clan.id) }}
-                      className="
-                        flex flex-col gap-1
-                        rounded-2xl
-                        border border-border/60
-                        bg-background/40
-                        px-4 py-3
-                        hover:bg-muted/50
-                        hover:scale-[1.02]
-                        transition
-                      "
+                      className="flex flex-col gap-1 rounded-2xl border border-border/60 bg-background/40 px-4 py-3 hover:bg-muted/50 hover:border-primary/20 hover:scale-[1.02] transition-all duration-200"
                     >
-                      <div className="flex items-center justify-between">
-                        <div className="font-medium text-base">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="font-medium text-base truncate">
                           {clan.name}
                         </div>
 
-                        {clan.leader_id === Number(userData.ID) ?
+                        {clan.leader_id === Number(userData.ID) ? (
                           <Badge
-                            className="
-                              rounded-full
-                              bg-yellow-100 text-yellow-800
-                              dark:bg-yellow-500/20 dark:text-yellow-300
-                              border border-yellow-300/50
-                              dark:border-yellow-500/30
-                            "
+                            className="rounded-full shrink-0 bg-yellow-100 text-yellow-800 dark:bg-yellow-500/20 dark:text-yellow-300 border border-yellow-300/50 dark:border-yellow-500/30"
                           >
-                            <Crown />
+                            <Crown className="h-3 w-3 mr-1" />
                             Vezető
-                          </Badge> :
-                          <Badge className="rounded-full">
-                            <User />
+                          </Badge>
+                        ) : (
+                          <Badge className="rounded-full shrink-0" variant="secondary">
+                            <User className="h-3 w-3 mr-1" />
                             Tag
                           </Badge>
-                        }
+                        )}
                       </div>
 
-                      <div className="text-sm text-muted-foreground text-justify wrap-break-word">
+                      <div className="text-sm text-muted-foreground line-clamp-2">
                         {clan.description ?? "Nincs leírás"}
                       </div>
                     </Link>
                   ))}
                 </CardContent>
               </Card>
+
             </div>
           </div>
         </div>

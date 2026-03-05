@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router"
 import MapView from "@/components/map/MapView"
 import { useGeolocation } from "@/hooks/useGeolocation"
-import LoadingPage from "@/components/LoadingPage"
+import LoadingPage from "@/components/shared/LoadingPage"
 import { useEffect } from "react"
 
 export const Route = createFileRoute("/map/")({
@@ -9,17 +9,16 @@ export const Route = createFileRoute("/map/")({
 })
 
 function MapPage() {
-  const { position, error, loading } = useGeolocation()
+  const { position, heading, error, loading } = useGeolocation()
 
   useEffect(() => {
-  document.body.style.overflow = "hidden"
-  return () => {
-    document.body.style.overflow = "auto"
-  }
-}, [])
+    document.body.style.overflow = "hidden"
+    return () => {
+      document.body.style.overflow = "auto"
+    }
+  }, [])
 
   if (loading) return <LoadingPage />
-
 
   if (error) {
     return (
@@ -36,5 +35,5 @@ function MapPage() {
 
   if (!position) return null
 
-  return <MapView position={position} />
+  return <MapView position={position} heading={heading} />
 }
