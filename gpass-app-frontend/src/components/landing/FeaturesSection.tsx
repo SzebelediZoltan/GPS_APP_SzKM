@@ -37,7 +37,7 @@ export default function FeaturesSection() {
 
             {/* Number watermark */}
             <div
-              className="pointer-events-none absolute -right-2 -top-4 text-8xl font-black text-foreground/[0.03] select-none transition-all duration-300 group-hover:text-foreground/[0.06]"
+              className="pointer-events-none absolute -right-2 -top-4 text-8xl font-black text-foreground/3 select-none transition-all duration-300 group-hover:text-foreground/6"
               aria-hidden
             >
               {String(i + 1).padStart(2, "0")}

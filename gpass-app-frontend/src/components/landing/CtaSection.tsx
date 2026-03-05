@@ -48,7 +48,7 @@ export default function CtaSection() {
 
             <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
               <Button asChild size="lg" className="group px-8 font-bold shadow-lg shadow-primary/30 text-base">
-                <Link to="/map/mapPage">
+                <Link to="/map">
                   Térkép megnyitása
                   <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                 </Link>

@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Check, Users, Flag, Copy, AlertTriangle, Route } from "lucide-react"
+import { Users, Flag, Copy, AlertTriangle, Route } from "lucide-react"
 
 const highlights = [
   { icon: <Flag className="h-4 w-4 text-amber-400" />, text: "Globális markerrel egyből jelezheted a rendőri ellenőrzést." },

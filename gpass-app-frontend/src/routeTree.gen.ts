@@ -12,10 +12,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MapIndexRouteImport } from './routes/map/index'
 import { Route as ClansIndexRouteImport } from './routes/clans/index'
 import { Route as ProfileSettingsRouteImport } from './routes/profile/settings'
 import { Route as ProfileFriendsRouteImport } from './routes/profile/friends'
-import { Route as MapMapPageRouteImport } from './routes/map/mapPage'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as ProfileUserIDIndexRouteImport } from './routes/profile/$userID/index'
@@ -36,6 +36,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MapIndexRoute = MapIndexRouteImport.update({
+  id: '/map/',
+  path: '/map/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ClansIndexRoute = ClansIndexRouteImport.update({
   id: '/clans/',
   path: '/clans/',
@@ -49,11 +54,6 @@ const ProfileSettingsRoute = ProfileSettingsRouteImport.update({
 const ProfileFriendsRoute = ProfileFriendsRouteImport.update({
   id: '/profile/friends',
   path: '/profile/friends',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MapMapPageRoute = MapMapPageRouteImport.update({
-  id: '/map/mapPage',
-  path: '/map/mapPage',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
@@ -83,10 +83,10 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
-  '/map/mapPage': typeof MapMapPageRoute
   '/profile/friends': typeof ProfileFriendsRoute
   '/profile/settings': typeof ProfileSettingsRoute
   '/clans/': typeof ClansIndexRoute
+  '/map/': typeof MapIndexRoute
   '/clans/$clanId/': typeof ClansClanIdIndexRoute
   '/profile/$userID/': typeof ProfileUserIDIndexRoute
 }
@@ -96,10 +96,10 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
-  '/map/mapPage': typeof MapMapPageRoute
   '/profile/friends': typeof ProfileFriendsRoute
   '/profile/settings': typeof ProfileSettingsRoute
   '/clans': typeof ClansIndexRoute
+  '/map': typeof MapIndexRoute
   '/clans/$clanId': typeof ClansClanIdIndexRoute
   '/profile/$userID': typeof ProfileUserIDIndexRoute
 }
@@ -110,10 +110,10 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
-  '/map/mapPage': typeof MapMapPageRoute
   '/profile/friends': typeof ProfileFriendsRoute
   '/profile/settings': typeof ProfileSettingsRoute
   '/clans/': typeof ClansIndexRoute
+  '/map/': typeof MapIndexRoute
   '/clans/$clanId/': typeof ClansClanIdIndexRoute
   '/profile/$userID/': typeof ProfileUserIDIndexRoute
 }
@@ -125,10 +125,10 @@ export interface FileRouteTypes {
     | '/contact'
     | '/auth/login'
     | '/auth/register'
-    | '/map/mapPage'
     | '/profile/friends'
     | '/profile/settings'
     | '/clans/'
+    | '/map/'
     | '/clans/$clanId/'
     | '/profile/$userID/'
   fileRoutesByTo: FileRoutesByTo
@@ -138,10 +138,10 @@ export interface FileRouteTypes {
     | '/contact'
     | '/auth/login'
     | '/auth/register'
-    | '/map/mapPage'
     | '/profile/friends'
     | '/profile/settings'
     | '/clans'
+    | '/map'
     | '/clans/$clanId'
     | '/profile/$userID'
   id:
@@ -151,10 +151,10 @@ export interface FileRouteTypes {
     | '/contact'
     | '/auth/login'
     | '/auth/register'
-    | '/map/mapPage'
     | '/profile/friends'
     | '/profile/settings'
     | '/clans/'
+    | '/map/'
     | '/clans/$clanId/'
     | '/profile/$userID/'
   fileRoutesById: FileRoutesById
@@ -165,10 +165,10 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
-  MapMapPageRoute: typeof MapMapPageRoute
   ProfileFriendsRoute: typeof ProfileFriendsRoute
   ProfileSettingsRoute: typeof ProfileSettingsRoute
   ClansIndexRoute: typeof ClansIndexRoute
+  MapIndexRoute: typeof MapIndexRoute
   ClansClanIdIndexRoute: typeof ClansClanIdIndexRoute
   ProfileUserIDIndexRoute: typeof ProfileUserIDIndexRoute
 }
@@ -196,6 +196,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/map/': {
+      id: '/map/'
+      path: '/map'
+      fullPath: '/map/'
+      preLoaderRoute: typeof MapIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/clans/': {
       id: '/clans/'
       path: '/clans'
@@ -215,13 +222,6 @@ declare module '@tanstack/react-router' {
       path: '/profile/friends'
       fullPath: '/profile/friends'
       preLoaderRoute: typeof ProfileFriendsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/map/mapPage': {
-      id: '/map/mapPage'
-      path: '/map/mapPage'
-      fullPath: '/map/mapPage'
-      preLoaderRoute: typeof MapMapPageRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/register': {
@@ -261,10 +261,10 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
-  MapMapPageRoute: MapMapPageRoute,
   ProfileFriendsRoute: ProfileFriendsRoute,
   ProfileSettingsRoute: ProfileSettingsRoute,
   ClansIndexRoute: ClansIndexRoute,
+  MapIndexRoute: MapIndexRoute,
   ClansClanIdIndexRoute: ClansClanIdIndexRoute,
   ProfileUserIDIndexRoute: ProfileUserIDIndexRoute,
 }

@@ -88,7 +88,7 @@ function AboutPage() {
           </p>
           <div className="flex flex-wrap gap-3 pt-2">
             <Button asChild size="lg" className="group font-semibold shadow-lg shadow-primary/20">
-              <Link to="/map/mapPage">
+              <Link to="/map">
                 Térkép megnyitása
                 <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>

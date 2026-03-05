@@ -105,7 +105,7 @@ export default function HeroSection() {
 
             <div className="hf4 flex flex-wrap gap-3">
               <Button asChild size="lg" className="group px-8 font-semibold shadow-lg shadow-primary/20">
-                <Link to="/map/mapPage">
+                <Link to="/map">
                   Próbáld ki most
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Link>

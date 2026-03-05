@@ -80,7 +80,7 @@ export default function Header({ user }: HeaderProps) {
 
                     {/* Desktop nav links */}
                     <nav className="hidden items-center gap-1 md:flex">
-                        <NavLink label="Térkép" to="/map/mapPage" />
+                        <NavLink label="Térkép" to="/map" />
                         <NavLink label="Rólunk" to="/about" />
                         <NavLink label="Kapcsolat" to="/contact" />
                         <NavLink label="Klánok" to="/clans" />
@@ -241,7 +241,7 @@ function MobileMenu({ user }: { user: User | null }) {
                         </p>
                         <div className="rounded-xl border border-border/70 bg-card/30 overflow-hidden">
                             <SheetClose asChild>
-                                <MobileNavItem label="Térkép" to="/map/mapPage" />
+                                <MobileNavItem label="Térkép" to="/map" />
                             </SheetClose>
                             <SheetClose asChild>
                                 <MobileNavItem label="Rólunk" to="/about" />
