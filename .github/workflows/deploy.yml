@@ -15,12 +15,13 @@ jobs:
         with:
           host: 204.168.158.148
           username: root
-          port: 22
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            echo "CONNECTED"
+            bash -l -c "
+            echo CONNECTED
             cd /root/project/GPS_APP_SzKM
             git pull origin main
             docker compose down
             docker compose up -d --build
-            echo "DEPLOY DONE"
+            echo DEPLOY DONE
+            "
