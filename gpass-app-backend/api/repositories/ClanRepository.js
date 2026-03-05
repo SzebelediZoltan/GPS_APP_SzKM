@@ -18,17 +18,23 @@ class ClanRepository {
                         ]
                     ]
                 },
-                include: [{
-                    association: "leader",
-                    attributes: ["username"],
-                    required: false,
-                },
-                {
-                    association: "members",
-                    attributes: [],
-                }
+                include: [
+                    {
+                        association: "leader",
+                        attributes: ["username"],
+                        required: false,
+                    },
+                    {
+                        association: "members",
+                        attributes: [],       // semmi mező ne jöjjön
+                        required: false,
+                        // A defaultScope-ot felülírjuk, hogy ne rakja bele
+                        // a clan_id / user_id / joined_at mezőket a SELECT-be
+                        through: undefined,
+                        scope: false,
+                    }
                 ],
-                group: ["Clan.id", "leader.id"],
+                group: ["Clan.id", "leader.ID", "leader.username"],
                 subQuery: false,
             });
         }
