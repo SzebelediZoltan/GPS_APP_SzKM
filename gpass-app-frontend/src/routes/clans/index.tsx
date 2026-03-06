@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 
 import { useAuth } from "@/hooks/useAuth"
-import { useClans } from "@/hooks/useClans"
+import { useClans } from "@/hooks/social/useClans"
 
 import NotLoggedIn from "@/components/shared/NotLoggedIn"
 import LoadingPage from "@/components/shared/LoadingPage"

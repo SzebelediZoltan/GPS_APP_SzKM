@@ -1,19 +1,23 @@
-import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from "react-leaflet"
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
 import L from "leaflet"
 import "leaflet-rotate"
-import { User, MapPin } from "lucide-react"
+import { User, MapPin, Compass as CompassIcon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
+import { useEffect, useState, useRef, useCallback } from "react"
 import { useAuth } from "@/hooks/useAuth"
-import { useEffect, useState, useRef } from "react"
-import { toast } from "sonner"
+import { useNavigation } from "@/context/NavigationContext"
+import MapController from "./MapController"
 import LocateButton from "./LocateButton"
 import NavigationPanel, { NavigationMobileSheet } from "./NavigationPanel"
-import RouteLayer from "./RouteLayer"
 import NavigationPreviewPanel from "./NavigationPreviewPanel"
+import RouteLayer from "./RouteLayer"
+import TurnByTurnPanel from "./TurnByTurnPanel"
+import SpeedDisplay from "./SpeedDisplay"
 
 type Props = {
   position: { lat: number; lng: number }
   heading: number | null
+  speed: number | null
 }
 
 function createUserIcon(coneAngle: number | null): L.DivIcon {
@@ -43,25 +47,36 @@ function createUserIcon(coneAngle: number | null): L.DivIcon {
   })
 }
 
-export default function MapView({ position, heading }: Props) {
+export default function MapView({ position, heading, speed }: Props) {
   const { user } = useAuth()
+  const { mode, registerCenterOnUser } = useNavigation()
+
   const [isDark, setIsDark] = useState(document.documentElement.classList.contains("dark"))
   const [headingLock, setHeadingLock] = useState(false)
   const [lockFlash, setLockFlash] = useState(false)
   const [mobileSheetOpen, setMobileSheetOpen] = useState(false)
+
   const positionRef = useRef(position)
   const mapRef = useRef<L.Map | null>(null)
   useEffect(() => { positionRef.current = position }, [position])
 
-  const centerOnUser = () => {
-    mapRef.current?.flyTo([positionRef.current.lat, positionRef.current.lng], 16, { duration: 0.9 })
-  }
+  const centerOnUser = useCallback(() => {
+    mapRef.current?.flyTo([positionRef.current.lat, positionRef.current.lng], 17, { duration: 0.8 })
+  }, [])
 
-  // Lock gomb piros villanás
-  const flashLock = () => {
+  useEffect(() => {
+    registerCenterOnUser(centerOnUser)
+  }, [centerOnUser, registerCenterOnUser])
+
+  useEffect(() => {
+    if (mode === "navigating") setHeadingLock(true)
+    else if (mode === "idle") setHeadingLock(false)
+  }, [mode])
+
+  const flashLock = useCallback(() => {
     setLockFlash(true)
     setTimeout(() => setLockFlash(false), 600)
-  }
+  }, [])
 
   const handleToggleHeadingLock = async () => {
     if (!headingLock) {
@@ -89,13 +104,14 @@ export default function MapView({ position, heading }: Props) {
 
   return (
     <div style={{ height: "calc(100dvh - env(safe-area-inset-top, 0px))", width: "100%", position: "relative" }}>
+      <TurnByTurnPanel position={position} />
+
       <MapContainer
         center={[position.lat, position.lng]}
         zoom={15} minZoom={5} maxZoom={18}
         maxBounds={bounds} maxBoundsViscosity={1.0}
         worldCopyJump={false} zoomControl={false}
-        rotate={true} bearing={0}
-        rotateControl={false}
+        rotate={true} bearing={0} rotateControl={false}
         style={{ height: "100%", width: "100%" }}
         ref={mapRef}
       >
@@ -112,12 +128,8 @@ export default function MapView({ position, heading }: Props) {
           position={position}
           heading={heading}
           headingLock={headingLock}
-          onLockedDragAttempt={() => {
+          onLockedInteraction={() => {
             flashLock()
-            toast.warning("A kamera zárolva van", {
-              description: "A térkép mozgatásához kapcsold ki a zárolást.",
-              duration: 2500,
-            })
           }}
         />
 
@@ -130,13 +142,13 @@ export default function MapView({ position, heading }: Props) {
               </div>
               {!!user && (
                 <>
-                  <div className="flex items-center gap-2 text-sm text-foreground">
+                  <div className="flex items-center gap-2 text-sm">
                     <User className="w-4 h-4" />
-                    <span className="text-muted-foreground">{user?.username}</span>
+                    <span className="text-muted-foreground">{user.username}</span>
                   </div>
                   <Link
                     to="/profile/$userID"
-                    params={{ userID: String(user?.userID) }}
+                    params={{ userID: String(user.userID) }}
                     className="w-full inline-flex justify-center rounded-lg border border-border bg-muted hover:bg-accent py-2 text-sm font-medium"
                   >
                     Profil megnyitása →
@@ -149,94 +161,43 @@ export default function MapView({ position, heading }: Props) {
 
         <NavigationPanel currentPosition={position} onOpenMobile={() => setMobileSheetOpen(true)} />
         <RouteLayer />
-        <LocateButton
-          position={position}
-          heading={heading}
-          headingLock={headingLock}
-          lockFlash={lockFlash}
-          onToggleHeadingLock={handleToggleHeadingLock}
-        />
+        {mode !== "navigating" && (
+          <LocateButton
+            position={position}
+            heading={heading}
+            headingLock={headingLock}
+            lockFlash={lockFlash}
+            onToggleHeadingLock={handleToggleHeadingLock}
+          />
+        )}
       </MapContainer>
 
-      <NavigationPreviewPanel centerOnUser={centerOnUser} />
-      <NavigationMobileSheet open={mobileSheetOpen} onOpenChange={setMobileSheetOpen} currentPosition={position} />
+      {mode === "navigating" && (
+        <>
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-1000 flex items-end justify-end px-4 pb-[calc(4rem+0.9rem)]">
+            <button
+              onClick={handleToggleHeadingLock}
+              className={`pointer-events-auto w-11 h-11 rounded-xl border shadow-md flex items-center justify-center active:scale-95 transition cursor-pointer ${
+                lockFlash
+                  ? "bg-red-500/20 border-red-500 text-red-500 animate-pulse"
+                  : headingLock
+                    ? "bg-primary border-primary text-primary-foreground"
+                    : "bg-card border-border text-foreground hover:bg-muted"
+              }`}
+            >
+              <CompassIcon className="w-5 h-5" />
+            </button>
+          </div>
+          <SpeedDisplay position={position} speed={speed} />
+        </>
+      )}
+
+      <NavigationPreviewPanel />
+      <NavigationMobileSheet
+        open={mobileSheetOpen}
+        onOpenChange={setMobileSheetOpen}
+        currentPosition={position}
+      />
     </div>
   )
-}
-
-// ─── MapController ────────────────────────────────────────────────────────────
-function MapController({ position, heading, headingLock, onLockedDragAttempt }: {
-  position: { lat: number; lng: number }
-  heading: number | null
-  headingLock: boolean
-  onLockedDragAttempt: () => void
-}) {
-  const map = useMap()
-  const refs = useRef({ position, heading, headingLock, lastBearing: 0 })
-  const toastShownRef = useRef(false)
-
-  useEffect(() => { refs.current.position = position }, [position])
-  useEffect(() => { refs.current.heading = heading }, [heading])
-  useEffect(() => { refs.current.headingLock = headingLock }, [headingLock])
-
-  // Drag blokkolás lock esetén
-  useMapEvents({
-    mousedown: () => {
-      if (!refs.current.headingLock) return
-      // Ha lock be, megakadályozzuk a dragot a dragging handler letiltásával
-    },
-    dragstart: () => {
-      if (!refs.current.headingLock) return
-      // Drag elkezdődött lock közben → azonnal visszaállítjuk a pozíciót
-      map.panTo([refs.current.position.lat, refs.current.position.lng], { animate: false })
-      // Toast csak egyszer jelenjen meg egymás után
-      if (!toastShownRef.current) {
-        toastShownRef.current = true
-        onLockedDragAttempt()
-        setTimeout(() => { toastShownRef.current = false }, 3000)
-      }
-    },
-  })
-
-  // RAF: bearing + pozíció követés lock esetén
-  useEffect(() => {
-    let rafId: number
-    const tick = () => {
-      const { headingLock, heading, position, lastBearing } = refs.current
-      if (headingLock && heading !== null) {
-        const diff = Math.abs(((heading - lastBearing) + 180) % 360 - 180)
-        if (diff > 1) {
-          map.setBearing(359 - heading)
-          refs.current.lastBearing = heading
-        }
-        const center = map.getCenter()
-        if (
-          Math.abs(center.lat - position.lat) > 0.00005 ||
-          Math.abs(center.lng - position.lng) > 0.00005
-        ) {
-          map.panTo([position.lat, position.lng], { animate: true, duration: 0.3 })
-        }
-      }
-      rafId = requestAnimationFrame(tick)
-    }
-    rafId = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(rafId)
-  }, [map])
-
-  // Lock váltás
-  useEffect(() => {
-    if (!headingLock) {
-      map.setBearing(0)
-      refs.current.lastBearing = 0
-      return
-    }
-    const { lat, lng } = refs.current.position
-    map.flyTo([lat, lng], map.getZoom(), { duration: 0.5 })
-    if (refs.current.heading !== null) {
-      map.setBearing(359 - refs.current.heading)
-      refs.current.lastBearing = refs.current.heading
-    }
-  }, [headingLock, map])
-
-  return null
 }

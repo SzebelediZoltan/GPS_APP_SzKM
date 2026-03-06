@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react"
 import { Crown, Users, Trash2, Pencil, UserX, ShieldCheck, ArrowLeft } from "lucide-react"
 
 import { useAuth } from "@/hooks/useAuth"
-import { useClans } from "@/hooks/useClans"
+import { useClans } from "@/hooks/social/useClans"
 
 import NotLoggedIn from "@/components/shared/NotLoggedIn"
 import LoadingPage from "@/components/shared/LoadingPage"

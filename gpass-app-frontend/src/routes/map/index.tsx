@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router"
 import MapView from "@/components/map/MapView"
-import { useGeolocation } from "@/hooks/useGeolocation"
+import { useGeolocation } from "@/hooks/map/useGeolocation"
 import LoadingPage from "@/components/shared/LoadingPage"
 import { useEffect } from "react"
 
@@ -9,7 +9,7 @@ export const Route = createFileRoute("/map/")({
 })
 
 function MapPage() {
-  const { position, heading, error, loading } = useGeolocation()
+  const { position, heading, speed, error, loading } = useGeolocation()
 
   useEffect(() => {
     // Megakadályozza a scroll-t a térkép oldalon
@@ -39,5 +39,5 @@ function MapPage() {
 
   if (!position) return null
 
-  return <MapView position={position} heading={heading} />
+  return <MapView speed={speed} position={position} heading={heading} />
 }

@@ -1,36 +1,12 @@
-import {
-  Route,
-  Clock,
-  MapPin,
-  ChevronDown,
-  X,
-  Navigation,
-  Zap,
-  ArrowRight,
-  Smartphone,
-  BookmarkPlus,
-} from "lucide-react"
-
 import { useState } from "react"
+import { Route, Clock, MapPin, ChevronDown, X, Navigation, Zap, ArrowRight, Smartphone, BookmarkPlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useNavigation } from "@/context/NavigationContext"
-import { useIsMobile } from "@/hooks/useIsMobile"
+import { useIsMobile } from "@/hooks/ui/useIsMobile"
 
-type Props = {
-  centerOnUser: () => void
-}
-
-export default function NavigationPreviewPanel({ centerOnUser }: Props) {
-  const {
-    mode,
-    routes,
-    selectedRouteIndex,
-    selectRoute,
-    startNavigation,
-    cancelPreview,
-  } = useNavigation()
-
+export default function NavigationPreviewPanel() {
+  const { mode, routes, selectedRouteIndex, selectRoute, startNavigation, cancelPreview } = useNavigation()
   const isMobile = useIsMobile()
   const [altOpen, setAltOpen] = useState(false)
 
@@ -39,37 +15,14 @@ export default function NavigationPreviewPanel({ centerOnUser }: Props) {
   const route = routes[selectedRouteIndex]
   const km = (route.distance / 1000).toFixed(1)
   const minutes = Math.round(route.duration / 60)
-  const fastest = Math.min(...routes.map((r) => r.duration))
+  const fastestDuration = Math.min(...routes.map((r) => r.duration))
 
   return (
-    <div
-      className="
-        pointer-events-none
-        absolute inset-x-0 bottom-0
-        flex justify-center
-        px-3
-        pb-[calc(4rem+0.9rem)]
-        z-1000
-      "
-    >
-      <div
-        className="
-          pointer-events-auto
-          w-full md:w-105
-          rounded-2xl
-          border border-border/60
-          bg-card backdrop-blur-xl
-          shadow-2xl shadow-black/40
-          overflow-hidden
-          animate-in fade-in slide-in-from-bottom-4 duration-300
-        "
-      >
-        {/* ── TOP ACCENT BAR ── */}
+    <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center px-3 pb-[calc(4rem+0.9rem)] z-1000">
+      <div className="pointer-events-auto w-full md:w-105 rounded-2xl border border-border/60 bg-card backdrop-blur-xl shadow-2xl shadow-black/40 overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-300">
         <div className="h-1 bg-linear-to-r from-primary/60 via-primary to-primary/60" />
 
         <div className="p-4 space-y-3">
-
-          {/* ── HEADER ── */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-primary/15 flex items-center justify-center">
@@ -77,20 +30,17 @@ export default function NavigationPreviewPanel({ centerOnUser }: Props) {
               </div>
               <div>
                 <p className="text-sm font-bold leading-none text-foreground">Útvonal előnézet</p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">
-                  {routes.length} útvonal találva
-                </p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">{routes.length} útvonal találva</p>
               </div>
             </div>
             <button
-              onClick={() => { cancelPreview(); centerOnUser() }}
+              onClick={cancelPreview}
               className="w-7 h-7 cursor-pointer rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
             >
               <X className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          {/* ── STATS ROW ── */}
           <div className="grid grid-cols-2 gap-2">
             <div className="rounded-xl border border-border/50 bg-muted/40 px-3 py-2.5 flex items-center gap-2.5">
               <div className="w-7 h-7 rounded-lg bg-blue-500/15 flex items-center justify-center shrink-0">
@@ -116,50 +66,28 @@ export default function NavigationPreviewPanel({ centerOnUser }: Props) {
             </div>
           </div>
 
-          {/* ── ALTERNATIVE ROUTES ── */}
           {routes.length > 1 && (
             <div>
               <button
                 onClick={() => setAltOpen(!altOpen)}
-                className="
-                  w-full flex items-center justify-between
-                  rounded-xl border border-border/50
-                  bg-muted/30 hover:bg-accent/50
-                  px-3 py-2
-                  transition-colors
-                  cursor-pointer
-                "
+                className="w-full flex items-center justify-between rounded-xl border border-border/50 bg-muted/30 hover:bg-accent/50 px-3 py-2 transition-colors cursor-pointer"
               >
-                <span className="text-muted-foreground text-xs">
-                  Alternatív útvonalak ({routes.length - 1})
-                </span>
-                <ChevronDown
-                  className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${altOpen ? "rotate-180" : ""}`}
-                />
+                <span className="text-muted-foreground text-xs">Alternatív útvonalak ({routes.length - 1})</span>
+                <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${altOpen ? "rotate-180" : ""}`} />
               </button>
 
               {altOpen && (
                 <div className="mt-2 space-y-1.5 animate-in fade-in slide-in-from-top-1 duration-150">
                   {routes.map((r, index) => {
-                    const rKm = (r.distance / 1000).toFixed(1)
-                    const rMin = Math.round(r.duration / 60)
-                    const isFastest = r.duration === fastest
                     const isActive = index === selectedRouteIndex
-
+                    const isFastest = r.duration === fastestDuration
                     return (
                       <button
                         key={index}
                         onClick={() => selectRoute(index)}
-                        className={`
-                          w-full text-left rounded-xl border px-3 py-2.5
-                          flex items-center justify-between
-                          transition-all duration-150
-                          cursor-pointer
-                          ${isActive
-                            ? "border-primary/50 bg-primary/10"
-                            : "border-border/40 bg-muted/20 hover:bg-accent/40 hover:border-border/60"
-                          }
-                        `}
+                        className={`w-full text-left rounded-xl border px-3 py-2.5 flex items-center justify-between transition-all cursor-pointer ${
+                          isActive ? "border-primary/50 bg-primary/10" : "border-border/40 bg-muted/20 hover:bg-accent/40"
+                        }`}
                       >
                         <div className="flex items-center gap-2">
                           <div className={`w-2 h-2 rounded-full shrink-0 ${isActive ? "bg-primary" : "bg-muted-foreground/40"}`} />
@@ -174,8 +102,8 @@ export default function NavigationPreviewPanel({ centerOnUser }: Props) {
                           )}
                         </div>
                         <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                          <span>{rKm} km</span>
-                          <span>{rMin} perc</span>
+                          <span>{(r.distance / 1000).toFixed(1)} km</span>
+                          <span>{Math.round(r.duration / 60)} perc</span>
                         </div>
                       </button>
                     )
@@ -185,49 +113,30 @@ export default function NavigationPreviewPanel({ centerOnUser }: Props) {
             </div>
           )}
 
-          {/* ── Desktop figyelmeztetés ── */}
           {!isMobile && (
             <div className="rounded-xl border border-border/50 bg-muted/30 px-3 py-2.5 flex items-center gap-2.5">
               <Smartphone className="w-4 h-4 shrink-0 text-muted-foreground" />
-              <p className="text-xs text-muted-foreground leading-snug">
-                Navigáció csak mobilon érhető el.
-              </p>
+              <p className="text-xs text-muted-foreground leading-snug">Navigáció csak mobilon érhető el.</p>
             </div>
           )}
 
-          {/* ── ACTION BUTTONS ── */}
           <div className="flex gap-2 pt-1">
-            <Button
-              variant="outline"
-              className="flex-1 rounded-xl border-border/60 font-semibold cursor-pointer"
-              onClick={() => { cancelPreview(); centerOnUser() }}
-            >
+            <Button variant="outline" className="flex-1 rounded-xl border-border/60 font-semibold cursor-pointer" onClick={cancelPreview}>
               Mégse
             </Button>
-
             {isMobile ? (
-              <Button
-                className="flex-1 rounded-xl cursor-pointer font-semibold shadow-lg shadow-primary/20"
-                onClick={startNavigation}
-              >
+              <Button className="flex-1 rounded-xl cursor-pointer font-semibold shadow-lg shadow-primary/20" onClick={startNavigation}>
                 <Navigation className="w-4 h-4 mr-2" />
                 Indulás
                 <ArrowRight className="w-3.5 h-3.5 ml-1.5 opacity-70" />
               </Button>
             ) : (
-              <Button
-                variant="secondary"
-                className="flex-1 rounded-xl cursor-pointer font-semibold"
-                onClick={() => {
-                  // TODO: útvonal mentés
-                }}
-              >
+              <Button variant="secondary" className="flex-1 rounded-xl cursor-pointer font-semibold" onClick={() => {}}>
                 <BookmarkPlus className="w-4 h-4 mr-2" />
                 Mentés
               </Button>
             )}
           </div>
-
         </div>
       </div>
     </div>

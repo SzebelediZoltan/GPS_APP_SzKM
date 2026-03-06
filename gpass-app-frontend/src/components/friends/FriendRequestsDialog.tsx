@@ -1,7 +1,7 @@
 "use client"
 
 import { useAuth } from "@/hooks/useAuth"
-import { useFriends } from "@/hooks/useFriends"
+import { useFriends } from "@/hooks/social/useFriends"
 import {
     Dialog,
     DialogContent,

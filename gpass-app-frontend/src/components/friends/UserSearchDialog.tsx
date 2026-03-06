@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
 import { useAuth } from "@/hooks/useAuth"
 import { Link } from "@tanstack/react-router"
-import { useDebounce } from "@/hooks/useDebounce"
+import { useDebounce } from "@/hooks/ui/useDebounce"
 import {
     Dialog,
     DialogContent,

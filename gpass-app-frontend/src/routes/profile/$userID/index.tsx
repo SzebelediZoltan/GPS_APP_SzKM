@@ -22,8 +22,8 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAuth } from "@/hooks/useAuth"
-import { useFriends } from "@/hooks/useFriends"
-import { useMappedFriends } from "@/hooks/useMappedFriends"
+import { useFriends } from "@/hooks/social/useFriends"
+import { useMappedFriends } from "@/hooks/social/useMappedFriends"
 import NotLoggedIn from "@/components/shared/NotLoggedIn"
 import LoadingPage from "@/components/shared/LoadingPage"
 import ServerErrorPage from "@/components/shared/ServerErrorPage"
@@ -44,7 +44,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useClans } from "@/hooks/useClans"
+import { useClans } from "@/hooks/social/useClans"
 
 export const Route = createFileRoute("/profile/$userID/")({
   component: RouteComponent,

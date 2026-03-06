@@ -8,6 +8,7 @@ type Position = {
 export function useGeolocation() {
   const [position, setPosition] = useState<Position | null>(null)
   const [heading, setHeading] = useState<number | null>(null)
+  const [speed, setSpeed] = useState<number | null>(null)   // m/s, GPS-ből
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -21,6 +22,7 @@ export function useGeolocation() {
     const watcher = navigator.geolocation.watchPosition(
       (pos) => {
         setPosition({ lat: pos.coords.latitude, lng: pos.coords.longitude })
+        setSpeed(pos.coords.speed)   // null ha nem elérhető
         setLoading(false)
       },
       (err) => {
@@ -35,34 +37,18 @@ export function useGeolocation() {
 
   useEffect(() => {
     const handleOrientation = (e: DeviceOrientationEvent) => {
-      // iOS: webkitCompassHeading már helyes észak-alapú fokszám (0-360, CW)
-      // Android: alpha = 0 ha észak, de matematikai CCW → 360-alpha adja a CW irányt
       const ios = (e as any).webkitCompassHeading
       if (typeof ios === "number" && !isNaN(ios)) {
         setHeading(ios)
         return
       }
       if (e.alpha !== null) {
-        // Android absolute orientation esetén is ez a helyes képlet
         setHeading((360 - e.alpha) % 360)
       }
     }
 
-    const attach = () => {
-      // deviceorientationabsolute pontosabb Androidon (gravitációtól független)
-      window.addEventListener("deviceorientationabsolute", handleOrientation as EventListener, true)
-      window.addEventListener("deviceorientation", handleOrientation as EventListener, true)
-    }
-
-    const DevOrEvent = DeviceOrientationEvent as any
-    if (typeof DevOrEvent.requestPermission === "function") {
-      // iOS 13+ – engedélyt csak user gesture-re lehet kérni,
-      // ezt a MapView-ban a heading lock gomb megnyomásakor kell triggerelni
-      // itt csak feliratkozunk ha már megvan
-      attach()
-    } else {
-      attach()
-    }
+    window.addEventListener("deviceorientationabsolute", handleOrientation as EventListener, true)
+    window.addEventListener("deviceorientation", handleOrientation as EventListener, true)
 
     return () => {
       window.removeEventListener("deviceorientationabsolute", handleOrientation as EventListener, true)
@@ -70,5 +56,5 @@ export function useGeolocation() {
     }
   }, [])
 
-  return { position, heading, error, loading }
+  return { position, heading, speed, error, loading }
 }
