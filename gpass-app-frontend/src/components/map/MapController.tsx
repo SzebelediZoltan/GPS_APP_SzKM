@@ -86,7 +86,7 @@ export default function MapController({ position, heading, headingLock, onLocked
       refs.current.lastBearing = 0
       return
     }
-    const { lat, lng } = refs.current.position
+    
     const targetZoom = Math.max(map.getZoom(), 16)
     map.setZoom(targetZoom)
     setTimeout(() => {
