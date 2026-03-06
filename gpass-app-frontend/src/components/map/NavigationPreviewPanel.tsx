@@ -7,12 +7,15 @@ import {
   Navigation,
   Zap,
   ArrowRight,
+  Smartphone,
+  BookmarkPlus,
 } from "lucide-react"
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useNavigation } from "@/context/NavigationContext"
+import { useIsMobile } from "@/hooks/useIsMobile"
 
 type Props = {
   centerOnUser: () => void
@@ -28,6 +31,7 @@ export default function NavigationPreviewPanel({ centerOnUser }: Props) {
     cancelPreview,
   } = useNavigation()
 
+  const isMobile = useIsMobile()
   const [altOpen, setAltOpen] = useState(false)
 
   if (mode !== "preview" || routes.length === 0) return null
@@ -181,6 +185,16 @@ export default function NavigationPreviewPanel({ centerOnUser }: Props) {
             </div>
           )}
 
+          {/* ── Desktop figyelmeztetés ── */}
+          {!isMobile && (
+            <div className="rounded-xl border border-border/50 bg-muted/30 px-3 py-2.5 flex items-center gap-2.5">
+              <Smartphone className="w-4 h-4 shrink-0 text-muted-foreground" />
+              <p className="text-xs text-muted-foreground leading-snug">
+                Navigáció csak mobilon érhető el.
+              </p>
+            </div>
+          )}
+
           {/* ── ACTION BUTTONS ── */}
           <div className="flex gap-2 pt-1">
             <Button
@@ -190,14 +204,28 @@ export default function NavigationPreviewPanel({ centerOnUser }: Props) {
             >
               Mégse
             </Button>
-            <Button
-              className="flex-1 rounded-xl cursor-pointer font-semibold shadow-lg shadow-primary/20"
-              onClick={startNavigation}
-            >
-              <Navigation className="w-4 h-4 mr-2" />
-              Indulás
-              <ArrowRight className="w-3.5 h-3.5 ml-1.5 opacity-70" />
-            </Button>
+
+            {isMobile ? (
+              <Button
+                className="flex-1 rounded-xl cursor-pointer font-semibold shadow-lg shadow-primary/20"
+                onClick={startNavigation}
+              >
+                <Navigation className="w-4 h-4 mr-2" />
+                Indulás
+                <ArrowRight className="w-3.5 h-3.5 ml-1.5 opacity-70" />
+              </Button>
+            ) : (
+              <Button
+                variant="secondary"
+                className="flex-1 rounded-xl cursor-pointer font-semibold"
+                onClick={() => {
+                  // TODO: útvonal mentés
+                }}
+              >
+                <BookmarkPlus className="w-4 h-4 mr-2" />
+                Mentés
+              </Button>
+            )}
           </div>
 
         </div>

@@ -1,66 +1,61 @@
-import { useMap, useMapEvents } from "react-leaflet"
-import { LocateFixed, Compass } from "lucide-react"
+import { useMap } from "react-leaflet"
+import { Compass, LocateFixed } from "lucide-react"
 
 type Props = {
-    position: { lat: number; lng: number }
-    heading: number | null
-    headingLock: boolean
-    onToggleHeadingLock: () => void
+  position: { lat: number; lng: number }
+  heading: number | null
+  headingLock: boolean
+  lockFlash: boolean
+  onToggleHeadingLock: () => void
 }
 
-export default function LocateButton({ position, heading, headingLock, onToggleHeadingLock }: Props) {
-    const map = useMap()
+export default function LocateButton({ position, heading, headingLock, lockFlash, onToggleHeadingLock }: Props) {
+  const map = useMap()
 
-    // Ha a user nyúl a térképhez, heading lock kikapcsol
-    useMapEvents({
-        dragstart: () => {
-            if (headingLock) onToggleHeadingLock()
-        },
-    })
+  const handleLocate = () => {
+    map.flyTo([position.lat, position.lng], 17, { duration: 0.8 })
+  }
 
-    const handleLocate = () => {
-        map.flyTo([position.lat, position.lng], 17, {
-            duration: 0.8,
-        })
-    }
+  return (
+    <div className="leaflet-top leaflet-right pointer-events-none">
+      <div className="m-4 flex flex-col gap-2 pointer-events-auto">
 
-    const btnClass = `
-        w-11 h-11
-        rounded-xl
-        bg-card
-        text-foreground
-        border border-border
-        shadow-md
-        flex items-center justify-center
-        hover:bg-muted
-        active:scale-95
-        transition
-        cursor-pointer
-    `
+        {/* Recenter gomb */}
+        <button
+          onClick={handleLocate}
+          className="
+            w-11 h-11 rounded-xl
+            bg-card text-foreground
+            border border-border shadow-md
+            flex items-center justify-center
+            hover:bg-muted active:scale-95 transition cursor-pointer
+          "
+        >
+          <LocateFixed className="w-5 h-5 text-primary" />
+        </button>
 
-    return (
-        <div className="leaflet-top leaflet-right pointer-events-none">
-            <div className="m-4 flex flex-col gap-2 pointer-events-auto">
+        {/* Heading lock gomb – csak ha van heading */}
+        {heading !== null && (
+          <button
+            onClick={onToggleHeadingLock}
+            className={`
+              w-11 h-11 rounded-xl
+              border shadow-md
+              flex items-center justify-center
+              active:scale-95 transition-all cursor-pointer
+              ${lockFlash
+                ? "bg-red-500/20 border-red-500 text-red-500 animate-pulse"
+                : headingLock
+                  ? "bg-primary border-primary text-primary-foreground"
+                  : "bg-card border-border text-foreground hover:bg-muted"
+              }
+            `}
+          >
+            <Compass className="w-5 h-5" />
+          </button>
+        )}
 
-                {/* Recenter gomb */}
-                <button onClick={handleLocate} className={btnClass}>
-                    <LocateFixed className="w-5 h-5 text-primary" />
-                </button>
-
-                {/* Heading lock gomb – csak ha van compass */}
-                {heading !== null && (
-                    <button
-                        onClick={onToggleHeadingLock}
-                        className={`${btnClass} ${headingLock
-                            ? "bg-primary text-primary-foreground border-primary hover:bg-primary/90"
-                            : ""
-                        }`}
-                    >
-                        <Compass className={`w-5 h-5 ${headingLock ? "text-primary-foreground" : "text-primary"}`} />
-                    </button>
-                )}
-
-            </div>
-        </div>
-    )
+      </div>
+    </div>
+  )
 }

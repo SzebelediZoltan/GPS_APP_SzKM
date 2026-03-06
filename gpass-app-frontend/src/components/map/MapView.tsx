@@ -1,17 +1,11 @@
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Popup,
-  useMap,
-  useMapEvents,
-} from "react-leaflet"
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from "react-leaflet"
 import L from "leaflet"
 import "leaflet-rotate"
 import { User, MapPin } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { useAuth } from "@/hooks/useAuth"
 import { useEffect, useState, useRef } from "react"
+import { toast } from "sonner"
 import LocateButton from "./LocateButton"
 import NavigationPanel, { NavigationMobileSheet } from "./NavigationPanel"
 import RouteLayer from "./RouteLayer"
@@ -22,8 +16,6 @@ type Props = {
   heading: number | null
 }
 
-// heading: a kúp szöge amit kapjon
-// null → nincs kúp
 function createUserIcon(coneAngle: number | null): L.DivIcon {
   return L.divIcon({
     className: "",
@@ -31,8 +23,7 @@ function createUserIcon(coneAngle: number | null): L.DivIcon {
       <div style="position:relative;width:40px;height:40px;display:flex;align-items:center;justify-content:center;">
         ${coneAngle !== null ? `
           <div style="
-            position:absolute;
-            width:0;height:0;
+            position:absolute;width:0;height:0;
             border-left:7px solid transparent;
             border-right:7px solid transparent;
             border-bottom:20px solid rgba(59,130,246,0.65);
@@ -54,76 +45,66 @@ function createUserIcon(coneAngle: number | null): L.DivIcon {
 
 export default function MapView({ position, heading }: Props) {
   const { user } = useAuth()
-  const [isDark, setIsDark] = useState(
-    document.documentElement.classList.contains("dark")
-  )
+  const [isDark, setIsDark] = useState(document.documentElement.classList.contains("dark"))
   const [headingLock, setHeadingLock] = useState(false)
+  const [lockFlash, setLockFlash] = useState(false)
   const [mobileSheetOpen, setMobileSheetOpen] = useState(false)
-  const [centerOnUser, setCenterOnUser] = useState<() => void>(() => () => { })
+  const positionRef = useRef(position)
+  const mapRef = useRef<L.Map | null>(null)
+  useEffect(() => { positionRef.current = position }, [position])
 
-  const requestCompassPermission = async () => {
-    const DevOrEvent = DeviceOrientationEvent as any
-    if (typeof DevOrEvent.requestPermission === "function") {
-      try {
-        const result = await DevOrEvent.requestPermission()
-        if (result !== "granted") return false
-      } catch { return false }
-    }
-    return true
+  const centerOnUser = () => {
+    mapRef.current?.flyTo([positionRef.current.lat, positionRef.current.lng], 16, { duration: 0.9 })
+  }
+
+  // Lock gomb piros villanás
+  const flashLock = () => {
+    setLockFlash(true)
+    setTimeout(() => setLockFlash(false), 600)
   }
 
   const handleToggleHeadingLock = async () => {
     if (!headingLock) {
-      const ok = await requestCompassPermission()
-      if (!ok) return
+      const DevOrEvent = DeviceOrientationEvent as any
+      if (typeof DevOrEvent.requestPermission === "function") {
+        try {
+          const res = await DevOrEvent.requestPermission()
+          if (res !== "granted") return
+        } catch { return }
+      }
     }
     setHeadingLock(prev => !prev)
   }
 
   useEffect(() => {
-    const observer = new MutationObserver(() => {
+    const obs = new MutationObserver(() =>
       setIsDark(document.documentElement.classList.contains("dark"))
-    })
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] })
-    return () => observer.disconnect()
+    )
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] })
+    return () => obs.disconnect()
   }, [])
 
   const bounds = L.latLngBounds(L.latLng(-85, -180), L.latLng(85, 180))
-
-  // Lock ki: kúp = heading (statikus térkép, kúp forog)
-  // Lock be: kúp = 0   (térkép forog heading-re, kúp fix "előre")
-  const coneAngle = heading !== null
-    ? (headingLock ? 0 : heading)
-    : null
-
-  const userIcon = createUserIcon(coneAngle)
+  const coneAngle = heading !== null ? (headingLock ? 0 : heading) : null
 
   return (
-    <div style={{
-      height: "calc(100dvh - env(safe-area-inset-top, 0px))",
-      width: "100%",
-      position: "relative",
-    }}>
+    <div style={{ height: "calc(100dvh - env(safe-area-inset-top, 0px))", width: "100%", position: "relative" }}>
       <MapContainer
         center={[position.lat, position.lng]}
-        zoom={15}
-        minZoom={5}
-        maxZoom={18}
-        maxBounds={bounds}
-        maxBoundsViscosity={1.0}
-        worldCopyJump={false}
-        zoomControl={false}
-        rotate={true}
-        bearing={0}
+        zoom={15} minZoom={5} maxZoom={18}
+        maxBounds={bounds} maxBoundsViscosity={1.0}
+        worldCopyJump={false} zoomControl={false}
+        rotate={true} bearing={0}
+        rotateControl={false}
         style={{ height: "100%", width: "100%" }}
+        ref={mapRef}
       >
         <TileLayer
           key={isDark ? "dark" : "light"}
           attribution="&copy; OpenStreetMap contributors"
-          url={
-            isDark
-              ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-              : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          url={isDark
+            ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+            : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           }
         />
 
@@ -131,13 +112,16 @@ export default function MapView({ position, heading }: Props) {
           position={position}
           heading={heading}
           headingLock={headingLock}
-          onDrag={() => setHeadingLock(false)}
-          setCenterFn={setCenterOnUser}
+          onLockedDragAttempt={() => {
+            flashLock()
+            toast.warning("A kamera zárolva van", {
+              description: "A térkép mozgatásához kapcsold ki a zárolást.",
+              duration: 2500,
+            })
+          }}
         />
 
-        <ConeUpdater coneAngle={coneAngle} />
-
-        <Marker icon={userIcon} position={[position.lat, position.lng]}>
+        <Marker icon={createUserIcon(coneAngle)} position={[position.lat, position.lng]}>
           <Popup closeButton={false} className="custom-popup">
             <div className="w-60 rounded-xl border border-border bg-card p-4 space-y-3">
               <div className="flex items-center gap-2">
@@ -163,112 +147,95 @@ export default function MapView({ position, heading }: Props) {
           </Popup>
         </Marker>
 
-        <NavigationPanel
-          currentPosition={position}
-          onOpenMobile={() => setMobileSheetOpen(true)}
-        />
+        <NavigationPanel currentPosition={position} onOpenMobile={() => setMobileSheetOpen(true)} />
         <RouteLayer />
         <LocateButton
           position={position}
           heading={heading}
           headingLock={headingLock}
+          lockFlash={lockFlash}
           onToggleHeadingLock={handleToggleHeadingLock}
         />
       </MapContainer>
 
       <NavigationPreviewPanel centerOnUser={centerOnUser} />
-      <NavigationMobileSheet
-        open={mobileSheetOpen}
-        onOpenChange={setMobileSheetOpen}
-        currentPosition={position}
-      />
+      <NavigationMobileSheet open={mobileSheetOpen} onOpenChange={setMobileSheetOpen} currentPosition={position} />
     </div>
   )
 }
 
-// DOM-on direkt frissíti a kúpot – Leaflet nem regenerálja az ikont minden rendernél
-function ConeUpdater({ coneAngle }: { coneAngle: number | null }) {
-  useEffect(() => {
-
-    // querySelector fallback – keressük a cone div-et a marker ikonban
-    const allMarkers = document.querySelectorAll(".leaflet-marker-icon div[style*='border-bottom']")
-    const coneEl = allMarkers[0] as HTMLElement | undefined
-
-    if (!coneEl) return
-
-    if (coneAngle === null) {
-      coneEl.style.display = "none"
-    } else {
-      coneEl.style.display = "block"
-      coneEl.style.transform = `rotate(${coneAngle}deg)`
-    }
-  }, [coneAngle])
-
-  return null
-}
-
-function MapController({
-  position,
-  heading,
-  headingLock,
-  onDrag,
-  setCenterFn,
-}: {
+// ─── MapController ────────────────────────────────────────────────────────────
+function MapController({ position, heading, headingLock, onLockedDragAttempt }: {
   position: { lat: number; lng: number }
   heading: number | null
   headingLock: boolean
-  onDrag: () => void
-  setCenterFn: (fn: () => void) => void
+  onLockedDragAttempt: () => void
 }) {
   const map = useMap()
-  const headingRef = useRef(heading)
-  const lockRef = useRef(headingLock)
-  const positionRef = useRef(position)
-  const lastBearingRef = useRef<number>(0)
+  const refs = useRef({ position, heading, headingLock, lastBearing: 0 })
+  const toastShownRef = useRef(false)
 
-  useEffect(() => { headingRef.current = heading }, [heading])
-  useEffect(() => { lockRef.current = headingLock }, [headingLock])
-  useEffect(() => { positionRef.current = position }, [position])
+  useEffect(() => { refs.current.position = position }, [position])
+  useEffect(() => { refs.current.heading = heading }, [heading])
+  useEffect(() => { refs.current.headingLock = headingLock }, [headingLock])
 
-  useEffect(() => {
-    setCenterFn(() => () => {
-      map.flyTo([position.lat, position.lng], map.getZoom(), { duration: 0.8 })
-    })
-  }, [map, position, setCenterFn])
-
+  // Drag blokkolás lock esetén
   useMapEvents({
+    mousedown: () => {
+      if (!refs.current.headingLock) return
+      // Ha lock be, megakadályozzuk a dragot a dragging handler letiltásával
+    },
     dragstart: () => {
-      if (lockRef.current) onDrag()
+      if (!refs.current.headingLock) return
+      // Drag elkezdődött lock közben → azonnal visszaállítjuk a pozíciót
+      map.panTo([refs.current.position.lat, refs.current.position.lng], { animate: false })
+      // Toast csak egyszer jelenjen meg egymás után
+      if (!toastShownRef.current) {
+        toastShownRef.current = true
+        onLockedDragAttempt()
+        setTimeout(() => { toastShownRef.current = false }, 3000)
+      }
     },
   })
 
+  // RAF: bearing + pozíció követés lock esetén
   useEffect(() => {
-    if (!headingLock) {
-      map.setBearing(0)
-      lastBearingRef.current = 0
-      return
-    }
-    if (heading === null) return
-
-    map.panTo([positionRef.current.lat, positionRef.current.lng], { animate: false })
-    map.setBearing(359 - heading)
-    lastBearingRef.current = heading
-
     let rafId: number
     const tick = () => {
-      if (!lockRef.current) return
-      const current = headingRef.current
-      if (current !== null) {
-        const diff = Math.abs(((current - lastBearingRef.current) + 180) % 360 - 180)
+      const { headingLock, heading, position, lastBearing } = refs.current
+      if (headingLock && heading !== null) {
+        const diff = Math.abs(((heading - lastBearing) + 180) % 360 - 180)
         if (diff > 1) {
-          map.setBearing(359 - current)
-          lastBearingRef.current = current
+          map.setBearing(359 - heading)
+          refs.current.lastBearing = heading
+        }
+        const center = map.getCenter()
+        if (
+          Math.abs(center.lat - position.lat) > 0.00005 ||
+          Math.abs(center.lng - position.lng) > 0.00005
+        ) {
+          map.panTo([position.lat, position.lng], { animate: true, duration: 0.3 })
         }
       }
       rafId = requestAnimationFrame(tick)
     }
     rafId = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(rafId)
+  }, [map])
+
+  // Lock váltás
+  useEffect(() => {
+    if (!headingLock) {
+      map.setBearing(0)
+      refs.current.lastBearing = 0
+      return
+    }
+    const { lat, lng } = refs.current.position
+    map.flyTo([lat, lng], map.getZoom(), { duration: 0.5 })
+    if (refs.current.heading !== null) {
+      map.setBearing(359 - refs.current.heading)
+      refs.current.lastBearing = refs.current.heading
+    }
   }, [headingLock, map])
 
   return null
