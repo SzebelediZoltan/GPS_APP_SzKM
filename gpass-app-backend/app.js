@@ -32,9 +32,11 @@ const tripRoutes = require("./api/routes/tripRoutes");
 const tripPointRoutes = require("./api/routes/tripPointRoutes");
 const authRoutes = require("./api/routes/authRoutes");
 const errorHandler = require("./api/middlewares/errorHandler");
-const { attachTransaction } = require("./api/middlewares/transactionHandler");
 
+const { attachTransaction } = require("./api/middlewares/transactionHandler");
 app.use(attachTransaction)
+
+
 app.use("/api", api);
 
 // +++ Swagger spec endpoint (külön JSON)

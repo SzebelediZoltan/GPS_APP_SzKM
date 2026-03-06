@@ -3,7 +3,7 @@ const { markerService } = require("../services")(db);
 
 exports.getMarkers = async (req, res, next) => {
     try {
-        res.status(200).json(await markerService.getMarkers());
+        res.status(200).json(await markerService.getMarkers({ transaction: req.app.get("getTransaction")() ?? req.transaction }));
     }
     catch (error) {
         next(error);
@@ -14,7 +14,7 @@ exports.getMarker = async (req, res, next) => {
     const markerId = req.markerID;
 
     try {
-        res.status(200).json(await markerService.getMarker(markerId));
+        res.status(200).json(await markerService.getMarker(markerId, { transaction: req.app.get("getTransaction")() ?? req.transaction }));
     }
     catch (error) {
         next(error);
@@ -25,7 +25,7 @@ exports.createMarker = async (req, res, next) => {
     const { creator_id, marker_type, lat, lng } = req.body || {};
 
     try {
-        res.status(201).json(await markerService.createMarker({ creator_id, marker_type, lat, lng }));
+        res.status(201).json(await markerService.createMarker({ creator_id, marker_type, lat, lng, transaction: req.app.get("getTransaction")() ?? req.transaction }));
     }
     catch (error) {
         next(error);
@@ -37,7 +37,7 @@ exports.updateMarker = async (req, res, next) => {
     const { marker_type, score, lat, lng } = req.body || {};
 
     try {
-        res.status(200).json(await markerService.updateMarker({ marker_type, score, lat, lng }, markerId));
+        res.status(200).json(await markerService.updateMarker({ marker_type, score, lat, lng, transaction: req.app.get("getTransaction")() ?? req.transaction }, markerId));
     }
     catch (error) {
         next(error);
@@ -48,7 +48,7 @@ exports.deleteMarker = async (req, res, next) => {
     const markerId = req.markerID;
 
     try {
-        res.status(200).json(await markerService.deleteMarker(markerId));
+        res.status(200).json(await markerService.deleteMarker(markerId, { transaction: req.app.get("getTransaction")() ?? req.transaction }));
     }
     catch (error) {
         next(error);
@@ -59,7 +59,7 @@ exports.getMarkersByCreator = async (req, res, next) => {
     const userId = req.params?.userId || req.userID;
 
     try {
-        res.status(200).json(await markerService.getMarkersByCreator(userId));
+        res.status(200).json(await markerService.getMarkersByCreator(userId, { transaction: req.app.get("getTransaction")() ?? req.transaction }));
     }
     catch (error) {
         next(error);
@@ -70,7 +70,7 @@ exports.getMarkersByType = async (req, res, next) => {
     const markerType = req.params?.markerType;
 
     try {
-        res.status(200).json(await markerService.getMarkersByType(markerType));
+        res.status(200).json(await markerService.getMarkersByType(markerType, { transaction: req.app.get("getTransaction")() ?? req.transaction }));
     }
     catch (error) {
         next(error);
@@ -82,7 +82,7 @@ exports.getMarkersInBox = async (req, res, next) => {
     
 
     try {
-        res.status(200).json(await markerService.getMarkersInBox(minLat, maxLat, minLng, maxLng));
+        res.status(200).json(await markerService.getMarkersInBox(minLat, maxLat, minLng, maxLng, { transaction: req.app.get("getTransaction")() ?? req.transaction }));
     }
     catch (error) {
         next(error);

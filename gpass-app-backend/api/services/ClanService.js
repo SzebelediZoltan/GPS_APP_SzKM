@@ -6,14 +6,14 @@ class ClanService {
         this.userRepository = require("../repositories")(db).userRepository;
     }
 
-    async getClans() {
-        return await this.clanRepository.getClans();
+    async getClans(options = {}) {
+        return await this.clanRepository.getClans(options);
     }
 
-    async getClan(clanId) {
+    async getClan(clanId, options = {}) {
         if (!clanId) throw new BadRequestError("Hiányzik a klán azonosító (clanId).");
 
-        const clan = await this.clanRepository.getClan(clanId);
+        const clan = await this.clanRepository.getClan(clanId, options);
 
         if (!clan) throw new NotFoundError("Nem található klán ezzel az azonosítóval.",
             {
@@ -23,49 +23,49 @@ class ClanService {
         return clan;
     }
 
-    async createClan(data) {
+    async createClan(data, options = {}) {
         if (!data) throw new BadRequestError("Hiányzik a klán adata (payload).", { data });
         if (!data.name) throw new BadRequestError("Hiányzik a klán neve (name).", { data });
         if (!data.leader_id) throw new BadRequestError("Hiányzik a klánvezető azonosító (leader_id).", { data });
 
-        const nameTaken = await this.clanRepository.getClan(data.name);
+        const nameTaken = await this.clanRepository.getClan(data.name, options);
 
         if (nameTaken) throw new BadRequestError("Ez a klán név már foglalt.", { data: data.name });
 
-        const UserExists = await this.userRepository.getUser(data.leader_id)
+        const UserExists = await this.userRepository.getUser(data.leader_id, options)
 
         if (!UserExists) throw new BadRequestError("Nincs ilyen felhasználó a megadott ID-val.", { data: data.leader_id })
 
-        return await this.clanRepository.createClan(data);
+        return await this.clanRepository.createClan(data, options);
     }
 
-    async updateClan(data, clanId) {
+    async updateClan(data, clanId, options = {}) {
         if (!clanId) throw new BadRequestError("Hiányzik a klán azonosító (clanId).");
         if (!data) throw new BadRequestError("Hiányzik a módosításhoz szükséges adat (payload).", { data });
 
-        const nameTaken = await this.clanRepository.getClan(data.name);
+        const nameTaken = await this.clanRepository.getClan(data.name, options);
 
         if (nameTaken) throw new BadRequestError("Ez a klán név már foglalt.", { data: data.name });
 
-        const exists = await this.clanRepository.getClan(clanId);
+        const exists = await this.clanRepository.getClan(clanId, options);
         if (!exists) throw new NotFoundError("Nem található klán ezzel az azonosítóval.", { data: clanId });
 
-        return await this.clanRepository.updateClan(data, clanId);
+        return await this.clanRepository.updateClan(data, clanId, options);
     }
 
-    async deleteClan(clanId) {
+    async deleteClan(clanId, options = {}) {
         if (!clanId) throw new BadRequestError("Hiányzik a klán azonosító (clanId).");
 
-        const exists = await this.clanRepository.getClan(clanId);
+        const exists = await this.clanRepository.getClan(clanId, options);
         if (!exists) throw new NotFoundError("Nem található klán ezzel az azonosítóval.", { data: clanId });
 
-        return await this.clanRepository.deleteClan(clanId);
+        return await this.clanRepository.deleteClan(clanId, options);
     }
 
-    async searchClans(query) {
+    async searchClans(query, options = {}) {
         if (!query) throw new BadRequestError("Hiányzik a keresési kifejezés (query).");
 
-        return await this.clanRepository.searchClans(query);
+        return await this.clanRepository.searchClans(query, options);
     }
 }
 

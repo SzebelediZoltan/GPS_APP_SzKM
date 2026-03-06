@@ -3,7 +3,7 @@ const { clanService } = require("../services")(db);
 
 exports.getClans = async (req, res, next) => {
     try {
-        res.status(200).json(await clanService.getClans());
+        res.status(200).json(await clanService.getClans({ transaction: req.app.get("getTransaction")() ?? req.transaction }));
     }
     catch (error) {
         next(error);
@@ -14,7 +14,7 @@ exports.getClan = async (req, res, next) => {
     const clanId = req.clanID;
 
     try {
-        res.status(200).json(await clanService.getClan(clanId));
+        res.status(200).json(await clanService.getClan(clanId, { transaction: req.app.get("getTransaction")() ?? req.transaction }));
     }
     catch (error) {
         next(error);
@@ -25,7 +25,7 @@ exports.createClan = async (req, res, next) => {
     const { name, leader_id, description } = req.body || {};
 
     try {
-        res.status(201).json(await clanService.createClan({ name, leader_id, description }));
+        res.status(201).json(await clanService.createClan({ name, leader_id, description, transaction: req.app.get("getTransaction")() ?? req.transaction }));
     }
     catch (error) {
         next(error);
@@ -37,7 +37,7 @@ exports.updateClan = async (req, res, next) => {
     const { name, leader_id, description } = req.body || {};
 
     try {
-        res.status(200).json(await clanService.updateClan({ name, leader_id, description }, clanId));
+        res.status(200).json(await clanService.updateClan({ name, leader_id, description, transaction: req.app.get("getTransaction")() ?? req.transaction }, clanId));
     }
     catch (error) {
         next(error);
@@ -48,7 +48,7 @@ exports.deleteClan = async (req, res, next) => {
     const clanId = req.clanID;
 
     try {
-        res.status(200).json(await clanService.deleteClan(clanId));
+        res.status(200).json(await clanService.deleteClan(clanId, { transaction: req.app.get("getTransaction")() ?? req.transaction }));
     }
     catch (error) {
         next(error);
@@ -59,7 +59,7 @@ exports.searchClans = async (req, res, next) => {
     const query = req.query.query || "";
 
     try {
-        res.status(200).json(await clanService.searchClans(query));
+        res.status(200).json(await clanService.searchClans(query, { transaction: req.app.get("getTransaction")() ?? req.transaction }));
     }
     catch (error) {
         next(error);

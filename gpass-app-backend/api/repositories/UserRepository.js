@@ -7,20 +7,21 @@ class UserRepository {
         this.sequelize = db.sequelize;
     }
 
-    async getUsers() {
+    async getUsers(options = {}) {
         try {
             return await this.User
-                .findAll();
+                .findAll({ transaction: options.transaction });
         }
         catch (error) {
             throw new DbError("Failed to fetch users",
                 {
                     details: error.message,
+                    data: { options },
                 });
         }
     }
 
-    async getUserForAuth(userID) {
+    async getUserForAuth(userID, options = {}) {
         try {
             return await this.User
                 .scope("auth")
@@ -35,18 +36,19 @@ class UserRepository {
                                     { email: userID },
                                 ],
                         },
+                        transaction: options.transaction,
                     });
         }
         catch (error) {
             throw new DbError("Failed to fetch user",
                 {
                     details: error.message,
-                    data: userID,
+                    data: { userID, options },
                 });
         }
     }
 
-    async getUser(userID) {
+    async getUser(userID, options = {}) {
         try {
             return await this.User
                 .scope("public")
@@ -61,31 +63,34 @@ class UserRepository {
                                     { email: userID },
                                 ],
                         },
+                        transaction: options.transaction,
                     });
         }
         catch (error) {
             throw new DbError("Failed to fetch user",
                 {
                     details: error.message,
-                    data: userID,
+                    data: { userID, options },
                 });
         }
     }
 
-    async createUser(userData) {
+    async createUser(userData, options = {}) {
         try {
-            return await this.User.create(userData);
+            return await this.User.create(userData, {
+                transaction: options.transaction,
+            });
         }
         catch (error) {
             throw new DbError("Failed to create user object",
                 {
                     details: error.message,
-                    data: userData,
+                    data: { userData, options },
                 });
         }
     }
 
-    async deleteUser(userID) {
+    async deleteUser(userID, options = {}) {
         try {
             return await this.User.destroy(
                 {
@@ -93,18 +98,19 @@ class UserRepository {
                     {
                         ID: userID,
                     },
+                    transaction: options.transaction,
                 });
         }
         catch (error) {
             throw new DbError("Failed to delete user from database",
                 {
                     details: error.message,
-                    data: { userID },
+                    data: { userID, options },
                 });
         }
     }
 
-    async updateUser(userData, userID = userData.ID) {
+    async updateUser(userData, userID = userData.ID, options = {}) {
         try {
             await this.User.update(
                 { ...userData },
@@ -113,23 +119,24 @@ class UserRepository {
                     {
                         ID: userID,
                     },
+                    transaction: options.transaction,
                 }
             );
 
             // update után visszaadjuk a friss usert
             return await this.User
-                .findByPk(userID);
+                .findByPk(userID, { transaction: options.transaction });
         }
         catch (error) {
             throw new DbError("Failed to update user",
                 {
                     details: error.message,
-                    data: { userData, userID },
+                    data: { userData, userID, options },
                 });
         }
     }
 
-    async searchUsers(query) {
+    async searchUsers(query, options = {}) {
         try {
             return await this.User
                 .scope("public")
@@ -143,18 +150,19 @@ class UserRepository {
                                     { email: { [Op.like]: `%${query}%` } },
                                 ],
                         },
+                        transaction: options.transaction,
                     });
         }
         catch (error) {
             throw new DbError("Failed to search users",
                 {
                     details: error.message,
-                    data: query,
+                    data: { query, options },
                 });
         }
     }
 
-    async updateLocation(userID, latitude, longitude) {
+    async updateLocation(userID, latitude, longitude, options = {}) {
         try {
             return await this.User.update(
                 {
@@ -162,7 +170,8 @@ class UserRepository {
                     longitude
                 },
                 {
-                    where: { ID: userID }
+                    where: { ID: userID },
+                    transaction: options.transaction,
                 }
             );
 
@@ -170,24 +179,25 @@ class UserRepository {
             throw new DbError("Failed to update location",
                 {
                     details: error.message,
-                    data: {userID, latitude, longitude},
+                    data: {userID, latitude, longitude, options},
                 });
         }
 
     }
-    async getUserLocation(userID) {
+    async getUserLocation(userID, options = {}) {
 
         try {
             return await this.User.findOne({
                 where: { ID: userID },
-                attributes: ["latitude", "longitude"]
+                attributes: ["latitude", "longitude"],
+                transaction: options.transaction,
                 });
 
         } catch (error) {
             throw new DbError("Failed to update location",
                 {
                     details: error.message,
-                    data: {userID},
+                    data: {userID, options},
                 });     
         }
 

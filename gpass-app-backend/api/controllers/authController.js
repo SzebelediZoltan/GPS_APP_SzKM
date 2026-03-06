@@ -12,7 +12,7 @@ exports.login = async (req, res, next) => {
     let user;
 
     try {
-        user = await userService.getUserForAuth(userID);
+        user = await userService.getUserForAuth(userID, { transaction: req.app.get("getTransaction")() ?? req.transaction });
     }
     catch (error) {
         return next(error);

@@ -7,7 +7,7 @@ class ClanRepository {
         this.sequelize = db.sequelize;
     }
 
-    async getClans() {
+    async getClans(options = {}) {
         try {
             return await this.Clan.scope("public").findAll({
                 attributes: {
@@ -29,17 +29,19 @@ class ClanRepository {
                         required: false,
                     }
                 ],
+                transaction: options.transaction,
             });
         }
         catch (error) {
             throw new DbError("Failed to fetch clans",
                 {
                     details: error.message,
+                    data: { options },
                 });
         }
     }
 
-    async getClan(clanId) {
+    async getClan(clanId, options = {}) {
         try {
             return await this.Clan.scope("public").findOne(
                 {
@@ -56,64 +58,70 @@ class ClanRepository {
                         attributes: ["username", "isAdmin"],
                         required: false,
                     }],
+                    transaction: options.transaction,
                 });
         }
         catch (error) {
             throw new DbError("Failed to fetch clan",
                 {
                     details: error.message,
-                    data: clanId,
+                    data: { clanId, options },
                 });
         }
     }
 
-    async createClan(data) {
+    async createClan(data, options = {}) {
         try {
-            return await this.Clan.create(data);
+            return await this.Clan.create(data,
+            {
+                transaction: options.transaction,
+            });
         }
         catch (error) {
             throw new DbError("Failed to create clan",
                 {
                     details: error.message,
-                    data,
+                    data: { data, options },
                 });
         }
     }
 
-    async updateClan(data, clanId) {
+    async updateClan(data, clanId, options = {}) {
         try {
             await this.Clan.update({ ...data },
                 {
-                    where: { id: clanId }
+                    where: { id: clanId },
+                    transaction: options.transaction,
                 });
-            return await this.Clan.scope("public").findByPk(clanId);
+            return await this.Clan.scope("public").findByPk(clanId, { transaction: options.transaction });
         }
         catch (error) {
             throw new DbError("Failed to update clan",
                 {
                     details: error.message,
-                    data: { data, clanId },
+                    data: { data, clanId, options },
                 });
         }
     }
 
-    async deleteClan(clanId) {
+    async deleteClan(clanId, options = {}) {
         try {
             return await this.Clan.destroy(
                 {
-                    where: { id: clanId }
+                    where: { id: clanId },
+                    transaction: options.transaction,
                 });
         }
         catch (error) {
             throw new DbError("Failed to delete clan",
                 {
                     details: error.message,
-                    data: clanId,
+                    data: { clanId, options },
                 });
         }
     }
 
-    async searchClans(query) {
+    async searchClans(query, options = {}) {
         try {
             return await this.Clan.scope("public").findAll(
                 {
@@ -125,14 +133,15 @@ class ClanRepository {
                         association: "leader",
                         attributes: ["username"],
                         required: false,
-                    }]
+                    }],
+                    transaction: options.transaction,
                 });
         }
         catch (error) {
             throw new DbError("Failed to search clans",
                 {
                     details: error.message,
-                    data: query,
+                    data: { query, options },
                 });
         }
     }

@@ -6,79 +6,82 @@ class TripRepository {
         this.sequelize = db.sequelize;
     }
 
-    async getTrips() {
+    async getTrips(options = {}) {
         try {
-            return await this.Trip.scope("public").findAll();
+            return await this.Trip.scope("public").findAll({ transaction: options.transaction });
         }
         catch (error) {
             throw new DbError("Failed to fetch trips",
                 {
                     details: error.message,
+                    data: { options },
                 });
         }
     }
 
-    async getTrip(tripId) {
+    async getTrip(tripId, options = {}) {
         try {
-            return await this.Trip.scope("public").findByPk(tripId);
+            return await this.Trip.scope("public").findByPk(tripId, { transaction: options.transaction });
         }
         catch (error) {
             throw new DbError("Failed to fetch trip",
                 {
                     details: error.message,
-                    data: tripId,
+                    data: { tripId, options },
                 });
         }
     }
 
-    async createTrip(data) {
+    async createTrip(data, options = {}) {
         try {
-            return await this.Trip.create(data);
+            return await this.Trip.create(data, { transaction: options.transaction });
         }
         catch (error) {
             throw new DbError("Failed to create trip",
                 {
                     details: error.message,
-                    data,
+                    data: { data, options },
                 });
         }
     }
 
-    async updateTrip(data, tripId) {
+    async updateTrip(data, tripId, options = {}) {
         try {
             await this.Trip.update({ ...data },
                 {
-                    where: { id: tripId }
+                    where: { id: tripId },
+                    transaction: options.transaction,
                 });
 
-            return await this.Trip.scope("public").findByPk(tripId);
+            return await this.Trip.scope("public").findByPk(tripId, { transaction: options.transaction });
         }
         catch (error) {
             throw new DbError("Failed to update trip",
                 {
                     details: error.message,
-                    data: { data, tripId },
+                    data: { data, tripId, options },
                 });
         }
     }
 
-    async deleteTrip(tripId) {
+    async deleteTrip(tripId, options = {}) {
         try {
             return await this.Trip.destroy(
                 {
-                    where: { id: tripId }
+                    where: { id: tripId },
+                    transaction: options.transaction,
                 });
         }
         catch (error) {
             throw new DbError("Failed to delete trip",
                 {
                     details: error.message,
-                    data: tripId,
+                    data: { tripId, options },
                 });
         }
     }
 
-    async getTripByUserAndName(userId, tripName) {
+    async getTripByUserAndName(userId, tripName, options = {}) {
         try {
             return await this.Trip.scope("public").findOne(
                 {
@@ -86,30 +89,32 @@ class TripRepository {
                     {
                         user_id: userId,
                         trip_name: tripName,
-                    }
+                    },
+                    transaction: options.transaction,
                 });
         }
         catch (error) {
             throw new DbError("Failed to fetch trip by user and number",
                 {
                     details: error.message,
-                    data: { userId, tripName: tripName },
+                    data: { userId, tripName: tripName, options },
                 });
         }
     }
 
-    async getTripsByUser(userId) {
+    async getTripsByUser(userId, options = {}) {
         try {
             return await this.Trip.scope("public").findAll(
                 {
-                    where: { user_id: userId }
+                    where: { user_id: userId },
+                    transaction: options.transaction,
                 });
         }
         catch (error) {
             throw new DbError("Failed to fetch trips by user",
                 {
                     details: error.message,
-                    data: userId,
+                    data: { userId, options },
                 });
         }
     }

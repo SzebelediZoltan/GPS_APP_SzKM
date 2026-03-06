@@ -6,91 +6,95 @@ class TripPointRepository {
         this.sequelize = db.sequelize;
     }
 
-    async getTripPoints() {
+    async getTripPoints(options = {}) {
         try {
-            return await this.TripPoint.scope("public").findAll();
+            return await this.TripPoint.scope("public").findAll({ transaction: options.transaction });
         }
         catch (error) {
             throw new DbError("Failed to fetch trip points",
                 {
                     details: error.message,
+                    data: { options },
                 });
         }
     }
 
-    async getTripPoint(pointId) {
+    async getTripPoint(pointId, options = {}) {
         try {
-            return await this.TripPoint.scope("public").findByPk(pointId);
+            return await this.TripPoint.scope("public").findByPk(pointId, { transaction: options.transaction });
         }
         catch (error) {
             throw new DbError("Failed to fetch trip point",
                 {
                     details: error.message,
-                    data: pointId,
+                    data: { pointId, options },
                 });
         }
     }
 
-    async createTripPoint(data) {
+    async createTripPoint(data, options = {}) {
         try {
-            return await this.TripPoint.create(data);
+            return await this.TripPoint.create(data, { transaction: options.transaction });
         }
         catch (error) {
             throw new DbError("Failed to create trip point",
                 {
                     details: error.message,
-                    data,
+                    data: { data, options },
                 });
         }
     }
 
-    async updateTripPoint(data, pointId) {
+    async updateTripPoint(data, pointId, options = {}) {
         try {
             await this.TripPoint.update({ ...data },
                 {
-                    where: { id: pointId }
+                    where: { id: pointId },
+                    transaction: options.transaction,
                 });
 
-            return await this.TripPoint.scope("public").findByPk(pointId);
+            return await this.TripPoint.scope("public").findByPk(pointId, { transaction: options.transaction });
         }
         catch (error) {
             throw new DbError("Failed to update trip point",
                 {
                     details: error.message,
-                    data: { data, pointId },
+                    data: { data, pointId, options },
                 });
         }
     }
 
-    async deleteTripPoint(pointId) {
+    async deleteTripPoint(pointId, options = {}) {
         try {
             return await this.TripPoint.destroy(
                 {
-                    where: { id: pointId }
+                    where: { id: pointId },
+                    transaction: options.transaction,
                 });
         }
         catch (error) {
             throw new DbError("Failed to delete trip point",
                 {
                     details: error.message,
-                    data: pointId,
+                    data: { pointId, options },
                 });
         }
     }
 
-    async getPointsByTrip(tripId) {
+    async getPointsByTrip(tripId, options = {}) {
         try {
             return await this.TripPoint.scope("public").findAll(
                 {
                     where: { trip_id: tripId },
                     order: [["recorded_at", "ASC"]],
+                    transaction: options.transaction,
                 });
         }
         catch (error) {
             throw new DbError("Failed to fetch trip points by trip",
                 {
                     details: error.message,
-                    data: tripId,
+                    data: { tripId, options },
                 });
         }
     }

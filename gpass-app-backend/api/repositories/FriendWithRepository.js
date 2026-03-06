@@ -8,80 +8,89 @@ class FriendWithRepository {
         this.sequelize = db.sequelize;
     }
 
-    async getAll() {
+    async getAll(options = {}) {
         try {
-            return await this.FriendWith.scope("public").findAll();
+            return await this.FriendWith.scope("public").findAll({
+                transaction: options.transaction,
+            });
         }
         catch (error) {
             throw new DbError("Failed to fetch friend relations",
                 {
                     details: error.message,
+                    data: { options },
                 });
         }
     }
 
-    async getById(id) {
+    async getById(id, options = {}) {
         try {
-            return await this.FriendWith.findByPk(id);
+            return await this.FriendWith.findByPk(id, {
+                transaction: options.transaction,
+            });
         }
         catch (error) {
             throw new DbError("Failed to fetch friend relation",
                 {
                     details: error.message,
-                    data: id,
+                    data: { id, options },
                 });
         }
     }
 
-    async create(data) {
+    async create(data, options = {}) {
         try {
-            return await this.FriendWith.create(data);
+            return await this.FriendWith.create(data, {
+                transaction: options.transaction,
+            });
         }
         catch (error) {
             throw new DbError("Failed to create friend relation",
                 {
                     details: error.message,
-                    data,
+                    data: { data, options },
                 });
         }
     }
 
-    async update(data, id) {
+    async update(data, id, options = {}) {
         try {
             await this.FriendWith.update({ ...data },
                 {
-                    where: { id }
+                    where: { id },
+                    transaction: options.transaction,
                 });
 
-            return await this.FriendWith.scope("public").findByPk(id);
+            return await this.FriendWith.scope("public").findByPk(id, { transaction: options.transaction });
         }
         catch (error) {
             throw new DbError("Failed to update friend relation",
                 {
                     details: error.message,
-                    data: { data, id },
+                    data: { data, id, options },
                 });
         }
     }
 
-    async delete(id) {
+    async delete(id, options = {}) {
         try {
             return await this.FriendWith.destroy(
                 {
-                    where: { id }
+                    where: { id },
+                    transaction: options.transaction,
                 });
         }
         catch (error) {
             throw new DbError("Failed to delete friend relation",
                 {
                     details: error.message,
-                    data: id,
+                    data: { id, options },
                 });
         }
     }
 
     // hasznos metódusok (repo-szintű lekérdezések)
-    async getPendingForUser(userId) {
+    async getPendingForUser(userId, options = {}) {
         try {
             return await this.FriendWith.scope("pending").findAll(
                 {
@@ -101,19 +110,20 @@ class FriendWithRepository {
                                 { sender_id: userId },
                                 { receiver_id: userId }
                             ]
-                    }
+                    },
+                    transaction: options.transaction,
                 });
         }
         catch (error) {
             throw new DbError("Failed to fetch pending friend requests",
                 {
                     details: error.message,
-                    data: userId,
+                    data: { userId, options },
                 });
         }
     }
 
-    async getAcceptedForUser(userId) {
+    async getAcceptedForUser(userId, options = {}) {
         try {
             return await this.FriendWith.scope("accepted").findAll(
                 {
@@ -135,14 +145,15 @@ class FriendWithRepository {
                                 { sender_id: userId },
                                 { receiver_id: userId }
                             ]
-                    }
+                    },
+                    transaction: options.transaction,
                 });
         }
         catch (error) {
             throw new DbError("Failed to fetch friends for user",
                 {
                     details: error.message,
-                    data: userId,
+                    data: { userId, options },
                 });
         }
     }

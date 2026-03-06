@@ -7,24 +7,26 @@ class ClanMemberRepository {
         this.sequelize = db.sequelize;
     }
 
-    async getMembers() {
+    async getMembers(options = {}) {
         try {
             return await this.ClanMember.scope("public").findAll({
                 include: [
                     {association: "user", attributes: ["id", "username", "isAdmin"]},
                     {association: "clan"}
-                ]
+                ],
+                transaction: options.transaction,
             });
         }
         catch (error) {
             throw new DbError("Failed to fetch clan members",
                 {
                     details: error.message,
+                    data: { options },
                 });
         }
     }
 
-    async getMember(clanId, userId) {
+    async getMember(clanId, userId, options = {}) {
         try {
             return await this.ClanMember.scope("public").findOne(
                 {
@@ -32,34 +34,38 @@ class ClanMemberRepository {
                     {
                         clan_id: clanId,
                         user_id: userId,
-                    }
+                    },
+                    transaction: options.transaction,
                 });
         }
         catch (error) {
             throw new DbError("Failed to fetch clan member",
                 {
                     details: error.message,
-                    data: { clanId, userId },
+                    data: { clanId, userId, options },
                 });
         }
     }
 
-    async addMember(data) {
+    async addMember(data, options = {}) {
         console.log("Adding clan member:", data);
         
         try {
-            return await this.ClanMember.create(data);
+            return await this.ClanMember.create(data,
+            {
+                transaction: options.transaction,
+            });
         }
         catch (error) {
             throw new DbError("Failed to add clan member",
                 {
                     details: error.message,
-                    data,
+                    data: { data, options },
                 });
         }
     }
 
-    async removeMember(clanId, userId) {
+    async removeMember(clanId, userId, options = {}) {
         try {
             return await this.ClanMember.destroy(
                 {
@@ -67,19 +73,20 @@ class ClanMemberRepository {
                     {
                         clan_id: clanId,
                         user_id: userId,
-                    }
+                    },
+                    transaction: options.transaction,
                 });
         }
         catch (error) {
             throw new DbError("Failed to remove clan member",
                 {
                     details: error.message,
-                    data: { clanId, userId },
+                    data: { clanId, userId, options },
                 });
         }
     }
 
-    async getMembersByClan(clanId) {
+    async getMembersByClan(clanId, options = {}) {
         try {
             return await this.ClanMember.scope("public").findAll(
                 {
@@ -94,19 +101,20 @@ class ClanMemberRepository {
                             association: "user",
                             attributes: ["id", "username", "isAdmin"]
                         },
-                    ]
+                    ],
+                    transaction: options.transaction,
                 });
         }
         catch (error) {
             throw new DbError("Failed to fetch clan members by clan",
                 {
                     details: error.message,
-                    data: clanId,
+                    data: { clanId, options },
                 });
         }
     }
 
-    async getMembershipsByUser(userId) {
+    async getMembershipsByUser(userId, options = {}) {
         try {
             return await this.ClanMember.scope("public").findAll(
                 {
@@ -115,14 +123,15 @@ class ClanMemberRepository {
                         association: "clan",
                         attributes: ["name", "leader_id", "description"],
                         required: false,
-                    }]
+                    }],
+                    transaction: options.transaction,
                 });
         }
         catch (error) {
             throw new DbError("Failed to fetch clan memberships by user",
                 {
                     details: error.message,
-                    data: userId,
+                    data: { userId, options },
                 });
         }
     }
