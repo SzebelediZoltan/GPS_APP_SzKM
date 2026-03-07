@@ -49,11 +49,11 @@ class TripService {
         return await this.tripRepository.deleteTrip(tripId, options);
     }
 
-    async getTripByUserAndNumber(userId, tripName, options = {}) {
+    async getTripByUserAndName(userId, tripName, options = {}) {
         if (!userId) throw new BadRequestError("Hiányzik a felhasználó azonosító (userId).");
         if (!tripName) throw new BadRequestError("Hiányzik a trip sorszám (tripName).");
 
-        const trip = await this.tripRepository.getTripByUserAndNumber(userId, tripName, options);
+        const trip = await this.tripRepository.getTripByUserAndName(userId, tripName, options);
 
         if (!trip) throw new NotFoundError("Nem található trip ezzel a felhasználóval és tripszámmal.",
             {
