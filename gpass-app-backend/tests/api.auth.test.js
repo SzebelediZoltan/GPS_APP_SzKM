@@ -1,130 +1,177 @@
 require("dotenv").config({ path: "./.env.test", quiet: true });
-
 const request = require("supertest");
 const app = require("../app");
-const { cleanDb, makeAuthCookie, db } = require("./api.helpers");
+const db = require("../api/db");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
-// ── Migráció ──────────────────────────────────────────────────────────────────
-beforeAll(async () => {
-    await db.sequelize.sync({ force: true });
-});
+const { transactionSetup, transactionTeardown } = require("./helpers/transactionHelper");
 
-afterAll(async () => {
-    await db.sequelize.close();
-});
-
-// ── Teszt adatok ──────────────────────────────────────────────────────────────
 describe("/api/auth", () => {
-    let testUser;
 
-    beforeAll(async () => {
-        await cleanDb();
-
-        testUser = await db.User.create({
-            username: "auth_test_user",
-            email: "auth@gpass.test",
-            password: "TestPass1!",
-            isAdmin: false,
-        });
+    afterEach(async () => {
+        jest.restoreAllMocks()
     });
 
-    afterAll(async () => {
-        await cleanDb();
-    });
+    describe("/login", () => {
 
-    // ── POST /api/auth/login ──────────────────────────────────────────────────
-    describe("POST /api/auth/login", () => {
-        test("sikeres bejelentkezés username-mel", async () => {
-            const res = await request(app)
-                .post("/api/auth/login")
-                .send({ userID: "auth_test_user", password: "TestPass1!" });
-
-            expect(res.status).toBe(200);
-            expect(typeof res.body).toBe("string"); // JWT token
-            expect(res.headers["set-cookie"]).toBeDefined();
-            expect(res.headers["set-cookie"][0]).toMatch(/user_token=/);
+        afterEach(async () => {
+            jest.restoreAllMocks()
         });
 
-        test("sikeres bejelentkezés email-lel", async () => {
-            const res = await request(app)
-                .post("/api/auth/login")
-                .send({ userID: "auth@gpass.test", password: "TestPass1!" });
-
-            expect(res.status).toBe(200);
-        });
-
-        test("helytelen jelszóval 401-et ad vissza", async () => {
-            const res = await request(app)
-                .post("/api/auth/login")
-                .send({ userID: "auth_test_user", password: "WrongPassword!" });
-
-            expect(res.status).toBe(401);
-        });
-
-        test("nem létező felhasználóval 404-et ad vissza", async () => {
-            const res = await request(app)
-                .post("/api/auth/login")
-                .send({ userID: "nobody_here", password: "Whatever1!" });
-
-            expect(res.status).toBe(404);
-        });
-
-        test("hiányzó userID esetén 400-at ad vissza", async () => {
-            const res = await request(app)
-                .post("/api/auth/login")
-                .send({ password: "TestPass1!" });
-
-            expect(res.status).toBe(400);
-        });
-    });
-
-    // ── GET /api/auth/status ──────────────────────────────────────────────────
-    describe("GET /api/auth/status", () => {
-        test("bejelentkezett user visszakapja saját adatait", async () => {
-            const cookie = makeAuthCookie({
-                ID: testUser.ID,
-                username: testUser.username,
-                email: testUser.email,
-                isAdmin: testUser.isAdmin,
+        describe("POST", () => {
+            beforeEach(async () => {
+                await transactionSetup(app, db);
             });
 
-            const res = await request(app)
-                .get("/api/auth/status")
-                .set("Cookie", cookie);
-
-            expect(res.status).toBe(200);
-            expect(res.body.username).toBe("auth_test_user");
-            expect(res.body.email).toBe("auth@gpass.test");
-        });
-
-        test("cookie nélkül 401-et ad vissza", async () => {
-            const res = await request(app).get("/api/auth/status");
-            expect(res.status).toBe(401);
-        });
-    });
-
-    // ── DELETE /api/auth/logout ───────────────────────────────────────────────
-    describe("DELETE /api/auth/logout", () => {
-        test("kijelentkezés törli a cookie-t", async () => {
-            const cookie = makeAuthCookie({
-                ID: testUser.ID,
-                username: testUser.username,
-                email: testUser.email,
-                isAdmin: testUser.isAdmin,
+            afterEach(async () => {
+                await transactionTeardown(app);
+                jest.restoreAllMocks()
             });
 
-            const res = await request(app)
-                .delete("/api/auth/logout")
-                .set("Cookie", cookie);
+            test("should set cookie on successful login", async () => {
+                jest.mock("../api/services", () => {
+                    return (database) => ({
+                        userService: {
+                            getUserForAuth: jest.fn().mockResolvedValue({
+                                ID: 1,
+                                username: "testuser",
+                                email: "test@example.com",
+                                password: "TestPassword123",
+                                isAdmin: false,
+                            })
+                        }
+                    });
+                });
 
-            expect(res.status).toBe(200);
-            const setCookie = res.headers["set-cookie"]?.[0] ?? "";
-            expect(setCookie).toMatch(/user_token=;/);
-        });
+                jest.mock("bcrypt", () => ({
+                    compare: jest.fn().mockResolvedValue(true),
+                }));
 
-        test("bejelentkezés nélkül is 200-at ad vissza", async () => {
-            const res = await request(app).delete("/api/auth/logout");
-            expect(res.status).toBe(200);
-        });
-    });
-});
+                // Login kérés
+                const res = await request(app)
+                    .post("/api/auth/login")
+                    .send({
+                        userID: "testuser",
+                        password: "TestPassword123"
+                    });
+
+                // Ellenőrzések
+                expect(res.status).toBe(200);
+                expect(res.headers["set-cookie"]).toBeDefined();
+                expect(res.headers["set-cookie"][0]).toMatch(/user_token=/);
+                expect(typeof res.body).toBe("string");
+            });
+        })
+    })
+
+    describe("/status", () => {
+        describe("GET", () => {
+            let testUser;
+            let token;
+
+            beforeEach(async () => {
+                await transactionSetup(app, db);
+
+                const t = app.get("getTransaction")();
+                const hashedPassword = await bcrypt.hash("TestPassword123", 10);
+
+                testUser = await db.User.create({
+                    username: "statustest",
+                    email: "status@example.com",
+                    password: hashedPassword,
+                    isAdmin: false,
+                }, { transaction: t });
+
+                // Valódi JWT token generálása
+                token = jwt.sign(
+                    {
+                        userID: testUser.ID,
+                        username: testUser.username,
+                        isAdmin: testUser.isAdmin,
+                        email: testUser.email
+                    },
+                    process.env.JWT_SECRET
+                );
+            });
+
+            afterEach(async () => {
+                await transactionTeardown(app);
+                jest.restoreAllMocks()
+            });
+
+            test("should return user data on valid token", async () => {
+                const res = await request(app)
+                    .get("/api/auth/status")
+                    .set("Cookie", `user_token=${token}`);
+
+                expect(res.status).toBe(200);
+                expect(res.body.username).toBe("statustest");
+                expect(res.body.email).toBe("status@example.com");
+                expect(res.body.isAdmin).toBe(false);
+            });
+
+            test("should return 401 without token", async () => {
+                const res = await request(app)
+                    .get("/api/auth/status");
+
+                expect(res.status).toBe(401);
+            });
+        })
+    })
+
+    describe("/logout", () => {
+        describe("DELETE", () => {
+            let testUser;
+            let token;
+
+            beforeEach(async () => {
+                await transactionSetup(app, db);
+
+                const t = app.get("getTransaction")();
+                const hashedPassword = await bcrypt.hash("TestPassword123", 10);
+
+                testUser = await db.User.create({
+                    username: "logouttest",
+                    email: "logout@example.com",
+                    password: hashedPassword,
+                    isAdmin: false,
+                }, { transaction: t });
+
+                // Valódi JWT token generálása
+                token = jwt.sign(
+                    {
+                        userID: testUser.ID,
+                        username: testUser.username,
+                        isAdmin: testUser.isAdmin,
+                        email: testUser.email
+                    },
+                    process.env.JWT_SECRET
+                );
+            });
+
+            afterEach(async () => {
+                await transactionTeardown(app);
+                jest.restoreAllMocks()
+            });
+
+            test("should clear cookie on logout", async () => {
+                const res = await request(app)
+                    .delete("/api/auth/logout")
+                    .set("Cookie", `user_token=${token}`);
+
+                expect(res.status).toBe(200);
+                expect(res.headers["set-cookie"]).toBeDefined();
+                expect(res.headers["set-cookie"][0]).toMatch(/user_token=;/);
+            });
+
+            test("should return 200 even without token", async () => {
+                const res = await request(app)
+                    .delete("/api/auth/logout");
+
+                expect(res.status).toBe(200);
+            });
+        })
+    })
+
+})

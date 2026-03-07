@@ -54,6 +54,7 @@ const db =
     }
     catch(error)
     {
+        // console.error(error)
         throw new DbError("Failed to synchronize database", 
         {
             details: error.message

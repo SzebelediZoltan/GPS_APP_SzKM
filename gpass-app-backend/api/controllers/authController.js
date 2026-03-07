@@ -5,6 +5,7 @@ const db = require("../db");
 const { userService } = require("../services")(db);
 
 const authUtils = require("../utilities/authUtils");
+const transactionBuilder = require("../utilities/transactionBuilder");
 
 exports.login = async (req, res, next) => {
     const { userID, password } = req.body;
@@ -12,13 +13,14 @@ exports.login = async (req, res, next) => {
     let user;
 
     try {
-        user = await userService.getUserForAuth(userID, { transaction: req.app.get("getTransaction")() ?? req.transaction });
+        const transaction = transactionBuilder.get(req);
+        user = await userService.getUserForAuth(userID, { transaction });
     }
     catch (error) {
         return next(error);
     }
 
-    if (bcrypt.compareSync(password, user.password)) {
+    if (await bcrypt.compare(password, user.password)) {
         const token = authUtils.generateUserToken(user);
 
         authUtils.setCookie(res, "user_token", token);

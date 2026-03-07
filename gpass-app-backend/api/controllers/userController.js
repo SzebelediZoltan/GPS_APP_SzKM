@@ -1,10 +1,12 @@
 const db = require("../db");
 const { userService } = require("../services")(db);
 const authUtils = require('../utilities/authUtils');
+const transactionBuilder = require("../utilities/transactionBuilder");
 
 exports.getUsers = async (req, res, next) => {
     try {
-        res.status(200).json(await userService.getUsers({ transaction: req.app.get("getTransaction")() ?? req.transaction }));
+        const transaction = transactionBuilder.get(req);
+        res.status(200).json(await userService.getUsers({ transaction }));
     }
     catch (error) {
         next(error);
@@ -15,7 +17,8 @@ exports.getUser = async (req, res, next) => {
     const userID = req.userID;
 
     try {
-        res.status(200).json(await userService.getUser(userID, { transaction: req.app.get("getTransaction")() ?? req.transaction }));
+        const transaction = transactionBuilder.get(req);
+        res.status(200).json(await userService.getUser(userID, { transaction }));
     }
     catch (error) {
         next(error);
@@ -26,7 +29,8 @@ exports.createUser = async (req, res, next) => {
     const { username, email, password } = req.body || {};
 
     try {
-        res.status(201).json(await userService.createUser({ username, email, password, transaction: req.app.get("getTransaction")() ?? req.transaction }));
+        const transaction = transactionBuilder.get(req);
+        res.status(201).json(await userService.createUser({ username, email, password, transaction }));
     }
     catch (error) {
         next(error);
@@ -38,7 +42,8 @@ exports.updateUser = async (req, res, next) => {
     const { username, email, password, isAdmin, status } = req.body || {};
     
     try {
-        const newUser = await userService.updateUser({ username, email, password, isAdmin, status, transaction: req.app.get("getTransaction")() ?? req.transaction }, userID);
+        const transaction = transactionBuilder.get(req);
+        const newUser = await userService.updateUser({ username, email, password, isAdmin, status, transaction }, userID);
         // user frissítés után
 
         const newToken = authUtils.generateUserToken({
@@ -61,7 +66,8 @@ exports.deleteUser = async (req, res, next) => {
     const userID = req.userID;
 
     try {
-        res.status(200).json(await userService.deleteUser(userID, { transaction: req.app.get("getTransaction")() ?? req.transaction }));
+        const transaction = transactionBuilder.get(req);
+        res.status(200).json(await userService.deleteUser(userID, { transaction }));
     }
     catch (error) {
         next(error);
@@ -72,7 +78,8 @@ exports.searchUsers = async (req, res, next) => {
     const query = req.query.query || "";
 
     try {
-        res.status(200).json(await userService.searchUsers(query, { transaction: req.app.get("getTransaction")() ?? req.transaction }));
+        const transaction = transactionBuilder.get(req);
+        res.status(200).json(await userService.searchUsers(query, { transaction }));
     }
     catch (error) {
         next(error);
@@ -84,15 +91,9 @@ exports.updateLocation = async (req, res) => {
     const { latitude, longitude } = req.body;
     const userID = req.user.ID;
 
-    await userService.updateUserLocation(
-        userID,
-        latitude,
-        longitude,
-        { transaction: req.app.get("getTransaction")() ?? req.transaction }
-    );
     try {
-
-        res.status(200).json(await userService.updateUserLocation(userID, latitude, longitude, { transaction: req.app.get("getTransaction")() ?? req.transaction }));
+        const transaction = transactionBuilder.get(req);
+        res.status(200).json(await userService.updateUserLocation(userID, latitude, longitude, { transaction }));
 
     } catch (error) {
 
@@ -108,8 +109,8 @@ exports.getUserLocation = async (req, res) => {
     const userID = req.userID;
 
     try {
-
-        res.status(200).json(await userService.getUserLocation(userID, { transaction: req.app.get("getTransaction")() ?? req.transaction }));
+        const transaction = transactionBuilder.get(req);
+        res.status(200).json(await userService.getUserLocation(userID, { transaction }));
 
     } catch (error) {
         res.status(400).json({

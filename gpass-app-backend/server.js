@@ -1,4 +1,4 @@
-require("dotenv").config({ quiet: true });
+require("dotenv").config({ path: "",quiet: true });
 
 const app = require("./app");
 
