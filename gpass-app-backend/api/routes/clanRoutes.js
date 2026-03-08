@@ -6,12 +6,11 @@ const authMiddleware = require("../middlewares/authMiddleware");
 
 // LISTA (public vagy logged in — itt logged in-re raktam, te döntöd)
 router.get("/", [authMiddleware.userIsLoggedIn], clanController.getClans);
+// LÉTREHOZÁS (logged in)
+router.post("/", [authMiddleware.userIsLoggedIn], clanController.createClan);
 
 // KERESÉS (logged in)
 router.get("/search", [authMiddleware.userIsLoggedIn], clanController.searchClans);
-
-// LÉTREHOZÁS (logged in)
-router.post("/", [authMiddleware.userIsLoggedIn], clanController.createClan);
 
 // PARAM
 router.param("clanID", (req, res, next, clanID) => {

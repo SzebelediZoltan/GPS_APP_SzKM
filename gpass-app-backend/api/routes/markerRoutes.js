@@ -6,6 +6,8 @@ const authMiddleware = require("../middlewares/authMiddleware");
 
 // LISTA (logged in)
 router.get("/", [authMiddleware.userIsLoggedIn, authMiddleware.isAdmin], markerController.getMarkers);
+// CREATE (logged in)
+router.post("/", [authMiddleware.userIsLoggedIn], markerController.createMarker);
 
 // BOX (query) (logged in)
 router.get("/box", [authMiddleware.userIsLoggedIn], markerController.getMarkersInBox);
@@ -13,9 +15,6 @@ router.get("/box", [authMiddleware.userIsLoggedIn], markerController.getMarkersI
 // TÍPUS / LÉTREHOZÓ (logged in)
 router.get("/type/:markerType", [authMiddleware.userIsLoggedIn], markerController.getMarkersByType);
 router.get("/creator/:userId", [authMiddleware.userIsLoggedIn], markerController.getMarkersByCreator);
-
-// CREATE (logged in)
-router.post("/", [authMiddleware.userIsLoggedIn], markerController.createMarker);
 
 // PARAM
 router.param("markerID", (req, res, next, markerID) => {

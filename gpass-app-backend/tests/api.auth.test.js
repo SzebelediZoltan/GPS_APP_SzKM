@@ -30,6 +30,7 @@ describe("/api/auth", () => {
             });
 
             test("should set cookie on successful login", async () => {
+                // Service mock csak login teszthez
                 jest.mock("../api/services", () => {
                     return (database) => ({
                         userService: {
@@ -37,17 +38,19 @@ describe("/api/auth", () => {
                                 ID: 1,
                                 username: "testuser",
                                 email: "test@example.com",
-                                password: "TestPassword123",
+                                password: "$2b$10$mockhashedpassword",
                                 isAdmin: false,
                             })
                         }
                     });
                 });
 
+                // Bcrypt mock csak login teszthez
                 jest.mock("bcrypt", () => ({
+                    ...jest.requireActual("bcrypt"),
                     compare: jest.fn().mockResolvedValue(true),
                 }));
-
+                
                 // Login kérés
                 const res = await request(app)
                     .post("/api/auth/login")
