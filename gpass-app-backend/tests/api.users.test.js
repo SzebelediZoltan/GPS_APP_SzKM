@@ -2,8 +2,27 @@ require("dotenv").config({ path: "./.env.test", quiet: true });
 const request = require("supertest");
 const app = require("../app");
 const db = require("../api/db");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 const { transactionSetup, transactionTeardown } = require("./helpers/transactionHelper");
+
+const makeToken = (user) =>
+    jwt.sign(
+        { userID: user.ID, username: user.username, isAdmin: user.isAdmin, email: user.email },
+        process.env.JWT_SECRET
+    );
+
+const createTestUser = async (app, overrides = {}) => {
+    const t = app.get("getTransaction")();
+    const hashedPassword = await bcrypt.hash("TestPassword123", 10);
+    return db.User.create({
+        username: overrides.username || "testuser",
+        email: overrides.email || "testuser@example.com",
+        password: hashedPassword,
+        isAdmin: overrides.isAdmin ?? false,
+    }, { transaction: t });
+};
 
 describe("/api/users", () => {
 
@@ -22,7 +41,15 @@ describe("/api/users", () => {
         });
 
         test("should get all users", async () => {
-            // Test implementation here
+            const admin = await createTestUser(app, { username: "adminget", email: "adminget@example.com", isAdmin: true });
+            const token = makeToken(admin);
+
+            const res = await request(app)
+                .get("/api/users")
+                .set("Cookie", `user_token=${token}`);
+
+            expect(res.status).toBe(200);
+            expect(Array.isArray(res.body)).toBe(true);
         });
     });
 
@@ -37,7 +64,13 @@ describe("/api/users", () => {
         });
 
         test("should create user", async () => {
-            // Test implementation here
+            const res = await request(app)
+                .post("/api/users")
+                .send({ username: "newuser", email: "newuser@example.com", password: "SecurePass123" });
+
+            expect(res.status).toBe(201);
+            expect(res.body.username).toBe("newuser");
+            expect(res.body.email).toBe("newuser@example.com");
         });
     });
 
@@ -53,7 +86,15 @@ describe("/api/users", () => {
             });
 
             test("should search users", async () => {
-                // Test implementation here
+                const user = await createTestUser(app, { username: "searchable", email: "searchable@example.com" });
+                const token = makeToken(user);
+
+                const res = await request(app)
+                    .get("/api/users/search?query=search")
+                    .set("Cookie", `user_token=${token}`);
+
+                expect(res.status).toBe(200);
+                expect(Array.isArray(res.body)).toBe(true);
             });
         });
     });
@@ -71,7 +112,15 @@ describe("/api/users", () => {
             });
 
             test("should get user by ID", async () => {
-                // Test implementation here
+                const user = await createTestUser(app, { username: "getbyid", email: "getbyid@example.com" });
+                const token = makeToken(user);
+
+                const res = await request(app)
+                    .get(`/api/users/${user.ID}`)
+                    .set("Cookie", `user_token=${token}`);
+
+                expect(res.status).toBe(200);
+                expect(res.body.username).toBe("getbyid");
             });
         });
 
@@ -86,7 +135,15 @@ describe("/api/users", () => {
             });
 
             test("should update user", async () => {
-                // Test implementation here
+                const user = await createTestUser(app, { username: "updateme", email: "updateme@example.com" });
+                const token = makeToken(user);
+
+                const res = await request(app)
+                    .put(`/api/users/${user.ID}`)
+                    .set("Cookie", `user_token=${token}`)
+                    .send({ username: "updateme", email: "updated@example.com", password: "NewPass123", isAdmin: false });
+
+                expect(res.status).toBe(200);
             });
         });
 
@@ -101,7 +158,15 @@ describe("/api/users", () => {
             });
 
             test("should delete user", async () => {
-                // Test implementation here
+                const admin = await createTestUser(app, { username: "deladmin", email: "deladmin@example.com", isAdmin: true });
+                const token = makeToken(admin);
+                const target = await createTestUser(app, { username: "deltarget", email: "deltarget@example.com" });
+
+                const res = await request(app)
+                    .delete(`/api/users/${target.ID}`)
+                    .set("Cookie", `user_token=${token}`);
+
+                expect(res.status).toBe(200);
             });
         });
     });
@@ -119,7 +184,15 @@ describe("/api/users", () => {
             });
 
             test("should update user location", async () => {
-                // Test implementation here
+                const user = await createTestUser(app, { username: "locupdate", email: "locupdate@example.com" });
+                const token = makeToken(user);
+
+                const res = await request(app)
+                    .put("/api/users/location")
+                    .set("Cookie", `user_token=${token}`)
+                    .send({ latitude: 47.5, longitude: 19.1 });
+
+                expect(res.status).toBe(200);
             });
         });
     });
@@ -137,7 +210,14 @@ describe("/api/users", () => {
             });
 
             test("should get user location", async () => {
-                // Test implementation here
+                const user = await createTestUser(app, { username: "locget", email: "locget@example.com" });
+                const token = makeToken(user);
+
+                const res = await request(app)
+                    .get(`/api/users/location/${user.ID}`)
+                    .set("Cookie", `user_token=${token}`);
+
+                expect(res.status).toBe(200);
             });
         });
     });
