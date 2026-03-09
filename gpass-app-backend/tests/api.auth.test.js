@@ -38,7 +38,7 @@ describe("/api/auth", () => {
                                 ID: 1,
                                 username: "testuser",
                                 email: "test@example.com",
-                                password: "$2b$10$mockhashedpassword",
+                                password: "TestPassword123",
                                 isAdmin: false,
                             })
                         }
