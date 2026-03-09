@@ -24,6 +24,15 @@ namespace gpass_app_wpf.ViewModels
         public RelayCommand DeleteUserCommand { get; }
         public RelayCommand ViewDetailCommand { get; }
 
+        private string _errorMessage;
+        public string ErrorMessage
+        {
+            get => _errorMessage;
+            set { _errorMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasError)); }
+        }
+        public bool HasError => !string.IsNullOrEmpty(_errorMessage);
+        public RelayCommand DismissErrorCommand { get; }
+
         public ObservableCollection<User> Users { get; set; } = new();
 
         public ClanViewModel ClanVM { get; } = new();
@@ -65,7 +74,8 @@ namespace gpass_app_wpf.ViewModels
             _api = SessionService.Api;
             WelcomeText = $"Üdv, {SessionService.Username}!";
 
-            LogoutCommand     = new RelayCommand(async _ => await Logout());
+            DismissErrorCommand = new RelayCommand(_ => ErrorMessage = null);
+            LogoutCommand       = new RelayCommand(async _ => await Logout());
             AddUserCommand    = new RelayCommand(async _ => await AddUser());
             EditUserCommand   = new RelayCommand(async _ => await EditUser(),   _ => SelectedUser != null);
             DeleteUserCommand = new RelayCommand(async _ => await DeleteUser(), _ => SelectedUser != null);
@@ -101,8 +111,7 @@ namespace gpass_app_wpf.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Kijelentkezési hiba: {ex.Message}", "Hiba",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                ErrorMessage = $"Kijelentkezési hiba: {ex.Message}";
             }
         }
 
@@ -121,8 +130,7 @@ namespace gpass_app_wpf.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Hiba a felhasználók betöltésekor: {ex.Message}", "Hiba",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                ErrorMessage = $"Hiba a felhasználók betöltésekor: {ex.Message}";
             }
         }
 
@@ -157,11 +165,9 @@ namespace gpass_app_wpf.ViewModels
         {
             if (SelectedUser == null) return;
 
-            var result = MessageBox.Show(
+            if (!WindowHelper.ShowConfirm(
                 $"Biztosan törölni akarod?\n\n{SelectedUser.username} ({SelectedUser.email})",
-                "Megerősítés", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-
-            if (result != MessageBoxResult.Yes) return;
+                "Felhasználó törlése", isDanger: true)) return;
 
             try
             {
@@ -171,8 +177,7 @@ namespace gpass_app_wpf.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Hiba a törléskor: {ex.Message}", "Hiba",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                ErrorMessage = $"Hiba a törléskor: {ex.Message}";
             }
         }
 

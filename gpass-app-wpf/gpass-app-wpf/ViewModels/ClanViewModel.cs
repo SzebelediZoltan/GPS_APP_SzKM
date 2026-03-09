@@ -24,6 +24,14 @@ namespace gpass_app_wpf.ViewModels
             set { _selectedClan = value; OnPropertyChanged(); }
         }
 
+        private string _errorMessage;
+        public string ErrorMessage
+        {
+            get => _errorMessage;
+            set { _errorMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasError)); }
+        }
+        public bool HasError => !string.IsNullOrEmpty(_errorMessage);
+
         // ── Klán keresés ──────────────────────────────────────────────────────
         private string _clanSearch = "";
         public string ClanSearch
@@ -49,10 +57,10 @@ namespace gpass_app_wpf.ViewModels
             catch (TaskCanceledException) { }
         }
 
-        public RelayCommand CreateClanCommand   { get; }
-        public RelayCommand ViewMembersCommand  { get; }
-        public RelayCommand EditClanCommand     { get; }
-        public RelayCommand DeleteClanCommand   { get; }
+        public RelayCommand CreateClanCommand  { get; }
+        public RelayCommand ViewMembersCommand { get; }
+        public RelayCommand DeleteClanCommand  { get; }
+        public RelayCommand DismissErrorCommand { get; }
 
         public ClanViewModel()
         {
@@ -60,14 +68,15 @@ namespace gpass_app_wpf.ViewModels
 
             CreateClanCommand  = new RelayCommand(async _ => await CreateClan());
             ViewMembersCommand = new RelayCommand(async _ => await ViewMembers(), _ => SelectedClan != null);
-            EditClanCommand    = new RelayCommand(async _ => await EditClan(),     _ => SelectedClan != null);
             DeleteClanCommand  = new RelayCommand(async _ => await DeleteClan(),   _ => SelectedClan != null);
+            DismissErrorCommand = new RelayCommand(_ => ErrorMessage = null);
 
             _ = LoadClans();
         }
 
         public async Task LoadClans()
         {
+            ErrorMessage = null;
             try
             {
                 var endpoint = string.IsNullOrWhiteSpace(ClanSearch)
@@ -84,8 +93,7 @@ namespace gpass_app_wpf.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Hiba a klánok betöltésekor: {ex.Message}", "Hiba",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                ErrorMessage = $"Hiba a klánok betöltésekor: {ex.Message}";
             }
         }
 
@@ -110,35 +118,13 @@ namespace gpass_app_wpf.ViewModels
             await LoadClans();
         }
 
-        private async Task EditClan()
-        {
-            if (SelectedClan == null) return;
-
-            var newName = Microsoft.VisualBasic.Interaction.InputBox(
-                "Adj meg új nevet a klánnak:", "Klán szerkesztése", SelectedClan.name);
-
-            if (string.IsNullOrWhiteSpace(newName) || newName == SelectedClan.name) return;
-
-            try
-            {
-                await _api.PutAsync<ClanWithMembers>($"clans/{SelectedClan.id}", new { name = newName });
-                await LoadClans();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Hiba a szerkesztéskor: {ex.Message}", "Hiba",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
         private async Task DeleteClan()
         {
             if (SelectedClan == null) return;
 
-            var r = MessageBox.Show(
+            if (!WindowHelper.ShowConfirm(
                 $"Biztosan törlöd a \"{SelectedClan.name}\" klánt?",
-                "Megerősítés", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-            if (r != MessageBoxResult.Yes) return;
+                "Klán törlése", isDanger: true)) return;
 
             try
             {
@@ -148,8 +134,7 @@ namespace gpass_app_wpf.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Hiba a törléskor: {ex.Message}", "Hiba",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                ErrorMessage = $"Hiba a törléskor: {ex.Message}";
             }
         }
     }

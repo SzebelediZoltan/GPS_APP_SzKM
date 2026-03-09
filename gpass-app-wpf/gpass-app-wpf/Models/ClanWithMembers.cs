@@ -16,5 +16,8 @@ namespace gpass_app_wpf.Models
         public ClanLeaderInfo leader { get; set; }
 
         public string leader_name => leader?.username ?? $"#{leader_id}";
+
+        // A leader nincs a clan_members táblában, ezért +1
+        public int total_members => member_count + 1;
     }
 }

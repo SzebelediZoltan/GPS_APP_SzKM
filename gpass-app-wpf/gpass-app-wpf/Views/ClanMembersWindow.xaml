@@ -31,6 +31,31 @@
         </StackPanel>
 
 
+        <!-- HIBASÁV -->
+        <Border DockPanel.Dock="Top"
+                Background="#3D1515"
+                BorderBrush="#C53030"
+                BorderThickness="1"
+                CornerRadius="4"
+                Padding="10,7"
+                Margin="0,0,0,8"
+                Visibility="{Binding HasError, Converter={StaticResource BoolToVisibility}}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="⚠ " Foreground="#FC8181" FontWeight="Bold" Margin="0,1,6,0"/>
+                <TextBlock Grid.Column="1" Text="{Binding ErrorMessage}" Foreground="#FC8181"
+                           FontSize="12" TextWrapping="Wrap"/>
+                <Button Grid.Column="2" Content="✕" Width="22" Height="22"
+                        Background="Transparent" Foreground="#FC8181" BorderThickness="0"
+                        Command="{Binding DismissErrorCommand}" VerticalAlignment="Top"/>
+            </Grid>
+        </Border>
+
+
         <!-- KLÁN ADATOK -->
         <Border DockPanel.Dock="Top"
                 Background="{DynamicResource SurfaceBrush}"
@@ -109,13 +134,21 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Column="0"
-                               Text="{Binding NameSaveResult}"
-                               VerticalAlignment="Center"
-                               FontSize="12"
-                               Margin="2,0,0,0"
-                               Foreground="{DynamicResource Accent}"
-                               Visibility="{Binding HasNameSaveResult, Converter={StaticResource BoolToVisibility}}"/>
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center"
+                                Visibility="{Binding HasNameSaveResult, Converter={StaticResource BoolToVisibility}}">
+                        <TextBlock Text="{Binding NameSaveResult}" FontSize="12" Margin="2,0,0,0">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Foreground" Value="{DynamicResource Accent}"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding NameSaveIsError}" Value="True">
+                                            <Setter Property="Foreground" Value="#FC8181"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </StackPanel>
 
                     <Button Grid.Column="1"
                             Padding="14,6"

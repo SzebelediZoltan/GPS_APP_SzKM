@@ -24,6 +24,9 @@ router.get("/:clanID", [authMiddleware.userIsLoggedIn], clanController.getClan);
 // UPDATE (logged in)
 router.put("/:clanID", [authMiddleware.userIsLoggedIn], clanController.updateClan);
 
+// LEADER CSERE (logged in) - name check nélkül
+router.patch("/:clanID/leader", [authMiddleware.userIsLoggedIn], clanController.changeLeader);
+
 // DELETE (admin) – ha akarod csak leadernek, azt majd service-ben szabályozzuk
 router.delete("/:clanID", [authMiddleware.userIsLoggedIn], clanController.deleteClan);
 

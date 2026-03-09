@@ -28,24 +28,26 @@
 
         <!-- HIBASÁV -->
         <Border Grid.Row="1"
-                Background="#3a1f1f"
-                BorderBrush="{DynamicResource Accent}"
+                Background="#3D1515"
+                BorderBrush="#C53030"
                 BorderThickness="1"
                 CornerRadius="4"
                 Padding="10,7"
                 Margin="0,0,0,12"
                 Visibility="{Binding HasError, Converter={StaticResource BoolToVisibility}}">
-
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="⚠ "
-                           Foreground="{DynamicResource Accent}"
-                           FontWeight="Bold"/>
-
-                <TextBlock Text="{Binding ErrorMessage}"
-                           Foreground="{DynamicResource Accent}"
-                           TextWrapping="Wrap"
-                           FontSize="13"/>
-            </StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="⚠ " Foreground="#FC8181" FontWeight="Bold" Margin="0,1,6,0"/>
+                <TextBlock Grid.Column="1" Text="{Binding ErrorMessage}" Foreground="#FC8181"
+                           TextWrapping="Wrap" FontSize="13"/>
+                <Button Grid.Column="2" Content="✕" Width="22" Height="22"
+                        Background="Transparent" Foreground="#FC8181" BorderThickness="0"
+                        Command="{Binding DismissErrorCommand}" VerticalAlignment="Top"/>
+            </Grid>
         </Border>
 
         <!-- FORM -->

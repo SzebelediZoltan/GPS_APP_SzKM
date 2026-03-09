@@ -72,3 +72,16 @@ exports.searchClans = async (req, res, next) => {
         next(error);
     }
 }
+
+exports.changeLeader = async (req, res, next) => {
+    const clanId = req.clanID;
+    const { leader_id } = req.body || {};
+
+    try {
+        const transaction = transactionBuilder.get(req);
+        res.status(200).json(await clanService.changeLeader(leader_id, clanId, { transaction }));
+    }
+    catch (error) {
+        next(error);
+    }
+}

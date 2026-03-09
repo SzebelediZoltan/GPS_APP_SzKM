@@ -46,8 +46,6 @@ namespace gpass_app_wpf.ViewModels
         public bool IsLocalhostSelected => _selectedServer?.BaseUrl?.Contains("localhost") == true;
         public bool IsGpassSelected     => _selectedServer?.BaseUrl?.Contains("gpass.site") == true;
 
-        public RelayCommand SelectServerCommand { get; }
-
         // ── Hibaüzenet ─────────────────────────────────────────────────────────
         private string? _errorMessage;
         public string? ErrorMessage
@@ -65,7 +63,8 @@ namespace gpass_app_wpf.ViewModels
             set { _loading = value; OnPropertyChanged(); }
         }
 
-        public RelayCommand LoginCommand { get; }
+        public RelayCommand SelectServerCommand { get; }
+        public RelayCommand LoginCommand        { get; }
 
         public LoginViewModel()
         {
@@ -73,6 +72,7 @@ namespace gpass_app_wpf.ViewModels
             SelectServerCommand = new RelayCommand(p =>
             {
                 SelectedServer = p?.ToString() == "localhost" ? Servers[0] : Servers[1];
+                ErrorMessage = null;
             });
             LoginCommand = new RelayCommand(async _ => await Login(), _ => !Loading);
         }
@@ -89,8 +89,6 @@ namespace gpass_app_wpf.ViewModels
             }
 
             Loading = true;
-
-            // Szerver beállítása
             SessionService.SetServer(SelectedServer.BaseUrl ?? "");
 
             try
@@ -106,9 +104,9 @@ namespace gpass_app_wpf.ViewModels
                 var handler = new JwtSecurityTokenHandler();
                 var jwt     = handler.ReadJwtToken(token);
 
-                var idClaim       = jwt.Claims.FirstOrDefault(c => c.Type == "userID");
-                var usernameClaim  = jwt.Claims.FirstOrDefault(c => c.Type == "username");
-                var isAdminClaim   = jwt.Claims.FirstOrDefault(c => c.Type == "isAdmin");
+                var idClaim      = jwt.Claims.FirstOrDefault(c => c.Type == "userID");
+                var usernameClaim = jwt.Claims.FirstOrDefault(c => c.Type == "username");
+                var isAdminClaim  = jwt.Claims.FirstOrDefault(c => c.Type == "isAdmin");
 
                 if (idClaim == null || usernameClaim == null || token == null)
                 {

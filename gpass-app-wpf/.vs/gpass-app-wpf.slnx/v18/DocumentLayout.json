@@ -7,12 +7,28 @@
       "RelativeMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|solutionrelative:gpass-app-wpf\\views\\clanformwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|c:\\_study\\gps_app_szkm\\gpass-app-wpf\\gpass-app-wpf\\views\\clanmemberswindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|solutionrelative:gpass-app-wpf\\views\\clanmemberswindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|c:\\_study\\gps_app_szkm\\gpass-app-wpf\\gpass-app-wpf\\viewmodels\\userdetailviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|solutionrelative:gpass-app-wpf\\viewmodels\\userdetailviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|c:\\_study\\gps_app_szkm\\gpass-app-wpf\\gpass-app-wpf\\views\\userdetailwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|solutionrelative:gpass-app-wpf\\views\\userdetailwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|c:\\_study\\gps_app_szkm\\gpass-app-wpf\\gpass-app-wpf\\themes\\controls.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|solutionrelative:gpass-app-wpf\\themes\\controls.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|c:\\_study\\gps_app_szkm\\gpass-app-wpf\\gpass-app-wpf\\views\\home.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|solutionrelative:gpass-app-wpf\\views\\home.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|c:\\_study\\gps_app_szkm\\gpass-app-wpf\\gpass-app-wpf\\viewmodels\\clanmembersviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|solutionrelative:gpass-app-wpf\\viewmodels\\clanmembersviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|c:\\_study\\gps_app_szkm\\gpass-app-wpf\\gpass-app-wpf\\views\\clanmemberswindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|solutionrelative:gpass-app-wpf\\views\\clanmemberswindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|c:\\_study\\gps_app_szkm\\gpass-app-wpf\\gpass-app-wpf\\viewmodels\\homeviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -21,10 +37,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|c:\\_study\\gps_app_szkm\\gpass-app-wpf\\gpass-app-wpf\\views\\home.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|solutionrelative:gpass-app-wpf\\views\\home.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|c:\\_study\\gps_app_szkm\\gpass-app-wpf\\gpass-app-wpf\\views\\home.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|solutionrelative:gpass-app-wpf\\views\\home.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|c:\\_study\\gps_app_szkm\\gpass-app-wpf\\gpass-app-wpf\\views\\clanmemberswindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -83,14 +95,6 @@
       "RelativeMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|solutionrelative:gpass-app-wpf\\views\\login.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|c:\\_study\\gps_app_szkm\\gpass-app-wpf\\gpass-app-wpf\\views\\userdetailwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|solutionrelative:gpass-app-wpf\\views\\userdetailwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|c:\\_study\\gps_app_szkm\\gpass-app-wpf\\gpass-app-wpf\\themes\\controls.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|solutionrelative:gpass-app-wpf\\themes\\controls.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|c:\\_study\\gps_app_szkm\\gpass-app-wpf\\gpass-app-wpf\\themes\\dark.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{217EDEA9-E55A-B479-3335-1A9888C852D9}|gpass-app-wpf\\gpass-app-wpf.csproj|solutionrelative:gpass-app-wpf\\themes\\dark.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     }
@@ -125,30 +129,19 @@
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "ClanMembersWindow.xaml",
-              "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\Views\\ClanMembersWindow.xaml",
-              "RelativeDocumentMoniker": "gpass-app-wpf\\Views\\ClanMembersWindow.xaml",
-              "ToolTip": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\Views\\ClanMembersWindow.xaml",
-              "RelativeToolTip": "gpass-app-wpf\\Views\\ClanMembersWindow.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-02-25T18:02:50.493Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
               "Title": "UserDetailViewModel.cs",
               "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\ViewModels\\UserDetailViewModel.cs",
               "RelativeDocumentMoniker": "gpass-app-wpf\\ViewModels\\UserDetailViewModel.cs",
               "ToolTip": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\ViewModels\\UserDetailViewModel.cs",
               "RelativeToolTip": "gpass-app-wpf\\ViewModels\\UserDetailViewModel.cs",
-              "ViewState": "AgIAAMQAAAAAAAAAAAAlwOgAAABQAAAAAAAAAA==",
+              "ViewState": "AgIAAE8BAAAAAAAAAAAwwG8BAAA/AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-04T19:56:09.086Z"
+              "WhenOpened": "2026-03-04T19:56:09.086Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 7,
               "Title": "HomeViewModel.cs",
               "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\ViewModels\\HomeViewModel.cs",
               "RelativeDocumentMoniker": "gpass-app-wpf\\ViewModels\\HomeViewModel.cs",
@@ -160,7 +153,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 8,
               "Title": "Home.xaml.cs",
               "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\Views\\Home.xaml.cs",
               "RelativeDocumentMoniker": "gpass-app-wpf\\Views\\Home.xaml.cs",
@@ -172,7 +165,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 4,
               "Title": "Home.xaml",
               "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\Views\\Home.xaml",
               "RelativeDocumentMoniker": "gpass-app-wpf\\Views\\Home.xaml",
@@ -183,7 +176,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 9,
               "Title": "ClanMembersWindow.xaml.cs",
               "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\Views\\ClanMembersWindow.xaml.cs",
               "RelativeDocumentMoniker": "gpass-app-wpf\\Views\\ClanMembersWindow.xaml.cs",
@@ -195,7 +188,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 10,
               "Title": "ClanViewModel.cs",
               "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\ViewModels\\ClanViewModel.cs",
               "RelativeDocumentMoniker": "gpass-app-wpf\\ViewModels\\ClanViewModel.cs",
@@ -207,160 +200,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "UserFormWindow.xaml",
-              "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\Views\\UserFormWindow.xaml",
-              "RelativeDocumentMoniker": "gpass-app-wpf\\Views\\UserFormWindow.xaml",
-              "ToolTip": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\Views\\UserFormWindow.xaml",
-              "RelativeToolTip": "gpass-app-wpf\\Views\\UserFormWindow.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-03-03T21:02:03.486Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "WindowHelper.cs",
-              "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\Helpers\\WindowHelper.cs",
-              "RelativeDocumentMoniker": "gpass-app-wpf\\Helpers\\WindowHelper.cs",
-              "ToolTip": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\Helpers\\WindowHelper.cs",
-              "RelativeToolTip": "gpass-app-wpf\\Helpers\\WindowHelper.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-05T16:10:09.399Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 14,
-              "Title": "SessionService.cs",
-              "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\DAL\\SessionService.cs",
-              "RelativeDocumentMoniker": "gpass-app-wpf\\DAL\\SessionService.cs",
-              "ToolTip": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\DAL\\SessionService.cs",
-              "RelativeToolTip": "gpass-app-wpf\\DAL\\SessionService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAdAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-04T19:22:39.223Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "App.xaml.cs",
-              "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\App.xaml.cs",
-              "RelativeDocumentMoniker": "gpass-app-wpf\\App.xaml.cs",
-              "ToolTip": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\App.xaml.cs",
-              "RelativeToolTip": "gpass-app-wpf\\App.xaml.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB0AAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-05T15:47:08.839Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "ThemeService.cs",
-              "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\DAL\\ThemeService.cs",
-              "RelativeDocumentMoniker": "gpass-app-wpf\\DAL\\ThemeService.cs",
-              "ToolTip": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\DAL\\ThemeService.cs",
-              "RelativeToolTip": "gpass-app-wpf\\DAL\\ThemeService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAjAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-04T19:55:59.205Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "App.xaml",
-              "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\App.xaml",
-              "RelativeDocumentMoniker": "gpass-app-wpf\\App.xaml",
-              "ToolTip": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\App.xaml",
-              "RelativeToolTip": "gpass-app-wpf\\App.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-03-03T20:42:33.343Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "Clan.cs",
-              "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\Models\\Clan.cs",
-              "RelativeDocumentMoniker": "gpass-app-wpf\\Models\\Clan.cs",
-              "ToolTip": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\Models\\Clan.cs",
-              "RelativeToolTip": "gpass-app-wpf\\Models\\Clan.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAWAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-04T19:56:02.292Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 15,
-              "Title": "ApiService.cs",
-              "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\DAL\\ApiService.cs",
-              "RelativeDocumentMoniker": "gpass-app-wpf\\DAL\\ApiService.cs",
-              "ToolTip": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\DAL\\ApiService.cs",
-              "RelativeToolTip": "gpass-app-wpf\\DAL\\ApiService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-04T18:48:18.998Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 17,
-              "Title": "LoginViewModel.cs",
-              "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\ViewModels\\LoginViewModel.cs",
-              "RelativeDocumentMoniker": "gpass-app-wpf\\ViewModels\\LoginViewModel.cs",
-              "ToolTip": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\ViewModels\\LoginViewModel.cs",
-              "RelativeToolTip": "gpass-app-wpf\\ViewModels\\LoginViewModel.cs",
-              "ViewState": "AgIAAFgAAAAAAAAAAADwv3YAAAAsAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-04T18:50:06.395Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 16,
-              "Title": "RelayCommand.cs",
-              "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\ViewModels\\RelayCommand.cs",
-              "RelativeDocumentMoniker": "gpass-app-wpf\\ViewModels\\RelayCommand.cs",
-              "ToolTip": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\ViewModels\\RelayCommand.cs",
-              "RelativeToolTip": "gpass-app-wpf\\ViewModels\\RelayCommand.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAoAAAAPAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-04T18:56:23.609Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 18,
-              "Title": "BaseViewModel.cs",
-              "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\ViewModels\\BaseViewModel.cs",
-              "RelativeDocumentMoniker": "gpass-app-wpf\\ViewModels\\BaseViewModel.cs",
-              "ToolTip": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\ViewModels\\BaseViewModel.cs",
-              "RelativeToolTip": "gpass-app-wpf\\ViewModels\\BaseViewModel.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAABDAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-04T18:55:14.138Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 19,
-              "Title": "Login.xaml",
-              "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\Views\\Login.xaml",
-              "RelativeDocumentMoniker": "gpass-app-wpf\\Views\\Login.xaml",
-              "ToolTip": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\Views\\Login.xaml",
-              "RelativeToolTip": "gpass-app-wpf\\Views\\Login.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-03-04T18:49:15.67Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 20,
-              "Title": "UserDetailWindow.xaml",
-              "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\Views\\UserDetailWindow.xaml",
-              "RelativeDocumentMoniker": "gpass-app-wpf\\Views\\UserDetailWindow.xaml",
-              "ToolTip": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\Views\\UserDetailWindow.xaml",
-              "RelativeToolTip": "gpass-app-wpf\\Views\\UserDetailWindow.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-03-04T17:56:59.722Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 3,
               "Title": "Controls.xaml",
               "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\Themes\\Controls.xaml",
               "RelativeDocumentMoniker": "gpass-app-wpf\\Themes\\Controls.xaml",
@@ -372,7 +212,183 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "UserDetailWindow.xaml",
+              "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\Views\\UserDetailWindow.xaml",
+              "RelativeDocumentMoniker": "gpass-app-wpf\\Views\\UserDetailWindow.xaml",
+              "ToolTip": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\Views\\UserDetailWindow.xaml",
+              "RelativeToolTip": "gpass-app-wpf\\Views\\UserDetailWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-03-04T17:56:59.722Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "ClanMembersViewModel.cs",
+              "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\ViewModels\\ClanMembersViewModel.cs",
+              "RelativeDocumentMoniker": "gpass-app-wpf\\ViewModels\\ClanMembersViewModel.cs",
+              "ToolTip": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\ViewModels\\ClanMembersViewModel.cs",
+              "RelativeToolTip": "gpass-app-wpf\\ViewModels\\ClanMembersViewModel.cs",
+              "ViewState": "AgIAAAIBAAAAAAAAAAAQwDIBAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-08T19:44:39.496Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ClanMembersWindow.xaml",
+              "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\Views\\ClanMembersWindow.xaml",
+              "RelativeDocumentMoniker": "gpass-app-wpf\\Views\\ClanMembersWindow.xaml",
+              "ToolTip": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\Views\\ClanMembersWindow.xaml",
+              "RelativeToolTip": "gpass-app-wpf\\Views\\ClanMembersWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-02-25T18:02:50.493Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "UserFormWindow.xaml",
+              "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\Views\\UserFormWindow.xaml",
+              "RelativeDocumentMoniker": "gpass-app-wpf\\Views\\UserFormWindow.xaml",
+              "ToolTip": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\Views\\UserFormWindow.xaml",
+              "RelativeToolTip": "gpass-app-wpf\\Views\\UserFormWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-03-03T21:02:03.486Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "WindowHelper.cs",
+              "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\Helpers\\WindowHelper.cs",
+              "RelativeDocumentMoniker": "gpass-app-wpf\\Helpers\\WindowHelper.cs",
+              "ToolTip": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\Helpers\\WindowHelper.cs",
+              "RelativeToolTip": "gpass-app-wpf\\Helpers\\WindowHelper.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-05T16:10:09.399Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "SessionService.cs",
+              "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\DAL\\SessionService.cs",
+              "RelativeDocumentMoniker": "gpass-app-wpf\\DAL\\SessionService.cs",
+              "ToolTip": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\DAL\\SessionService.cs",
+              "RelativeToolTip": "gpass-app-wpf\\DAL\\SessionService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-04T19:22:39.223Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "App.xaml.cs",
+              "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\App.xaml.cs",
+              "RelativeDocumentMoniker": "gpass-app-wpf\\App.xaml.cs",
+              "ToolTip": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\App.xaml.cs",
+              "RelativeToolTip": "gpass-app-wpf\\App.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-05T15:47:08.839Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "ThemeService.cs",
+              "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\DAL\\ThemeService.cs",
+              "RelativeDocumentMoniker": "gpass-app-wpf\\DAL\\ThemeService.cs",
+              "ToolTip": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\DAL\\ThemeService.cs",
+              "RelativeToolTip": "gpass-app-wpf\\DAL\\ThemeService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAjAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-04T19:55:59.205Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "App.xaml",
+              "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\App.xaml",
+              "RelativeDocumentMoniker": "gpass-app-wpf\\App.xaml",
+              "ToolTip": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\App.xaml",
+              "RelativeToolTip": "gpass-app-wpf\\App.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-03-03T20:42:33.343Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "Clan.cs",
+              "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\Models\\Clan.cs",
+              "RelativeDocumentMoniker": "gpass-app-wpf\\Models\\Clan.cs",
+              "ToolTip": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\Models\\Clan.cs",
+              "RelativeToolTip": "gpass-app-wpf\\Models\\Clan.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-04T19:56:02.292Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "ApiService.cs",
+              "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\DAL\\ApiService.cs",
+              "RelativeDocumentMoniker": "gpass-app-wpf\\DAL\\ApiService.cs",
+              "ToolTip": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\DAL\\ApiService.cs",
+              "RelativeToolTip": "gpass-app-wpf\\DAL\\ApiService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-04T18:48:18.998Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "LoginViewModel.cs",
+              "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\ViewModels\\LoginViewModel.cs",
+              "RelativeDocumentMoniker": "gpass-app-wpf\\ViewModels\\LoginViewModel.cs",
+              "ToolTip": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\ViewModels\\LoginViewModel.cs",
+              "RelativeToolTip": "gpass-app-wpf\\ViewModels\\LoginViewModel.cs",
+              "ViewState": "AgIAAFgAAAAAAAAAAADwv3YAAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-04T18:50:06.395Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "RelayCommand.cs",
+              "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\ViewModels\\RelayCommand.cs",
+              "RelativeDocumentMoniker": "gpass-app-wpf\\ViewModels\\RelayCommand.cs",
+              "ToolTip": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\ViewModels\\RelayCommand.cs",
+              "RelativeToolTip": "gpass-app-wpf\\ViewModels\\RelayCommand.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAoAAAAPAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-04T18:56:23.609Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "BaseViewModel.cs",
+              "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\ViewModels\\BaseViewModel.cs",
+              "RelativeDocumentMoniker": "gpass-app-wpf\\ViewModels\\BaseViewModel.cs",
+              "ToolTip": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\ViewModels\\BaseViewModel.cs",
+              "RelativeToolTip": "gpass-app-wpf\\ViewModels\\BaseViewModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAABDAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-04T18:55:14.138Z"
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 22,
+              "Title": "Login.xaml",
+              "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\Views\\Login.xaml",
+              "RelativeDocumentMoniker": "gpass-app-wpf\\Views\\Login.xaml",
+              "ToolTip": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\Views\\Login.xaml",
+              "RelativeToolTip": "gpass-app-wpf\\Views\\Login.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-03-04T18:49:15.67Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
               "Title": "Dark.xaml",
               "DocumentMoniker": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\Themes\\Dark.xaml",
               "RelativeDocumentMoniker": "gpass-app-wpf\\Themes\\Dark.xaml",

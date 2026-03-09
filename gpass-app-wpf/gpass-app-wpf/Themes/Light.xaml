@@ -21,4 +21,12 @@
     <SolidColorBrush x:Key="LoginCardBorder"     Color="#D1D9E6"/>
     <SolidColorBrush x:Key="WindowBackground"    Color="#F4F6FA"/>
 
+
+    <!-- DataGrid kijelölés színei - felülírják a WPF SystemColor brush-ait -->
+    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"         Color="#3B82F6"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}"     Color="White"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#3B82F6"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="White"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}"           Color="Transparent"/>
+
 </ResourceDictionary>

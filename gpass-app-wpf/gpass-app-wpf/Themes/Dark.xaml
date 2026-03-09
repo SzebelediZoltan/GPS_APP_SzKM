@@ -24,4 +24,12 @@
 
     
 
+
+    <!-- DataGrid kijelölés színei - felülírják a WPF SystemColor brush-ait -->
+    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"         Color="#4F9CF9"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}"     Color="White"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#4F9CF9"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="White"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}"           Color="Transparent"/>
+
 </ResourceDictionary>

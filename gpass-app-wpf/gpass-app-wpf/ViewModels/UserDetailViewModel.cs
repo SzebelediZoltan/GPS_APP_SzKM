@@ -1,3 +1,4 @@
+using gpass_app_wpf.Helpers;
 using gpass_app_wpf.DAL;
 using gpass_app_wpf.Models;
 using System;
@@ -31,8 +32,20 @@ namespace gpass_app_wpf.ViewModels
         public Trip SelectedTrip
         {
             get => _selectedTrip;
-            set { _selectedTrip = value; OnPropertyChanged(); }
+            set
+            {
+                _selectedTrip = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasSelectedTrip));
+                if (value != null)
+                {
+                    EditTripName   = value.trip_name ?? value.name ?? "";
+                    TripEditError  = null;
+                    TripEditResult = null;
+                }
+            }
         }
+        public bool HasSelectedTrip => _selectedTrip != null;
         public Marker SelectedMarker
         {
             get => _selectedMarker;
@@ -53,15 +66,49 @@ namespace gpass_app_wpf.ViewModels
         public FriendWith SelectedFriend
         {
             get => _selectedFriend;
-            set { _selectedFriend = value; OnPropertyChanged(); }
+            set { _selectedFriend = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasSelectedFriend)); }
         }
+        public bool HasSelectedFriend => _selectedFriend != null;
 
         // Parancsok
         public RelayCommand DeleteTripCommand    { get; }
+        public RelayCommand EditTripCommand      { get; }
+        public RelayCommand DismissErrorsCommand { get; }
         public RelayCommand DeleteMarkerCommand  { get; }
         public RelayCommand EditMarkerCommand    { get; }
         public RelayCommand ToggleFriendCommand  { get; }
         public RelayCommand DeleteFriendCommand  { get; }
+
+        // ── Trip névszerkesztés ───────────────────────────────────────────────
+        private string _editTripName;
+        public string EditTripName
+        {
+            get => _editTripName;
+            set { _editTripName = value; OnPropertyChanged(); ValidateTripEdit(); }
+        }
+
+        private string _tripEditError;
+        public string TripEditError
+        {
+            get => _tripEditError;
+            set { _tripEditError = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasTripEditError)); }
+        }
+        public bool HasTripEditError => !string.IsNullOrEmpty(_tripEditError);
+
+        private string _tripEditResult;
+        public string TripEditResult
+        {
+            get => _tripEditResult;
+            set { _tripEditResult = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasTripEditResult)); }
+        }
+        public bool HasTripEditResult => !string.IsNullOrEmpty(_tripEditResult);
+
+        private bool _tripSaving;
+        public bool TripSaving
+        {
+            get => _tripSaving;
+            set { _tripSaving = value; OnPropertyChanged(); }
+        }
 
         // ── Marker szerkesztés ────────────────────────────────────────────────
         private string _editMarkerType;
@@ -110,6 +157,7 @@ namespace gpass_app_wpf.ViewModels
             set { _errors = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasErrors)); }
         }
         public bool HasErrors => !string.IsNullOrEmpty(_errors);
+        public void ClearErrors() => Errors = null;
 
         private bool _loading;
         public bool Loading
@@ -123,7 +171,9 @@ namespace gpass_app_wpf.ViewModels
             _user = user;
             _api  = SessionService.Api;
 
-            DeleteTripCommand   = new RelayCommand(async _ => await DeleteTrip(),   _ => SelectedTrip   != null);
+            DeleteTripCommand    = new RelayCommand(async _ => await DeleteTrip(),   _ => SelectedTrip != null);
+            EditTripCommand      = new RelayCommand(async _ => await EditTrip(),     _ => SelectedTrip != null && !TripSaving && !HasTripEditError);
+            DismissErrorsCommand = new RelayCommand(_ => Errors = null);
             EditMarkerCommand   = new RelayCommand(async _ => await EditMarker(),   _ => SelectedMarker != null && !MarkerSaving && !HasMarkerEditError);
             DeleteMarkerCommand = new RelayCommand(async _ => await DeleteMarker(), _ => SelectedMarker != null);
             ToggleFriendCommand = new RelayCommand(async _ => await ToggleFriend(), _ => SelectedFriend != null);
@@ -135,7 +185,7 @@ namespace gpass_app_wpf.ViewModels
         private async Task LoadAll()
         {
             Loading = true;
-            Errors = "";
+            Errors = null;
             await Task.WhenAll(LoadTrips(), LoadMarkers(), LoadFriends(), LoadClans());
             await LoadTripPoints();
             Loading = false;
@@ -193,15 +243,39 @@ namespace gpass_app_wpf.ViewModels
         {
             try
             {
-                var memberships = await _api.GetAsync<List<ClanMember>>($"clan-members/by-user/{_user.ID}");
+                // Az összes klán neve - ebből keressük ki a neveket clan_id alapján
+                var allClans = await _api.GetAsync<List<ClanWithMembers>>("clans");
+                var clanMap = allClans.ToDictionary(c => c.id, c => c.name);
 
+                var result = new List<ClanMember>();
+
+                // Tagságok (ahol tag a user)
+                var memberships = await _api.GetAsync<List<ClanMember>>($"clan-members/by-user/{_user.ID}");
                 foreach (var m in memberships)
-                    m.clan_name = m.clan?.name ?? $"#{m.clan_id}";
+                {
+                    m.clan_name = clanMap.TryGetValue(m.clan_id, out var n) ? n : $"#{m.clan_id}";
+                    result.Add(m);
+                }
+
+                // Leader klánok (ahol vezető, de nem szerepel clan_members-ben)
+                foreach (var c in allClans)
+                {
+                    if (c.leader_id == _user.ID && !result.Any(m => m.clan_id == c.id))
+                    {
+                        result.Add(new ClanMember
+                        {
+                            clan_id   = c.id,
+                            user_id   = _user.ID,
+                            joined_at = c.created_at,
+                            clan_name = c.name
+                        });
+                    }
+                }
 
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     Clans.Clear();
-                    foreach (var c in memberships) Clans.Add(c);
+                    foreach (var c in result) Clans.Add(c);
                 });
             }
             catch (Exception ex) { AppendError("Clánok", ex.Message); }
@@ -230,16 +304,16 @@ namespace gpass_app_wpf.ViewModels
         private async Task DeleteTrip()
         {
             if (SelectedTrip == null) return;
-            var r = MessageBox.Show($"Biztosan törlöd a Trip #{SelectedTrip.name} tripet?",
-                "Törlés", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-            if (r != MessageBoxResult.Yes) return;
+            if (!WindowHelper.ShowConfirm(
+                $"Biztosan törlöd a(z) \"{SelectedTrip.DisplayName}\" tripet?",
+                "Trip törlése", isDanger: true)) return;
             try
             {
                 await _api.DeleteAsync($"trips/{SelectedTrip.id}");
                 await LoadTrips();
                 await LoadTripPoints();
             }
-            catch (Exception ex) { MessageBox.Show(ex.Message, "Hiba", MessageBoxButton.OK, MessageBoxImage.Error); }
+            catch (Exception ex) { AppendError("Trip törlés", ex.Message); }
         }
 
         // ── MARKER VALIDATE ──────────────────────────────────────────────────
@@ -248,6 +322,42 @@ namespace gpass_app_wpf.ViewModels
             "danger", "police", "accident", "traffic", "roadblock", "speedtrap", "other"
         };
 
+        private void ValidateTripEdit()
+        {
+            if (string.IsNullOrWhiteSpace(EditTripName))
+                TripEditError = "A trip neve nem lehet üres!";
+            else if (EditTripName.Trim().Length < 1)
+                TripEditError = "Legalább 1 karakter szükséges!";
+            else if (!System.Text.RegularExpressions.Regex.IsMatch(EditTripName.Trim(), @"^[A-Za-z0-9]+$"))
+                TripEditError = "Csak betű és szám megengedett!";
+            else
+                TripEditError = null;
+        }
+
+        private async Task EditTrip()
+        {
+            if (SelectedTrip == null) return;
+            if (HasTripEditError) return;
+
+            TripSaving    = true;
+            TripEditResult = null;
+            try
+            {
+                await _api.PutAsync<Trip>($"trips/{SelectedTrip.id}", new
+                {
+                    trip_name = EditTripName.Trim()
+                });
+                SelectedTrip.trip_name = EditTripName.Trim();
+                TripEditResult = "✔ Sikeresen mentve!";
+                await LoadTrips();
+            }
+            catch (Exception ex)
+            {
+                TripEditResult = $"⚠ {ex.Message}";
+            }
+            finally { TripSaving = false; }
+        }
+
         private void ValidateMarkerEdit()
         {
             if (string.IsNullOrWhiteSpace(EditMarkerType))
@@ -255,7 +365,7 @@ namespace gpass_app_wpf.ViewModels
             else if (!AllowedMarkerTypes.Contains(EditMarkerType))
                 MarkerEditError = "Érvénytelen marker típus!";
             else if (!int.TryParse(EditMarkerScore, out int s) || s < 0)
-                MarkerEditError = "A pont értéke nem negatív egész szám kell legyen!";
+                MarkerEditError = "A pont értéke nem negatív \negész szám kell legyen!";
             else
                 MarkerEditError = null;
         }
@@ -292,15 +402,15 @@ namespace gpass_app_wpf.ViewModels
         private async Task DeleteMarker()
         {
             if (SelectedMarker == null) return;
-            var r = MessageBox.Show($"Biztosan törlöd a markert? (#{SelectedMarker.id} – {SelectedMarker.marker_type})",
-                "Törlés", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-            if (r != MessageBoxResult.Yes) return;
+            if (!WindowHelper.ShowConfirm(
+                $"Biztosan törlöd a markert?\n#{SelectedMarker.id} – {SelectedMarker.marker_type}",
+                "Marker törlése", isDanger: true)) return;
             try
             {
                 await _api.DeleteAsync($"markers/{SelectedMarker.id}");
                 await LoadMarkers();
             }
-            catch (Exception ex) { MessageBox.Show(ex.Message, "Hiba", MessageBoxButton.OK, MessageBoxImage.Error); }
+            catch (Exception ex) { AppendError("Marker törlés", ex.Message); }
         }
 
         // ── FRIEND TOGGLE (sent <-> accepted) ────────────────────────────────
@@ -313,27 +423,27 @@ namespace gpass_app_wpf.ViewModels
                 await _api.PutAsync<FriendWith>($"friends-with/{SelectedFriend.id}", new { status = newStatus });
                 await LoadFriends();
             }
-            catch (Exception ex) { MessageBox.Show(ex.Message, "Hiba", MessageBoxButton.OK, MessageBoxImage.Error); }
+            catch (Exception ex) { AppendError("Barát státusz", ex.Message); }
         }
 
         // ── FRIEND DELETE ─────────────────────────────────────────────────────
         private async Task DeleteFriend()
         {
             if (SelectedFriend == null) return;
-            var r = MessageBox.Show($"Biztosan törlöd a barát kapcsolatot? (#{SelectedFriend.id})",
-                "Törlés", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-            if (r != MessageBoxResult.Yes) return;
+            if (!WindowHelper.ShowConfirm(
+                $"Biztosan törlöd a barát kapcsolatot? (#{SelectedFriend.id})",
+                "Barát törlése", isDanger: true)) return;
             try
             {
                 await _api.DeleteAsync($"friends-with/{SelectedFriend.id}");
                 await LoadFriends();
             }
-            catch (Exception ex) { MessageBox.Show(ex.Message, "Hiba", MessageBoxButton.OK, MessageBoxImage.Error); }
+            catch (Exception ex) { AppendError("Barát törlés", ex.Message); }
         }
 
         private void AppendError(string section, string msg)
         {
-            Application.Current.Dispatcher.Invoke(() => Errors += $"[{section}]: {msg}\n");
+            Application.Current.Dispatcher.Invoke(() => Errors = (Errors ?? "") + $"[{section}]: {msg}\n");
         }
     }
 }

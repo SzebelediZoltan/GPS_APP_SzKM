@@ -101,6 +101,9 @@ namespace gpass_app_wpf.DAL
         public async Task<T?> PutAsync<T>(string endpoint, object data)
             => JsonSerializer.Deserialize<T>(await SendAndRead(HttpMethod.Put, endpoint, data), _jsonOptions);
 
+        public async Task<T?> PatchAsync<T>(string endpoint, object data)
+            => JsonSerializer.Deserialize<T>(await SendAndRead(HttpMethod.Patch, endpoint, data), _jsonOptions);
+
         public async Task DeleteAsync(string endpoint)
             => await SendAndRead(HttpMethod.Delete, endpoint);
     }

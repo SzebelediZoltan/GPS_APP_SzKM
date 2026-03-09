@@ -103,12 +103,33 @@
                         </Grid>
                     </Border>
 
+                    <!-- Hibasáv -->
+                    <Border DockPanel.Dock="Top"
+                            Visibility="{Binding HasError, Converter={StaticResource BoolToVisibility}}"
+                            Background="#3D1515" BorderBrush="#C53030" BorderThickness="1"
+                            CornerRadius="4" Padding="10,7" Margin="0,0,0,6">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="⚠ " Foreground="#FC8181"
+                                       FontWeight="Bold" Margin="0,1,6,0"/>
+                            <TextBlock Grid.Column="1" Text="{Binding ErrorMessage}"
+                                       Foreground="#FC8181" FontSize="13" TextWrapping="Wrap"/>
+                            <Button Grid.Column="2" Content="✕" Width="24" Height="24"
+                                    Background="Transparent" Foreground="#FC8181" BorderThickness="0"
+                                    Command="{Binding DismissErrorCommand}" VerticalAlignment="Top"/>
+                        </Grid>
+                    </Border>
+
                     <DataGrid ItemsSource="{Binding Users}"
                               SelectedItem="{Binding SelectedUser, Mode=TwoWay}"
                               AutoGenerateColumns="False" IsReadOnly="True"
                               SelectionMode="Single" CanUserAddRows="False"
                               GridLinesVisibility="Horizontal" HeadersVisibility="Column"
-                              AlternatingRowBackground="{DynamicResource AlternatingRow}" BorderBrush="{DynamicResource SurfaceBorderBrush}" BorderThickness="1">
+                              BorderBrush="{DynamicResource SurfaceBorderBrush}" BorderThickness="1">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID"             Binding="{Binding ID}"       Width="55"/>
                             <DataGridTextColumn Header="Felhasználónév" Binding="{Binding username}" Width="200"/>
@@ -161,6 +182,24 @@
                         </Grid>
                     </Border>
 
+                    <!-- Hibasáv -->
+                    <Border DockPanel.Dock="Top"
+                            Visibility="{Binding HasError, Converter={StaticResource BoolToVisibility}}"
+                            Background="#3D1515" BorderBrush="#C53030" BorderThickness="1"
+                            CornerRadius="4" Padding="12,8" Margin="0,0,0,6">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{Binding ErrorMessage}"
+                                       Foreground="#FC8181" FontSize="13" TextWrapping="Wrap"/>
+                            <Button Grid.Column="1" Content="✕" Width="24" Height="24"
+                                    Background="Transparent" Foreground="#FC8181" BorderThickness="0"
+                                    Command="{Binding DismissErrorCommand}" VerticalAlignment="Top"/>
+                        </Grid>
+                    </Border>
+
                     <DataGrid ItemsSource="{Binding Clans}"
                               SelectedItem="{Binding SelectedClan, Mode=TwoWay}"
                               AutoGenerateColumns="False" IsReadOnly="True"
@@ -171,7 +210,7 @@
                             <DataGridTextColumn Header="ID"          Binding="{Binding id}"           Width="50"/>
                             <DataGridTextColumn Header="Klán neve"   Binding="{Binding name}"         Width="170"/>
                             <DataGridTextColumn Header="Vezető"      Binding="{Binding leader_name}"  Width="120"/>
-                            <DataGridTextColumn Header="Tagok"       Binding="{Binding member_count}" Width="60"/>
+                            <DataGridTextColumn Header="Tagok"       Binding="{Binding total_members}" Width="60"/>
                             <DataGridTextColumn Header="Leírás"      Binding="{Binding description}"  Width="150"/>
                             <DataGridTextColumn Header="Létrehozva"  Binding="{Binding created_at, Converter={StaticResource IsoDate}}" Width="*"/>
                         </DataGrid.Columns>

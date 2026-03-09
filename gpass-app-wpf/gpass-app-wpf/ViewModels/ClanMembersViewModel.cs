@@ -1,3 +1,4 @@
+using gpass_app_wpf.Helpers;
 using gpass_app_wpf.DAL;
 using gpass_app_wpf.Models;
 using System;
@@ -24,7 +25,7 @@ namespace gpass_app_wpf.ViewModels
             set { _clanInfo = value; OnPropertyChanged(); }
         }
 
-        // ── Klán neve szerkesztés ──────────────────────────────────────────────
+        // ── Klán neve/leírás szerkesztés ──────────────────────────────────────
         private string _clanName;
         public string ClanName
         {
@@ -69,6 +70,7 @@ namespace gpass_app_wpf.ViewModels
             set { _nameSaveResult = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasNameSaveResult)); }
         }
         public bool HasNameSaveResult => !string.IsNullOrEmpty(_nameSaveResult);
+        public bool NameSaveIsError   => _nameSaveResult?.StartsWith("⚠") == true;
 
         // ── Tagok ──────────────────────────────────────────────────────────────
         public ObservableCollection<ClanMemberDetail> Members { get; } = new();
@@ -80,7 +82,17 @@ namespace gpass_app_wpf.ViewModels
             set { _selectedMember = value; OnPropertyChanged(); }
         }
 
+        // ── Globális hiba ──────────────────────────────────────────────────────
+        private string _errorMessage;
+        public string ErrorMessage
+        {
+            get => _errorMessage;
+            set { _errorMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasError)); }
+        }
+        public bool HasError => !string.IsNullOrEmpty(_errorMessage);
+
         public RelayCommand SaveNameCommand     { get; }
+        public RelayCommand DismissErrorCommand { get; }
         public RelayCommand RemoveMemberCommand { get; }
         public RelayCommand ChangeLeaderCommand { get; }
         public RelayCommand AddMemberCommand    { get; }
@@ -134,9 +146,10 @@ namespace gpass_app_wpf.ViewModels
             ClanDescription = clan.description;
             ClanInfo = $"ID: {_clan.id}  •  Vezető: {_clan.leader_name}";
 
+            DismissErrorCommand  = new RelayCommand(_ => ErrorMessage = null);
             SaveNameCommand      = new RelayCommand(async _ => await SaveName(),      _ => !NameSaving && !HasClanNameError && !HasClanDescriptionError);
-            RemoveMemberCommand  = new RelayCommand(async _ => await RemoveMember(),  _ => SelectedMember != null);
-            ChangeLeaderCommand  = new RelayCommand(async _ => await ChangeLeader(),  _ => SelectedMember != null && SelectedMember.user_id != _clan.leader_id);
+            RemoveMemberCommand  = new RelayCommand(async _ => await RemoveMember(),  _ => SelectedMember != null && !SelectedMember.is_leader);
+            ChangeLeaderCommand  = new RelayCommand(async _ => await ChangeLeader(),  _ => SelectedMember != null && !SelectedMember.is_leader);
             AddMemberCommand     = new RelayCommand(async _ => await AddMember(),     _ => HasUserToAdd);
             SelectAddUserCommand = new RelayCommand(u => { UserToAdd = u as User; AddSearchResults.Clear(); _addSearch = ""; OnPropertyChanged(nameof(AddSearch)); });
 
@@ -201,25 +214,17 @@ namespace gpass_app_wpf.ViewModels
         }
 
         // ── Tagok betöltése ────────────────────────────────────────────────────
+        // A backend NEM engedi hogy a leader clan_member legyen,
+        // ezért a leadert manuálisan adjuk hozzá a listához az API-tól kapott tagok elé.
         public async Task LoadMembers()
         {
             Loading = true;
             try
             {
+                // Csak az igazi tagok (leader nélkül)
                 var memberships = await _api.GetAsync<List<ClanMember>>($"clan-members/by-clan/{_clan.id}");
 
-                // Ha a vezető nincs a tagok közt, adjuk hozzá automatikusan
-                bool leaderIsMember = memberships.Any(m => m.user_id == _clan.leader_id);
-                if (!leaderIsMember)
-                {
-                    try
-                    {
-                        await _api.PostAsync<object>("clan-members", new { clan_id = _clan.id, user_id = _clan.leader_id });
-                        memberships = await _api.GetAsync<List<ClanMember>>($"clan-members/by-clan/{_clan.id}");
-                    }
-                    catch { }
-                }
-
+                // Felhasználói adatok betöltése
                 var users = new Dictionary<int, User>();
                 try
                 {
@@ -229,8 +234,25 @@ namespace gpass_app_wpf.ViewModels
                 catch { }
 
                 var details = new List<ClanMemberDetail>();
+
+                // Leader mindig az első, manuálisan hozzáadva
+                var leaderDetail = new ClanMemberDetail
+                {
+                    clan_id   = _clan.id,
+                    user_id   = _clan.leader_id,
+                    joined_at = _clan.created_at,
+                    leader_id = _clan.leader_id
+                };
+                if (users.TryGetValue(_clan.leader_id, out var leaderUser))
+                    leaderDetail.user = new ClanMemberUserInfo { ID = leaderUser.ID, username = leaderUser.username, email = leaderUser.email };
+                else
+                    leaderDetail.user = new ClanMemberUserInfo { ID = _clan.leader_id, username = _clan.leader_name, email = "" };
+                details.Add(leaderDetail);
+
+                // Többi tag
                 foreach (var m in memberships)
                 {
+                    if (m.user_id == _clan.leader_id) continue; // ne duplikáljuk
                     var detail = new ClanMemberDetail
                     {
                         clan_id   = m.clan_id,
@@ -251,51 +273,60 @@ namespace gpass_app_wpf.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Hiba a tagok betöltésekor: {ex.Message}", "Hiba",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                Application.Current.Dispatcher.Invoke(() =>
+                    ErrorMessage = $"Hiba a tagok betöltésekor: {ex.Message}");
             }
             Loading = false;
         }
 
         // ── Vezető váltás ──────────────────────────────────────────────────────
+        // 1. Régi leader → tag lesz (addMember)
+        // 2. Új leader → ki kell venni a tagok közül (removeMember)
+        // 3. PUT /clans/{id} { leader_id: newLeader.user_id }
         private async Task ChangeLeader()
         {
-            if (SelectedMember == null || SelectedMember.user_id == _clan.leader_id) return;
+            if (SelectedMember == null || SelectedMember.is_leader) return;
 
             var newLeader = SelectedMember;
-            var r = MessageBox.Show(
+            var oldLeaderId = _clan.leader_id;
+
+            if (!WindowHelper.ShowConfirm(
                 $"Biztosan átadod a vezető szerepét {newLeader.display_name}-nak?",
-                "Vezető váltás", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (r != MessageBoxResult.Yes) return;
+                "Vezető váltás", yesText: "Átadom", icon: "👑")) return;
 
             try
             {
-                await _api.PutAsync<object>($"clans/{_clan.id}", new { leader_id = newLeader.user_id });
-
-                bool alreadyMember = Members.Any(m => m.user_id == newLeader.user_id);
-                if (!alreadyMember)
+                // 1. Új leader kivesszük a tagok közül (még mielőtt leader lenne)
+                try
                 {
-                    try { await _api.PostAsync<object>("clan-members", new { clan_id = _clan.id, user_id = newLeader.user_id }); }
-                    catch { }
+                    await _api.DeleteAsync($"clan-members/{_clan.id}/{newLeader.user_id}");
                 }
+                catch { /* ha nincs a tagok közt, nem baj */ }
 
+                // 2. Klán frissítése: új leader (most már nem a régi a leader)
+                await _api.PatchAsync<object>($"clans/{_clan.id}/leader", new { leader_id = newLeader.user_id });
+
+                // 3. Régi leader bekerül tagnak (most már nem leader, a backend engedi)
+                try
+                {
+                    await _api.PostAsync<object>("clan-members", new { clan_id = _clan.id, user_id = oldLeaderId });
+                }
+                catch { /* ha valamiért nem sikerül, nem kritikus */ }
+
+                // Helyi állapot frissítése
                 _clan.leader_id = newLeader.user_id;
                 _clan.leader = new ClanLeaderInfo { username = newLeader.display_name };
-                ClanInfo = $"ID: {_clan.id}  •  Vezető: {_clan.leader_name}";
+                ClanInfo = $"ID: {_clan.id}  •  Vezető: {newLeader.display_name}";
 
                 await LoadMembers();
-
-                MessageBox.Show($"Az új vezető: {newLeader.display_name}", "Sikeres",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Hiba a vezető váltáskor: {ex.Message}", "Hiba",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                ErrorMessage = $"Hiba a vezető váltáskor: {ex.Message}";
             }
         }
 
-        // ── Tag eltávolítás ────────────────────────────────────────────────────
+        // ── Tag keresés debounce ───────────────────────────────────────────────
 #pragma warning disable CS1998
         private async void DebounceAddSearch()
 #pragma warning restore CS1998
@@ -339,15 +370,21 @@ namespace gpass_app_wpf.ViewModels
             finally { AddSearching = false; }
         }
 
+        // ── Tag hozzáadás ──────────────────────────────────────────────────────
         private async Task AddMember()
         {
             if (UserToAdd == null) return;
 
+            if (UserToAdd.ID == _clan.leader_id)
+            {
+                ErrorMessage = "A klán vezetője már automatikusan szerepel a listában.";
+                return;
+            }
+
             bool alreadyMember = Members.Any(m => m.user_id == UserToAdd.ID);
             if (alreadyMember)
             {
-                MessageBox.Show($"{UserToAdd.username} már tagja a klánnak.",
-                    "Figyelmeztetés", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ErrorMessage = $"{UserToAdd.username} már tagja a klánnak.";
                 return;
             }
 
@@ -360,26 +397,24 @@ namespace gpass_app_wpf.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Hiba a tag hozzáadásakor: {ex.Message}", "Hiba",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                ErrorMessage = $"Hiba a tag hozzáadásakor: {ex.Message}";
             }
         }
 
+        // ── Tag eltávolítás ────────────────────────────────────────────────────
         private async Task RemoveMember()
         {
             if (SelectedMember == null) return;
 
-            if (SelectedMember.user_id == _clan.leader_id)
+            if (SelectedMember.is_leader)
             {
-                MessageBox.Show("A klán vezetőjét nem lehet eltávolítani. Először adj meg új vezetőt.",
-                    "Figyelmeztetés", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ErrorMessage = "A klán vezetőjét nem lehet eltávolítani. Először adj meg új vezetőt.";
                 return;
             }
 
-            var r = MessageBox.Show(
+            if (!WindowHelper.ShowConfirm(
                 $"Biztosan eltávolítod {SelectedMember.display_name}-t a klánból?",
-                "Megerősítés", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-            if (r != MessageBoxResult.Yes) return;
+                "Tag eltávolítása", isDanger: true)) return;
 
             try
             {
@@ -388,8 +423,7 @@ namespace gpass_app_wpf.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Hiba az eltávolításkor: {ex.Message}", "Hiba",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                ErrorMessage = $"Hiba az eltávolításkor: {ex.Message}";
             }
         }
     }

@@ -90,8 +90,9 @@ namespace gpass_app_wpf.ViewModels
         }
 
         // ── Parancsok ──────────────────────────────────────────────────────────
-        public RelayCommand SaveCommand   { get; }
-        public RelayCommand CancelCommand { get; }
+        public RelayCommand SaveCommand          { get; }
+        public RelayCommand CancelCommand       { get; }
+        public RelayCommand DismissErrorCommand { get; }
 
         private static readonly Regex EmailRegex = new Regex(
             @"^[\w\-\.]+@([\w\-]+\.)+[\w\-]{2,4}$",
@@ -110,8 +111,9 @@ namespace gpass_app_wpf.ViewModels
                 IsAdmin  = editUser.isAdmin;
             }
 
-            SaveCommand   = new RelayCommand(async _ => await Save(), _ => !Saving);
-            CancelCommand = new RelayCommand(_ => _window.Close(), _ => !Saving);
+            SaveCommand          = new RelayCommand(async _ => await Save(), _ => !Saving);
+            CancelCommand        = new RelayCommand(_ => _window.Close(), _ => !Saving);
+            DismissErrorCommand  = new RelayCommand(_ => ErrorMessage = null);
         }
 
         private void ClearGeneralError() => ErrorMessage = null;

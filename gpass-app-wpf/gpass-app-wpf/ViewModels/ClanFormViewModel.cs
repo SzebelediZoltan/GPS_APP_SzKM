@@ -109,9 +109,10 @@ namespace gpass_app_wpf.ViewModels
         }
 
         // ── Parancsok ──────────────────────────────────────────────────────────
-        public RelayCommand SelectLeaderCommand { get; }
-        public RelayCommand SaveCommand         { get; }
-        public RelayCommand CancelCommand       { get; }
+        public RelayCommand SelectLeaderCommand  { get; }
+        public RelayCommand SaveCommand          { get; }
+        public RelayCommand CancelCommand        { get; }
+        public RelayCommand DismissErrorCommand  { get; }
 
         private CancellationTokenSource _searchCts;
 
@@ -123,6 +124,7 @@ namespace gpass_app_wpf.ViewModels
             SelectLeaderCommand = new RelayCommand(u => { SelectedLeader = u as User; SearchResults.Clear(); _leaderSearch = ""; OnPropertyChanged(nameof(LeaderSearch)); });
             SaveCommand         = new RelayCommand(async _ => await Save(), _ => !Saving);
             CancelCommand       = new RelayCommand(_ => _window.Close(),    _ => !Saving);
+            DismissErrorCommand = new RelayCommand(_ => ErrorMessage = null);
         }
 
         private void ClearGeneralError() => ErrorMessage = null;

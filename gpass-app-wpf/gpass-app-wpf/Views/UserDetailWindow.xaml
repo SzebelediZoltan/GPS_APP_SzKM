@@ -35,19 +35,26 @@
 
         <!-- HIBAÜZENET -->
         <Border DockPanel.Dock="Top"
-                Background="#3a1f1f"
-                BorderBrush="{DynamicResource Accent}"
+                Background="#3D1515"
+                BorderBrush="#C53030"
                 BorderThickness="1"
                 CornerRadius="4"
-                Padding="8,6"
+                Padding="10,7"
                 Margin="0,0,0,8"
                 Visibility="{Binding HasErrors, Converter={StaticResource BoolToVisibility}}">
-
-            <TextBlock Text="{Binding Errors}"
-                       Foreground="{DynamicResource Accent}"
-                       FontSize="11"
-                       TextWrapping="Wrap"/>
-
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="⚠ " Foreground="#FC8181" FontWeight="Bold" Margin="0,1,6,0"/>
+                <TextBlock Grid.Column="1" Text="{Binding Errors}" Foreground="#FC8181"
+                           FontSize="12" TextWrapping="Wrap"/>
+                <Button Grid.Column="2" Content="✕" Width="22" Height="22"
+                        Background="Transparent" Foreground="#FC8181" BorderThickness="0"
+                        Command="{Binding DismissErrorsCommand}" VerticalAlignment="Top"/>
+            </Grid>
         </Border>
 
 
@@ -64,12 +71,67 @@
                             BorderBrush="{DynamicResource SurfaceBorderBrush}"
                             BorderThickness="0,1,0,0">
 
-                        <StackPanel Orientation="Horizontal">
-                            <Button Content="✕  Trip törlése"
-                                    Padding="10,5"
-                                    Background="{DynamicResource Accent}"
-                                    Foreground="White"
-                                    Command="{Binding DeleteTripCommand}"/>
+                        <StackPanel>
+
+                            <Grid Visibility="{Binding HasSelectedTrip, Converter={StaticResource BoolToVisibility}}">
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="8"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0"
+                                           Text="Név:"
+                                           VerticalAlignment="Center"
+                                           Foreground="{DynamicResource SecondaryText}"
+                                           Margin="0,0,6,0"/>
+
+                                <TextBox Grid.Column="1"
+                                         Text="{Binding EditTripName, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding TripEditError}"
+                                               FontSize="11" Margin="10,0,0,0"
+                                               Foreground="#FC8181"
+                                               Visibility="{Binding HasTripEditError, Converter={StaticResource BoolToVisibility}}"/>
+                                    <TextBlock Text="{Binding TripEditResult}"
+                                               FontSize="11" Margin="10,0,0,0"
+                                               Foreground="{DynamicResource Accent}"
+                                               Visibility="{Binding HasTripEditResult, Converter={StaticResource BoolToVisibility}}"/>
+                                </StackPanel>
+
+                                <Button Grid.Column="3"
+                                        Padding="12,5"
+                                        Background="{DynamicResource Accent}"
+                                        Foreground="White"
+                                        Command="{Binding EditTripCommand}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="⏳ "
+                                                   Visibility="{Binding TripSaving, Converter={StaticResource BoolToVisibility}}"/>
+                                        <TextBlock Text="✎  Mentés"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <Button Grid.Column="5"
+                                        Padding="12,5"
+                                        Background="{DynamicResource Accent}"
+                                        Foreground="White"
+                                        Command="{Binding DeleteTripCommand}">
+                                    <TextBlock Text="✕  Törlés"/>
+                                </Button>
+
+                            </Grid>
+
+                            <TextBlock Text="Jelölj ki egy tripet a szerkesztéshez vagy törléshez."
+                                       Foreground="{DynamicResource MutedText}"
+                                       FontStyle="Italic"
+                                       FontSize="12"
+                                       Visibility="{Binding HasSelectedTrip, Converter={StaticResource InverseBool}}"/>
+
                         </StackPanel>
 
                     </Border>
@@ -149,15 +211,19 @@
                                            Margin="0,0,6,0"/>
 
                                 <TextBox Grid.Column="4"
-                                         Text="{Binding EditMarkerScore}"/>
+                                         Text="{Binding EditMarkerScore, UpdateSourceTrigger=PropertyChanged}"/>
 
 
-                                <TextBlock Grid.Column="5"
-                                           Text="{Binding MarkerEditError}"
-                                           Foreground="{DynamicResource Accent}"
-                                           FontSize="11"
-                                           Margin="10,0,0,0"
-                                           Visibility="{Binding HasMarkerEditError, Converter={StaticResource BoolToVisibility}}"/>
+                                <StackPanel Grid.Column="5" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding MarkerEditError}"
+                                               FontSize="11" Margin="10,0,0,0"
+                                               Foreground="#FC8181"
+                                               Visibility="{Binding HasMarkerEditError, Converter={StaticResource BoolToVisibility}}"/>
+                                    <TextBlock Text="{Binding MarkerEditResult}"
+                                               FontSize="11" Margin="10,0,0,0"
+                                               Foreground="{DynamicResource Accent}"
+                                               Visibility="{Binding HasMarkerEditResult, Converter={StaticResource BoolToVisibility}}"/>
+                                </StackPanel>
 
 
                                 <Button Grid.Column="6"
@@ -248,20 +314,24 @@
                 BorderBrush="{DynamicResource SurfaceBorderBrush}"
                 BorderThickness="0,1,0,0">
 
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel>
 
-                            <Button Content="🔄  Státusz váltás"
-                        Padding="10,5"
-                        Margin="0,0,8,0"
-                        Background="{DynamicResource Accent}"
-                        Foreground="White"
-                        Command="{Binding ToggleFriendCommand}"/>
+                            <StackPanel Orientation="Horizontal"
+                                        Visibility="{Binding HasSelectedFriend, Converter={StaticResource BoolToVisibility}}">
+                                <Button Content="🔄  Státusz váltás"
+                                        Padding="10,5" Margin="0,0,8,0"
+                                        Background="#2980b9" Foreground="White"
+                                        Command="{Binding ToggleFriendCommand}"/>
+                                <Button Content="✕  Törlés"
+                                        Padding="10,5"
+                                        Background="#e74c3c" Foreground="White"
+                                        Command="{Binding DeleteFriendCommand}"/>
+                            </StackPanel>
 
-                            <Button Content="✕  Törlés"
-                        Padding="10,5"
-                        Background="{DynamicResource Accent}"
-                        Foreground="White"
-                        Command="{Binding DeleteFriendCommand}"/>
+                            <TextBlock Text="Jelölj ki egy barátot a kezeléshez."
+                                       Foreground="{DynamicResource MutedText}"
+                                       FontStyle="Italic" FontSize="12"
+                                       Visibility="{Binding HasSelectedFriend, Converter={StaticResource InverseBool}}"/>
 
                         </StackPanel>
 

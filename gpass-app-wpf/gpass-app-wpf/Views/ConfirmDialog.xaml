@@ -1,0 +1,67 @@
+<Window x:Class="gpass_app_wpf.Views.ConfirmDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{Binding Title}"
+        SizeToContent="WidthAndHeight"
+        MinWidth="340"
+        MaxWidth="480"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource AppBackground}">
+
+    <Border Background="{DynamicResource SurfaceBrush}"
+            BorderBrush="{DynamicResource SurfaceBorderBrush}"
+            BorderThickness="1"
+            Margin="1">
+
+        <StackPanel Margin="28,22,28,20">
+
+            <!-- Ikon + Cím -->
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                <TextBlock Text="{Binding Icon}"
+                           FontSize="22"
+                           VerticalAlignment="Center"
+                           Margin="0,0,10,0"/>
+                <TextBlock Text="{Binding Title}"
+                           FontSize="16"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource PrimaryText}"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- Üzenet -->
+            <TextBlock Text="{Binding Message}"
+                       Foreground="{DynamicResource SecondaryText}"
+                       FontSize="13"
+                       TextWrapping="Wrap"
+                       MaxWidth="420"
+                       Margin="0,0,0,22"/>
+
+            <!-- Gombok -->
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Right">
+
+                <Button Content="{Binding NoText}"
+                        Padding="18,8"
+                        Margin="0,0,10,0"
+                        Background="{DynamicResource ToolbarBackground}"
+                        Foreground="{DynamicResource PrimaryText}"
+                        BorderBrush="{DynamicResource SurfaceBorderBrush}"
+                        BorderThickness="1"
+                        Click="No_Click"/>
+
+                <Button Content="{Binding YesText}"
+                        Padding="18,8"
+                        Background="{Binding YesBackground}"
+                        Foreground="White"
+                        BorderThickness="0"
+                        FontWeight="SemiBold"
+                        Click="Yes_Click"/>
+
+            </StackPanel>
+
+        </StackPanel>
+
+    </Border>
+
+</Window>

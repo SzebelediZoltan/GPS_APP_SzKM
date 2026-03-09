@@ -1,8 +1,10 @@
+using gpass_app_wpf.DAL;
 using gpass_app_wpf.Models;
 using gpass_app_wpf.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace gpass_app_wpf.Views
 {
@@ -15,7 +17,13 @@ namespace gpass_app_wpf.Views
             InitializeComponent();
             _vm = new ClanMembersViewModel(clan);
             DataContext = _vm;
+            ThemeService.Apply();
+            UpdateBackground();
+            ThemeService.ThemeChanged += UpdateBackground;
         }
+
+        private void UpdateBackground()
+            => Dispatcher.Invoke(() => Background = (Brush)FindResource("AppBackground"));
 
         private void AddSearchListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
