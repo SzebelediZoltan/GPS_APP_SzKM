@@ -1,5 +1,5 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router"
-import { Map, Users, Navigation, Gauge, ChevronRight, FlaskConical, Layout, UserPlus, MonitorSmartphone, BookOpen } from "lucide-react"
+import { Map, Users, Navigation, Gauge, ChevronRight, FlaskConical, Layout, UserPlus, MonitorSmartphone } from "lucide-react"
 
 export const Route = createFileRoute("/dev/")({
   beforeLoad: () => {

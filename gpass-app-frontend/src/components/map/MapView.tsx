@@ -66,8 +66,7 @@ export default function MapView({ position, heading, speed }: Props) {
 
   // ── Social data (barátok + klántagok) ──
   const { friendIDs, clanMembers, isLoading: socialLoading } = useMapSocialData(
-    user?.userID ?? "",
-    !!user
+    { userID: user?.userID ?? "", enabled: !!user }
   )
 
   // ── Socket: élő pozíció megosztás + online barátok/klántagok ──
@@ -187,7 +186,7 @@ export default function MapView({ position, heading, speed }: Props) {
         <FriendMarkers users={onlineUsers} currentPosition={position} />
 
         <NavigationPanel currentPosition={position} onOpenMobile={() => setMobileSheetOpen(true)} />
-        <RouteLayer position={position} />
+        <RouteLayer/>
 
         {mode !== "navigating" && (
           <LocateButton

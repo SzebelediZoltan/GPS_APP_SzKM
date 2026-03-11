@@ -1,6 +1,6 @@
 import { createFileRoute, redirect, Link } from "@tanstack/react-router"
 import { useState, useEffect, useRef } from "react"
-import { Gauge, Map, Play, Pause } from "lucide-react"
+import { Map, Play, Pause } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
 
 export const Route = createFileRoute("/dev/speed-prev")({

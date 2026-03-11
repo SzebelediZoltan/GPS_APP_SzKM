@@ -45,11 +45,10 @@ type RawClanMember = {
 
 type Options = {
   userID: string | undefined
-  username: string | undefined
   enabled: boolean
 }
 
-export function useMapSocialData({ userID, username, enabled }: Options) {
+export function useMapSocialData({ userID, enabled }: Options) {
 
   // 1. Elfogadott barátok
   const friendsQuery = useQuery({

@@ -2,7 +2,7 @@ import { createFileRoute, redirect, Link } from "@tanstack/react-router"
 import { useState } from "react"
 import {
   AlertTriangle, WifiOff, Lock, MapPin, Users, Flag,
-  Map, RefreshCw, ChevronRight
+  Map, RefreshCw
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -54,7 +54,7 @@ function NotLoggedInMock() {
 // ── LoadingPage mock ──
 function LoadingPageMock() {
   return (
-    <div className="flex min-h-[200px] items-center justify-center">
+    <div className="flex min-h-50 items-center justify-center">
       <div className="flex flex-col items-center gap-4">
         <div className="relative h-12 w-12">
           <div className="absolute inset-0 rounded-full border-2 border-border/30" />
