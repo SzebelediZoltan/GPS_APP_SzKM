@@ -29,9 +29,10 @@ exports.create = async (req, res, next) => {
 
     try {
         const transaction = transactionBuilder.get(req);
-        res.status(201).json(await friendWithService.create({ sender_id, receiver_id, transaction }));
+        res.status(201).json(await friendWithService.create({ sender_id, receiver_id }, { transaction }));
     }
     catch (error) {
+        // console.log(error)
         next(error);
     }
 }
@@ -42,7 +43,7 @@ exports.update = async (req, res, next) => {
 
     try {
         const transaction = transactionBuilder.get(req);
-        res.status(200).json(await friendWithService.update({ status, transaction }, id));
+        res.status(200).json(await friendWithService.update({ status }, id, { transaction }));
     }
     catch (error) {
         next(error);
@@ -57,6 +58,7 @@ exports.delete = async (req, res, next) => {
         res.status(200).json(await friendWithService.delete(id, { transaction }));
     }
     catch (error) {
+        // console.log(error)
         next(error);
     }
 }

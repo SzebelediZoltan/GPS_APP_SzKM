@@ -14,7 +14,7 @@ router.get("/", tripController.getTrips);
 router.get("/by-user/:userId", tripController.getTripsByUser);
 
 // user + tripName
-router.get("/by-user/:userId/name/:tripID", tripController.getTripByUserAndName);
+router.get("/by-user/:userId/name/:tripName", tripController.getTripByUserAndName);
 
 // CREATE
 router.post("/", tripController.createTrip);

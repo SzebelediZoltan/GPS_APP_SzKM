@@ -3,9 +3,20 @@ const request = require("supertest");
 const app = require("../app");
 const db = require("../api/db");
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
 
 const { transactionSetup, transactionTeardown } = require("./helpers/transactionHelper");
+
+const getSeedUser = async (username) => {
+    const user = await db.User.findOne({ where: { username } });
+    if (!user) throw new Error(`Seed user '${username}' not found. Run seeders first.`);
+    return user;
+};
+
+const getSeedClan = async (name) => {
+    const clan = await db.Clan.findOne({ where: { name } });
+    if (!clan) throw new Error(`Seed clan '${name}' not found. Run seeders first.`);
+    return clan;
+};
 
 const makeToken = (user) =>
     jwt.sign(
@@ -13,31 +24,7 @@ const makeToken = (user) =>
         process.env.JWT_SECRET
     );
 
-const createTestUser = async (app, overrides = {}) => {
-    const t = app.get("getTransaction")();
-    const hashedPassword = await bcrypt.hash("TestPassword123", 10);
-    return db.User.create({
-        username: overrides.username || "clanuser",
-        email: overrides.email || "clanuser@example.com",
-        password: hashedPassword,
-        isAdmin: overrides.isAdmin ?? false,
-    }, { transaction: t });
-};
-
-const createTestClan = async (app, leaderId, overrides = {}) => {
-    const t = app.get("getTransaction")();
-    return db.Clan.create({
-        name: overrides.name || "TestClan",
-        leader_id: leaderId,
-        description: overrides.description || "Teszt klán",
-    }, { transaction: t });
-};
-
 describe("/api/clans", () => {
-
-    afterEach(async () => {
-        jest.restoreAllMocks()
-    });
 
     describe("GET", () => {
         beforeEach(async () => {
@@ -46,13 +33,11 @@ describe("/api/clans", () => {
 
         afterEach(async () => {
             await transactionTeardown(app);
-            jest.restoreAllMocks()
         });
 
         test("should get all clans", async () => {
-            const user = await createTestUser(app, { username: "clanlist", email: "clanlist@example.com" });
+            const user = await getSeedUser("seed_user1");
             const token = makeToken(user);
-            await createTestClan(app, user.ID, { name: "ListClan" });
 
             const res = await request(app)
                 .get("/api/clans")
@@ -70,11 +55,10 @@ describe("/api/clans", () => {
 
         afterEach(async () => {
             await transactionTeardown(app);
-            jest.restoreAllMocks()
         });
 
         test("should create clan", async () => {
-            const user = await createTestUser(app, { username: "clanmaker", email: "clanmaker@example.com" });
+            const user = await getSeedUser("seed_user1");
             const token = makeToken(user);
 
             const res = await request(app)
@@ -95,16 +79,14 @@ describe("/api/clans", () => {
 
             afterEach(async () => {
                 await transactionTeardown(app);
-                jest.restoreAllMocks()
             });
 
             test("should search clans", async () => {
-                const user = await createTestUser(app, { username: "clansearcher", email: "clansearcher@example.com" });
+                const user = await getSeedUser("seed_user1");
                 const token = makeToken(user);
-                await createTestClan(app, user.ID, { name: "SearchableClan" });
 
                 const res = await request(app)
-                    .get("/api/clans/search?query=Search")
+                    .get("/api/clans/search?query=SeedClan")
                     .set("Cookie", `user_token=${token}`);
 
                 expect(res.status).toBe(200);
@@ -122,20 +104,19 @@ describe("/api/clans", () => {
 
             afterEach(async () => {
                 await transactionTeardown(app);
-                jest.restoreAllMocks()
             });
 
             test("should get clan by ID", async () => {
-                const user = await createTestUser(app, { username: "clangetone", email: "clangetone@example.com" });
+                const user = await getSeedUser("seed_user1");
                 const token = makeToken(user);
-                const clan = await createTestClan(app, user.ID, { name: "GetOneClan" });
+                const clan = await getSeedClan("SeedClan One");
 
                 const res = await request(app)
                     .get(`/api/clans/${clan.id}`)
                     .set("Cookie", `user_token=${token}`);
 
                 expect(res.status).toBe(200);
-                expect(res.body.name).toBe("GetOneClan");
+                expect(res.body.name).toBe("SeedClan One");
             });
         });
 
@@ -146,18 +127,17 @@ describe("/api/clans", () => {
 
             afterEach(async () => {
                 await transactionTeardown(app);
-                jest.restoreAllMocks()
             });
 
             test("should update clan", async () => {
-                const user = await createTestUser(app, { username: "clanupdater", email: "clanupdater@example.com" });
+                const user = await getSeedUser("seed_user1");
                 const token = makeToken(user);
-                const clan = await createTestClan(app, user.ID, { name: "UpdateableClan" });
+                const clan = await getSeedClan("SeedClan One");
 
                 const res = await request(app)
                     .put(`/api/clans/${clan.id}`)
                     .set("Cookie", `user_token=${token}`)
-                    .send({ name: "UpdatedClan", leader_id: user.ID, description: "Frissített" });
+                    .send({ name: "SeedClan One", leader_id: user.ID, description: "Frissített leírás" });
 
                 expect(res.status).toBe(200);
             });
@@ -170,13 +150,12 @@ describe("/api/clans", () => {
 
             afterEach(async () => {
                 await transactionTeardown(app);
-                jest.restoreAllMocks()
             });
 
             test("should delete clan", async () => {
-                const user = await createTestUser(app, { username: "clandeleter", email: "clandeleter@example.com" });
+                const user = await getSeedUser("seed_user2");
                 const token = makeToken(user);
-                const clan = await createTestClan(app, user.ID, { name: "DeletableClan" });
+                const clan = await getSeedClan("SeedClan Two");
 
                 const res = await request(app)
                     .delete(`/api/clans/${clan.id}`)

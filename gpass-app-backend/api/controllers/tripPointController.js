@@ -29,7 +29,7 @@ exports.createTripPoint = async (req, res, next) => {
 
     try {
         const transaction = transactionBuilder.get(req);
-        res.status(201).json(await tripPointService.createTripPoint({ trip_id, lat, lng, transaction }));
+        res.status(201).json(await tripPointService.createTripPoint({ trip_id, lat, lng }, { transaction }));
     }
     catch (error) {
         next(error);
@@ -42,7 +42,7 @@ exports.updateTripPoint = async (req, res, next) => {
 
     try {
         const transaction = transactionBuilder.get(req);
-        res.status(200).json(await tripPointService.updateTripPoint({ lat, lng, recorded_at, transaction }, pointId));
+        res.status(200).json(await tripPointService.updateTripPoint({ lat, lng, recorded_at }, pointId, { transaction }));
     }
     catch (error) {
         next(error);

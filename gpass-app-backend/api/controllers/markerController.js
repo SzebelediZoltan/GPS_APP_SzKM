@@ -29,7 +29,7 @@ exports.createMarker = async (req, res, next) => {
 
     try {
         const transaction = transactionBuilder.get(req);
-        res.status(201).json(await markerService.createMarker({ creator_id, marker_type, lat, lng, transaction }));
+        res.status(201).json(await markerService.createMarker({ creator_id, marker_type, lat, lng }, { transaction }));
     }
     catch (error) {
         next(error);
@@ -42,7 +42,7 @@ exports.updateMarker = async (req, res, next) => {
 
     try {
         const transaction = transactionBuilder.get(req);
-        res.status(200).json(await markerService.updateMarker({ marker_type, score, lat, lng, transaction }, markerId));
+        res.status(200).json(await markerService.updateMarker({ marker_type, score, lat, lng }, markerId, { transaction }));
     }
     catch (error) {
         next(error);
@@ -87,7 +87,6 @@ exports.getMarkersByType = async (req, res, next) => {
 
 exports.getMarkersInBox = async (req, res, next) => {
     const { minLat, maxLat, minLng, maxLng } = req.query || {};
-    
 
     try {
         const transaction = transactionBuilder.get(req);

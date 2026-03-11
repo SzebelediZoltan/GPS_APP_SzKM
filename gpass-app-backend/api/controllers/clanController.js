@@ -29,7 +29,7 @@ exports.createClan = async (req, res, next) => {
 
     try {
         const transaction = transactionBuilder.get(req);
-        res.status(201).json(await clanService.createClan({ name, leader_id, description, transaction }));
+        res.status(201).json(await clanService.createClan({ name, leader_id, description }, { transaction }));
     }
     catch (error) {
         next(error);
@@ -42,7 +42,7 @@ exports.updateClan = async (req, res, next) => {
 
     try {
         const transaction = transactionBuilder.get(req);
-        res.status(200).json(await clanService.updateClan({ name, leader_id, description, transaction }, clanId));
+        res.status(200).json(await clanService.updateClan({ name, leader_id, description }, clanId, { transaction }));
     }
     catch (error) {
         next(error);
@@ -57,6 +57,7 @@ exports.deleteClan = async (req, res, next) => {
         res.status(200).json(await clanService.deleteClan(clanId, { transaction }));
     }
     catch (error) {
+        console.log(error)
         next(error);
     }
 }

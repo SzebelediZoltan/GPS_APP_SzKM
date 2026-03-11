@@ -52,31 +52,33 @@ module.exports = (sequelize) =>
     {
         foreignKey: "clan_id",
         as: "members",
-        constraints: false,
-        
-        onDelete: "CASCADE",
-        hooks: true,
+        // constraints: false,
     });
 
     ClanMember.belongsTo(Clan,
     {
         foreignKey: "clan_id",
         as: "clan",
-        constraints: false,
+        // constraints: false,
+
+        onDelete: "CASCADE"
     });
 
     User.hasMany(ClanMember,
     {
         foreignKey: "user_id",
         as: "clanMemberships",
-        constraints: false,
+        // constraints: false,
     });
 
     ClanMember.belongsTo(User,
     {
         foreignKey: "user_id",
         as: "user",
-        constraints: false,
+        // constraints: false,
+
+        onDelete: "CASCADE",
+        // hooks: true,
     });
 
     // (Opcionális, de kényelmes) Many-to-many shortcut:

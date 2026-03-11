@@ -42,24 +42,27 @@ const db =
     ...models,
 };
 
-(async () => 
+// Tesztkor a migrációk már létrehozták a táblákat, a sync felesleges és hibát okoz
+if (process.env.NODE_ENV !== "test")
 {
-    try
+    (async () => 
     {
-        console.log("Database synchronization started");
-
-        await db.sequelize.sync({ alter: true });
-
-        console.log("Database synchronization OK");
-    }
-    catch(error)
-    {
-        // console.error(error)
-        throw new DbError("Failed to synchronize database", 
+        try
         {
-            details: error.message
-        });
-    }
-})();
+            console.log("Database synchronization started");
+
+            await db.sequelize.sync({ alter: true });
+
+            console.log("Database synchronization OK");
+        }
+        catch(error)
+        {
+            throw new DbError("Failed to synchronize database", 
+            {
+                details: error.message
+            });
+        }
+    })();
+}
 
 module.exports = db;

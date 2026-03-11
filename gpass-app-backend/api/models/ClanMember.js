@@ -25,6 +25,8 @@ module.exports = (sequelize) => {
                     isInt: { msg: "A user_id csak egész szám lehet." },
                     min: { args: [1], msg: "A user_id csak pozitív szám lehet." },
                 },
+
+                onDelete: "CASCADE",
             },
 
             joined_at: {

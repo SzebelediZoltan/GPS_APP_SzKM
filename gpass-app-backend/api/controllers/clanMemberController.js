@@ -30,7 +30,7 @@ exports.addMember = async (req, res, next) => {
 
     try {
         const transaction = transactionBuilder.get(req);
-        res.status(201).json(await clanMemberService.addMember({ clan_id, user_id, transaction }));
+        res.status(201).json(await clanMemberService.addMember({ clan_id, user_id }, { transaction }));
     }
     catch (error) {
         next(error);

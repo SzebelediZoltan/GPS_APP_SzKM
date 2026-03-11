@@ -4,31 +4,34 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     const [users] = await queryInterface.sequelize.query(
-      `SELECT ID, username FROM Users WHERE username IN ('seed_user1', 'seed_user2', 'seed_user3')`
+      `SELECT ID, username FROM Users WHERE username IN ('seed_user1', 'seed_user2')`
     );
 
     const user1 = users.find(u => u.username === 'seed_user1');
     const user2 = users.find(u => u.username === 'seed_user2');
-    const user3 = users.find(u => u.username === 'seed_user3');
 
-    await queryInterface.bulkInsert('friends_with',
+    await queryInterface.bulkInsert('markers',
     [
       {
-        sender_id: user1.ID,
-        receiver_id: user2.ID,
-        status: 'sent',
+        creator_id: user1.ID,
+        marker_type: 'danger',
+        lat: 47.500000,
+        lng: 19.050000,
+        score: 5,
         created_at: new Date(),
       },
       {
-        sender_id: user2.ID,
-        receiver_id: user3.ID,
-        status: 'accepted',
+        creator_id: user2.ID,
+        marker_type: 'police',
+        lat: 47.510000,
+        lng: 19.060000,
+        score: 3,
         created_at: new Date(),
       },
     ]);
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.bulkDelete('friends_with', null);
+    await queryInterface.bulkDelete('markers', null);
   },
 };

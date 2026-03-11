@@ -3,9 +3,23 @@ const request = require("supertest");
 const app = require("../app");
 const db = require("../api/db");
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
 
 const { transactionSetup, transactionTeardown } = require("./helpers/transactionHelper");
+
+const getSeedUser = async (username) => {
+    const user = await db.User.findOne({ where: { username } });
+    if (!user) throw new Error(`Seed user '${username}' not found. Run seeders first.`);
+    return user;
+};
+
+// Tranzakción belül hoz létre barátságot (írás tesztekhez)
+const createFriendship = async (app, senderId, receiverId, status = "sent") => {
+    const t = app.get("getTransaction")();
+    return db.FriendWith.create(
+        { sender_id: senderId, receiver_id: receiverId, status },
+        { transaction: t }
+    );
+};
 
 const makeToken = (user) =>
     jwt.sign(
@@ -13,31 +27,7 @@ const makeToken = (user) =>
         process.env.JWT_SECRET
     );
 
-const createTestUser = async (app, overrides = {}) => {
-    const t = app.get("getTransaction")();
-    const hashedPassword = await bcrypt.hash("TestPassword123", 10);
-    return db.User.create({
-        username: overrides.username || "fwuser",
-        email: overrides.email || "fwuser@example.com",
-        password: hashedPassword,
-        isAdmin: overrides.isAdmin ?? false,
-    }, { transaction: t });
-};
-
-const createTestFriendship = async (app, senderId, receiverId, overrides = {}) => {
-    const t = app.get("getTransaction")();
-    return db.FriendWith.create({
-        sender_id: senderId,
-        receiver_id: receiverId,
-        status: overrides.status || "sent",
-    }, { transaction: t });
-};
-
 describe("/api/friends-with", () => {
-
-    afterEach(async () => {
-        jest.restoreAllMocks()
-    });
 
     describe("GET", () => {
         beforeEach(async () => {
@@ -46,11 +36,10 @@ describe("/api/friends-with", () => {
 
         afterEach(async () => {
             await transactionTeardown(app);
-            jest.restoreAllMocks()
         });
 
         test("should get all friendships", async () => {
-            const admin = await createTestUser(app, { username: "fwadmin", email: "fwadmin@example.com", isAdmin: true });
+            const admin = await getSeedUser("seed_admin");
             const token = makeToken(admin);
 
             const res = await request(app)
@@ -69,13 +58,17 @@ describe("/api/friends-with", () => {
 
         afterEach(async () => {
             await transactionTeardown(app);
-            jest.restoreAllMocks()
         });
 
         test("should create friendship", async () => {
-            const sender = await createTestUser(app, { username: "fwsender", email: "fwsender@example.com" });
-            const receiver = await createTestUser(app, { username: "fwreceiver", email: "fwreceiver@example.com" });
+            const sender = await getSeedUser("seed_admin");
+            const receiver = await getSeedUser("seed_user1");
             const token = makeToken(sender);
+
+            // Ha maradt volna előző futásból, töröljük (a tranzakció úgyis visszavonja)
+            await db.FriendWith.destroy({
+                where: { sender_id: sender.ID, receiver_id: receiver.ID },
+            });
 
             const res = await request(app)
                 .post("/api/friends-with")
@@ -98,15 +91,14 @@ describe("/api/friends-with", () => {
 
             afterEach(async () => {
                 await transactionTeardown(app);
-                jest.restoreAllMocks()
             });
 
             test("should get friendship by ID", async () => {
-                const admin = await createTestUser(app, { username: "fwgetadmin", email: "fwgetadmin@example.com", isAdmin: true });
+                const user1 = await getSeedUser("seed_user1");
+                const user2 = await getSeedUser("seed_user2");
+                const admin = await getSeedUser("seed_admin");
                 const token = makeToken(admin);
-                const user1 = await createTestUser(app, { username: "fwget1", email: "fwget1@example.com" });
-                const user2 = await createTestUser(app, { username: "fwget2", email: "fwget2@example.com" });
-                const friendship = await createTestFriendship(app, user1.ID, user2.ID);
+                const friendship = await createFriendship(app, user1.ID, user2.ID);
 
                 const res = await request(app)
                     .get(`/api/friends-with/${friendship.id}`)
@@ -117,20 +109,29 @@ describe("/api/friends-with", () => {
         });
 
         describe("PUT", () => {
+            let friendship;
+
             beforeEach(async () => {
+                const user1 = await getSeedUser("seed_user1");
+                const user2 = await getSeedUser("seed_user2");
+
+                // Tranzakción kívül hozzuk létre, hogy ne legyen deadlock
+                await db.FriendWith.destroy({ where: { sender_id: user1.ID, receiver_id: user2.ID } });
+                friendship = await db.FriendWith.create({ sender_id: user1.ID, receiver_id: user2.ID, status: "sent" });
+
                 await transactionSetup(app, db);
             });
 
             afterEach(async () => {
                 await transactionTeardown(app);
-                jest.restoreAllMocks()
+
+                // Cleanup
+                if (friendship) await db.FriendWith.destroy({ where: { id: friendship.id } });
             });
 
-            test("should update friendship", async () => {
-                const user1 = await createTestUser(app, { username: "fwput1", email: "fwput1@example.com" });
-                const user2 = await createTestUser(app, { username: "fwput2", email: "fwput2@example.com" });
+            test("should update friendship status", async () => {
+                const user1 = await getSeedUser("seed_user1");
                 const token = makeToken(user1);
-                const friendship = await createTestFriendship(app, user1.ID, user2.ID, { status: "sent" });
 
                 const res = await request(app)
                     .put(`/api/friends-with/${friendship.id}`)
@@ -142,20 +143,29 @@ describe("/api/friends-with", () => {
         });
 
         describe("DELETE", () => {
+            let friendship;
+
             beforeEach(async () => {
+                const user1 = await getSeedUser("seed_user1");
+                const user2 = await getSeedUser("seed_user2");
+
+                // Tranzakción kívül hozzuk létre, hogy ne legyen deadlock
+                await db.FriendWith.destroy({ where: { sender_id: user1.ID, receiver_id: user2.ID } });
+                friendship = await db.FriendWith.create({ sender_id: user1.ID, receiver_id: user2.ID, status: "sent" });
+
                 await transactionSetup(app, db);
             });
 
             afterEach(async () => {
                 await transactionTeardown(app);
-                jest.restoreAllMocks()
+
+                // Cleanup (ha a delete nem sikerült)
+                if (friendship) await db.FriendWith.destroy({ where: { id: friendship.id } });
             });
 
             test("should delete friendship", async () => {
-                const user1 = await createTestUser(app, { username: "fwdel1", email: "fwdel1@example.com" });
-                const user2 = await createTestUser(app, { username: "fwdel2", email: "fwdel2@example.com" });
+                const user1 = await getSeedUser("seed_user1");
                 const token = makeToken(user1);
-                const friendship = await createTestFriendship(app, user1.ID, user2.ID);
 
                 const res = await request(app)
                     .delete(`/api/friends-with/${friendship.id}`)
@@ -174,14 +184,12 @@ describe("/api/friends-with", () => {
 
             afterEach(async () => {
                 await transactionTeardown(app);
-                jest.restoreAllMocks()
             });
 
             test("should get pending friendships for user", async () => {
-                const user1 = await createTestUser(app, { username: "fwpend1", email: "fwpend1@example.com" });
-                const user2 = await createTestUser(app, { username: "fwpend2", email: "fwpend2@example.com" });
+                // seed_user2 kapja a 'sent' kérést seed_user1-től — seederből látható
+                const user2 = await getSeedUser("seed_user2");
                 const token = makeToken(user2);
-                await createTestFriendship(app, user1.ID, user2.ID, { status: "sent" });
 
                 const res = await request(app)
                     .get(`/api/friends-with/pending/${user2.ID}`)
@@ -201,17 +209,15 @@ describe("/api/friends-with", () => {
 
             afterEach(async () => {
                 await transactionTeardown(app);
-                jest.restoreAllMocks()
             });
 
-            test("should delete friendship", async () => {
-                const user1 = await createTestUser(app, { username: "fwacc1", email: "fwacc1@example.com" });
-                const user2 = await createTestUser(app, { username: "fwacc2", email: "fwacc2@example.com" });
-                const token = makeToken(user1);
-                await createTestFriendship(app, user1.ID, user2.ID, { status: "accepted" });
+            test("should get accepted friendships for user", async () => {
+                // seed_user2 → seed_user3 (status: accepted) — seederből látható
+                const user2 = await getSeedUser("seed_user2");
+                const token = makeToken(user2);
 
                 const res = await request(app)
-                    .get(`/api/friends-with/accepted/${user1.ID}`)
+                    .get(`/api/friends-with/accepted/${user2.ID}`)
                     .set("Cookie", `user_token=${token}`);
 
                 expect(res.status).toBe(200);

@@ -51,11 +51,11 @@ class TripService {
 
     async getTripByUserAndName(userId, tripName, options = {}) {
         if (!userId) throw new BadRequestError("Hiányzik a felhasználó azonosító (userId).");
-        if (!tripName) throw new BadRequestError("Hiányzik a trip sorszám (tripName).");
+        if (!tripName) throw new BadRequestError("Hiányzik a trip név (tripName).");
 
         const trip = await this.tripRepository.getTripByUserAndName(userId, tripName, options);
 
-        if (!trip) throw new NotFoundError("Nem található trip ezzel a felhasználóval és tripszámmal.",
+        if (!trip) throw new NotFoundError("Nem található trip ezzel a felhasználóval és névvel.",
             {
                 data: { userId, tripName }
             });

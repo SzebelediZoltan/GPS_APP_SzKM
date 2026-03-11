@@ -48,7 +48,7 @@ class ClanMemberRepository {
     }
 
     async addMember(data, options = {}) {
-        console.log("Adding clan member:", data);
+        // console.log("Adding clan member:", data);
         
         try {
             return await this.ClanMember.create(data,

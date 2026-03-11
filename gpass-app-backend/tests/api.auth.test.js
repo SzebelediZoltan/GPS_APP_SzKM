@@ -3,22 +3,24 @@ const request = require("supertest");
 const app = require("../app");
 const db = require("../api/db");
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
 
 const { transactionSetup, transactionTeardown } = require("./helpers/transactionHelper");
 
+const getSeedUser = async (username) => {
+    const user = await db.User.findOne({ where: { username } });
+    if (!user) throw new Error(`Seed user '${username}' not found. Run seeders first.`);
+    return user;
+};
+
+const makeToken = (user) =>
+    jwt.sign(
+        { userID: user.ID, username: user.username, isAdmin: user.isAdmin, email: user.email },
+        process.env.JWT_SECRET
+    );
+
 describe("/api/auth", () => {
 
-    afterEach(async () => {
-        jest.restoreAllMocks()
-    });
-
     describe("/login", () => {
-
-        afterEach(async () => {
-            jest.restoreAllMocks()
-        });
-
         describe("POST", () => {
             beforeEach(async () => {
                 await transactionSetup(app, db);
@@ -26,91 +28,57 @@ describe("/api/auth", () => {
 
             afterEach(async () => {
                 await transactionTeardown(app);
-                jest.restoreAllMocks()
             });
 
             test("should set cookie on successful login", async () => {
-                // Service mock csak login teszthez
-                jest.mock("../api/services", () => {
-                    return (database) => ({
-                        userService: {
-                            getUserForAuth: jest.fn().mockResolvedValue({
-                                ID: 1,
-                                username: "testuser",
-                                email: "test@example.com",
-                                password: "TestPassword123",
-                                isAdmin: false,
-                            })
-                        }
-                    });
-                });
-
-                // Bcrypt mock csak login teszthez
-                jest.mock("bcrypt", () => ({
-                    ...jest.requireActual("bcrypt"),
-                    compare: jest.fn().mockResolvedValue(true),
-                }));
-                
-                // Login kérés
+                // seed_user1 valódi bcrypt hashelt jelszóval szerepel az adatbázisban
                 const res = await request(app)
                     .post("/api/auth/login")
                     .send({
-                        userID: "testuser",
-                        password: "TestPassword123"
+                        userID: "seed_user1",
+                        password: "TestPassword123",
                     });
 
-                // Ellenőrzések
                 expect(res.status).toBe(200);
                 expect(res.headers["set-cookie"]).toBeDefined();
                 expect(res.headers["set-cookie"][0]).toMatch(/user_token=/);
                 expect(typeof res.body).toBe("string");
             });
-        })
-    })
+
+            test("should return 401 on wrong password", async () => {
+                const res = await request(app)
+                    .post("/api/auth/login")
+                    .send({
+                        userID: "seed_user1",
+                        password: "WrongPassword",
+                    });
+
+                expect(res.status).toBe(401);
+            });
+        });
+    });
 
     describe("/status", () => {
         describe("GET", () => {
-            let testUser;
-            let token;
-
             beforeEach(async () => {
                 await transactionSetup(app, db);
-
-                const t = app.get("getTransaction")();
-                const hashedPassword = await bcrypt.hash("TestPassword123", 10);
-
-                testUser = await db.User.create({
-                    username: "statustest",
-                    email: "status@example.com",
-                    password: hashedPassword,
-                    isAdmin: false,
-                }, { transaction: t });
-
-                // Valódi JWT token generálása
-                token = jwt.sign(
-                    {
-                        userID: testUser.ID,
-                        username: testUser.username,
-                        isAdmin: testUser.isAdmin,
-                        email: testUser.email
-                    },
-                    process.env.JWT_SECRET
-                );
             });
 
             afterEach(async () => {
                 await transactionTeardown(app);
-                jest.restoreAllMocks()
             });
 
             test("should return user data on valid token", async () => {
+                const seedUser = await getSeedUser("seed_user1");
+                const token = makeToken(seedUser);
+
                 const res = await request(app)
                     .get("/api/auth/status")
                     .set("Cookie", `user_token=${token}`);
 
                 expect(res.status).toBe(200);
-                expect(res.body.username).toBe("statustest");
-                expect(res.body.email).toBe("status@example.com");
+                expect(res.body.username).toBe("seed_user1");
+                expect(res.body.email).toBe("seed_user1@example.com");
                 expect(res.body.isAdmin).toBe(false);
             });
 
@@ -120,45 +88,23 @@ describe("/api/auth", () => {
 
                 expect(res.status).toBe(401);
             });
-        })
-    })
+        });
+    });
 
     describe("/logout", () => {
         describe("DELETE", () => {
-            let testUser;
-            let token;
-
             beforeEach(async () => {
                 await transactionSetup(app, db);
-
-                const t = app.get("getTransaction")();
-                const hashedPassword = await bcrypt.hash("TestPassword123", 10);
-
-                testUser = await db.User.create({
-                    username: "logouttest",
-                    email: "logout@example.com",
-                    password: hashedPassword,
-                    isAdmin: false,
-                }, { transaction: t });
-
-                // Valódi JWT token generálása
-                token = jwt.sign(
-                    {
-                        userID: testUser.ID,
-                        username: testUser.username,
-                        isAdmin: testUser.isAdmin,
-                        email: testUser.email
-                    },
-                    process.env.JWT_SECRET
-                );
             });
 
             afterEach(async () => {
                 await transactionTeardown(app);
-                jest.restoreAllMocks()
             });
 
             test("should clear cookie on logout", async () => {
+                const seedUser = await getSeedUser("seed_user1");
+                const token = makeToken(seedUser);
+
                 const res = await request(app)
                     .delete("/api/auth/logout")
                     .set("Cookie", `user_token=${token}`);
@@ -174,7 +120,6 @@ describe("/api/auth", () => {
 
                 expect(res.status).toBe(200);
             });
-        })
-    })
-
-})
+        });
+    });
+});
