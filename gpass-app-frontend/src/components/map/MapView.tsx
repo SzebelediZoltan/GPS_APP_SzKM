@@ -3,7 +3,7 @@ import L from "leaflet"
 import "leaflet-rotate"
 import { User, MapPin, Compass as CompassIcon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
-import { useEffect, useState, useRef, useCallback } from "react"
+import { useEffect, useState, useRef, useCallback, useMemo } from "react"
 import { useAuth } from "@/hooks/useAuth"
 import { useNavigation } from "@/context/NavigationContext"
 import MapController from "./MapController"
@@ -13,6 +13,10 @@ import NavigationPreviewPanel from "./NavigationPreviewPanel"
 import RouteLayer from "./RouteLayer"
 import TurnByTurnPanel from "./TurnByTurnPanel"
 import SpeedDisplay from "./SpeedDisplay"
+import FriendMarkers from "./FriendMarkers"
+import FriendsListPanel from "./FriendsListPanel"
+import { useMapSocialData } from "@/hooks/map/useMapSocialData"
+import { useMapSocket } from "@/hooks/map/useMapSocket"
 
 type Props = {
   position: { lat: number; lng: number }
@@ -60,6 +64,27 @@ export default function MapView({ position, heading, speed }: Props) {
   const mapRef = useRef<L.Map | null>(null)
   useEffect(() => { positionRef.current = position }, [position])
 
+  // ── Social data (barátok + klántagok) ──
+  const { friendIDs, clanMembers, isLoading: socialLoading } = useMapSocialData(
+    { userID: user?.userID ?? "", enabled: !!user }
+  )
+
+  // ── Socket: élő pozíció megosztás + online barátok/klántagok ──
+  const { onlineUsers } = useMapSocket({
+    enabled: !!user && !socialLoading,
+    position,
+    friendIDs,
+    clanMembers,
+  })
+
+  // ── User ikon memoizálva ──
+  const coneAngle = useMemo(
+    () => heading !== null ? (headingLock ? 0 : Math.round(heading / 5) * 5) : null,
+    [heading, headingLock]
+  )
+
+  const userIcon = useMemo(() => createUserIcon(coneAngle), [coneAngle])
+
   const centerOnUser = useCallback(() => {
     mapRef.current?.flyTo([positionRef.current.lat, positionRef.current.lng], 17, { duration: 0.8 })
   }, [])
@@ -100,7 +125,6 @@ export default function MapView({ position, heading, speed }: Props) {
   }, [])
 
   const bounds = L.latLngBounds(L.latLng(-85, -180), L.latLng(85, 180))
-  const coneAngle = heading !== null ? (headingLock ? 0 : heading) : null
 
   return (
     <div style={{ height: "calc(100dvh - env(safe-area-inset-top, 0px))", width: "100%", position: "relative" }}>
@@ -128,19 +152,18 @@ export default function MapView({ position, heading, speed }: Props) {
           position={position}
           heading={heading}
           headingLock={headingLock}
-          onLockedInteraction={() => {
-            flashLock()
-          }}
+          onLockedInteraction={flashLock}
         />
 
-        <Marker icon={createUserIcon(coneAngle)} position={[position.lat, position.lng]}>
+        {/* Saját marker */}
+        <Marker icon={userIcon} position={[position.lat, position.lng]}>
           <Popup closeButton={false} className="custom-popup">
             <div className="w-60 rounded-xl border border-border bg-card p-4 space-y-3">
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-primary" />
                 <span className="text-sm font-medium text-muted-foreground">Itt vagy te</span>
               </div>
-              {!!user && (
+              {user && (
                 <>
                   <div className="flex items-center gap-2 text-sm">
                     <User className="w-4 h-4" />
@@ -159,8 +182,12 @@ export default function MapView({ position, heading, speed }: Props) {
           </Popup>
         </Marker>
 
+        {/* Barát/klántag markerek */}
+        <FriendMarkers users={onlineUsers} currentPosition={position} />
+
         <NavigationPanel currentPosition={position} onOpenMobile={() => setMobileSheetOpen(true)} />
-        <RouteLayer />
+        <RouteLayer/>
+
         {mode !== "navigating" && (
           <LocateButton
             position={position}
@@ -193,6 +220,10 @@ export default function MapView({ position, heading, speed }: Props) {
       )}
 
       <NavigationPreviewPanel />
+
+      {/* Barátlista overlay panel (MapContainer-en kívül) */}
+      <FriendsListPanel users={onlineUsers} currentPosition={position} />
+
       <NavigationMobileSheet
         open={mobileSheetOpen}
         onOpenChange={setMobileSheetOpen}
