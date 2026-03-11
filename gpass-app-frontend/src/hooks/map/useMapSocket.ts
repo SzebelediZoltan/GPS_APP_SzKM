@@ -3,9 +3,26 @@ import { io, Socket } from "socket.io-client"
 
 const SEND_THROTTLE_MS = 3000
 
-// ── Típusok ──
+export type UserClanTag = {
+  clanId: number
+  clanName: string
+}
 
-/** Egy online user amit a szervertől kapunk */
+export type TaggedOnlineUser = {
+  userID: string
+  username: string
+  lat: number
+  lng: number
+  isFriend: boolean
+  clans: UserClanTag[]
+}
+
+export type ClanMemberEntry = {
+  userID: string
+  clanId: number
+  clanName: string
+}
+
 type RawOnlineUser = {
   userID: string
   username: string
@@ -13,40 +30,10 @@ type RawOnlineUser = {
   lng: number
 }
 
-/** Egy klán amiben az illető tag (vagy vezető) */
-export type UserClanTag = {
-  clanId: number
-  clanName: string
-}
-
-/** Egy online user teljes relációs adatokkal */
-export type TaggedOnlineUser = {
-  userID: string
-  username: string
-  lat: number
-  lng: number
-  /** Barát-e (accepted friend relation) */
-  isFriend: boolean
-  /** Melyik közös klánokban van (lehet több) */
-  clans: UserClanTag[]
-}
-
-/** A hook bemenetéhez szükséges klántagsági info */
-export type ClanMemberEntry = {
-  /** A klántag userID-je */
-  userID: string
-  clanId: number
-  clanName: string
-}
-
 type UseMapSocketOptions = {
-  /** Ha false, nem csatlakozik (pl. nincs bejelentkezve) */
   enabled: boolean
-  /** Saját GPS pozíció — változáskor throttle-lal elküldi */
   position: { lat: number; lng: number } | null
-  /** Elfogadott barátok userID-i */
   friendIDs: Set<string>
-  /** Klántagok részletes listája: userID + melyik klánban */
   clanMembers: ClanMemberEntry[]
 }
 
@@ -56,13 +43,18 @@ export function useMapSocket({
   friendIDs,
   clanMembers,
 }: UseMapSocketOptions) {
-  const socketRef = useRef<Socket | null>(null)
+  const socketRef   = useRef<Socket | null>(null)
   const lastSentRef = useRef<number>(0)
+  const positionRef = useRef<{ lat: number; lng: number } | null>(null)
+  // Ref-ben tartjuk hogy a socket event handler mindig a friss értéket lássa
+  const relevantRef = useRef<Set<string>>(new Set())
 
-  // Nyers pozíciók: userID → RawOnlineUser
   const [rawOnline, setRawOnline] = useState<Map<string, RawOnlineUser>>(new Map())
 
-  // Klántag lookup: userID → ClanMemberEntry[]
+  // Frissítjük a pozíció ref-et minden renderkor
+  useEffect(() => { positionRef.current = position }, [position])
+
+  // Klan lookup map
   const clanMemberMap = useMemo(() => {
     const map = new Map<string, ClanMemberEntry[]>()
     for (const entry of clanMembers) {
@@ -72,12 +64,16 @@ export function useMapSocket({
     return map
   }, [clanMembers])
 
-  // Összes releváns userID (barát VAGY klántag)
+  // Releváns ID-k (barát VAGY klántag) — ref-ben is frissítjük
   const relevantIDs = useMemo(() => {
     const ids = new Set<string>(friendIDs)
     for (const entry of clanMembers) ids.add(entry.userID)
     return ids
   }, [friendIDs, clanMembers])
+
+  useEffect(() => {
+    relevantRef.current = relevantIDs
+  }, [relevantIDs])
 
   // ── Socket kapcsolat ──
   useEffect(() => {
@@ -88,16 +84,25 @@ export function useMapSocket({
       : window.location.origin
 
     const socket = io(url, {
-      withCredentials: true,  // user_token httpOnly cookie
+      withCredentials: true,
       transports: ["websocket"],
     })
 
     socketRef.current = socket
 
-    socket.on("position:update", (data: RawOnlineUser) => {
-      // Csak barát vagy klántag pozícióját fogadjuk el
-      if (!relevantIDs.has(data.userID)) return
+    // Segédfüggvény: pozíció küldése ha van és nem túl korán
+    const sendPosition = () => {
+      const pos = positionRef.current
+      if (!pos || !socket.connected) return
+      const now = Date.now()
+      if (now - lastSentRef.current < SEND_THROTTLE_MS) return
+      lastSentRef.current = now
+      socket.emit("position:update", { lat: pos.lat, lng: pos.lng })
+    }
 
+    // position:update — ref-en keresztül nézzük a relevantIDs-t
+    socket.on("position:update", (data: RawOnlineUser) => {
+      if (!relevantRef.current.has(data.userID)) return
       setRawOnline((prev) => {
         const next = new Map(prev)
         next.set(data.userID, data)
@@ -107,8 +112,33 @@ export function useMapSocket({
 
     socket.on("user:disconnected", ({ userID }: { userID: string }) => {
       setRawOnline((prev) => {
+        if (!prev.has(userID)) return prev
         const next = new Map(prev)
         next.delete(userID)
+        return next
+      })
+    })
+
+    // Csatlakozás után: azonnal küldjük a pozíciót + kérjük az online listát
+    socket.on("connect", () => {
+      // Azonnali pozíció küldés (throttle bypass — ez az első küldés)
+      const pos = positionRef.current
+      if (pos && socket.connected) {
+        lastSentRef.current = Date.now()
+        socket.emit("position:update", { lat: pos.lat, lng: pos.lng })
+      }
+      socket.emit("request:online")
+    })
+
+    // Szerver küldi az összes jelenleg online usert egyszerre
+    socket.on("online:snapshot", (users: RawOnlineUser[]) => {
+      setRawOnline((prev) => {
+        const next = new Map(prev)
+        for (const u of users) {
+          if (relevantRef.current.has(u.userID)) {
+            next.set(u.userID, u)
+          }
+        }
         return next
       })
     })
@@ -117,29 +147,32 @@ export function useMapSocket({
       console.warn("[socket] kapcsolódási hiba:", err.message)
     })
 
+    // Intervallum alapú pozíció küldés — nem csak pozíció változáskor
+    const interval = setInterval(sendPosition, SEND_THROTTLE_MS)
+
     return () => {
+      clearInterval(interval)
       socket.disconnect()
       socketRef.current = null
       setRawOnline(new Map())
     }
+  // Csak enabled változásakor csatlakozik újra
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enabled])
 
-  // ── Pozíció küldése throttle-lal ──
+  // ── Pozíció küldése mozgáskor is (throttle-lal) ──
   useEffect(() => {
-    if (!enabled || !position || !socketRef.current?.connected) return
+    if (!enabled || !position) return
+    const socket = socketRef.current
+    if (!socket?.connected) return
 
     const now = Date.now()
     if (now - lastSentRef.current < SEND_THROTTLE_MS) return
-
     lastSentRef.current = now
-    socketRef.current.emit("position:update", {
-      lat: position.lat,
-      lng: position.lng,
-    })
+    socket.emit("position:update", { lat: position.lat, lng: position.lng })
   }, [position, enabled])
 
-  // ── Ha már nem barát/klántag valaki, töröljük a térképről ──
+  // ── Ha már nem barát/klántag valaki, töröljük ──
   useEffect(() => {
     setRawOnline((prev) => {
       let changed = false
@@ -155,18 +188,12 @@ export function useMapSocket({
   }, [relevantIDs])
 
   // ── Tagelt lista összerakása ──
-  // Minden online userhez hozzárendeljük: barát-e + melyik klánokban van
   const onlineUsers = useMemo<TaggedOnlineUser[]>(() => {
     const result: TaggedOnlineUser[] = []
-
     for (const raw of rawOnline.values()) {
       const isFriend = friendIDs.has(raw.userID)
-      const clans = clanMemberMap.get(raw.userID) ?? []
-
-      // Csak akkor kerül fel ha valóban barát VAGY klántag
-      // (duplikáció nem lehetséges mert Map-ben tároljuk)
+      const clans    = clanMemberMap.get(raw.userID) ?? []
       if (!isFriend && clans.length === 0) continue
-
       result.push({
         userID: raw.userID,
         username: raw.username,
@@ -176,7 +203,6 @@ export function useMapSocket({
         clans: clans.map((c) => ({ clanId: c.clanId, clanName: c.clanName })),
       })
     }
-
     return result
   }, [rawOnline, friendIDs, clanMemberMap])
 
