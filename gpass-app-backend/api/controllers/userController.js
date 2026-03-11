@@ -87,7 +87,7 @@ exports.searchUsers = async (req, res, next) => {
 
 exports.updateLocation = async (req, res) => {
     const { latitude, longitude } = req.body;
-    const userID = req.user.ID;
+    const userID = req.user.userID;
 
     try {
         const transaction = transactionBuilder.get(req);

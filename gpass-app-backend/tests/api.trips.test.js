@@ -115,7 +115,7 @@ describe("/api/trips", () => {
         });
     });
 
-    describe("/by-user/:userId/name/:tripID", () => {
+    describe("/by-user/:userId/name/:tripName", () => {
         describe("GET", () => {
             beforeEach(async () => {
                 await transactionSetup(app, db);
@@ -132,7 +132,7 @@ describe("/api/trips", () => {
                 const trip = await createTestTrip(app, user.ID, { trip_name: "NamedTrip" });
 
                 const res = await request(app)
-                    .get(`/api/trips/by-user/${user.ID}/name/${trip.id}`)
+                    .get(`/api/trips/by-user/${user.ID}/name/${trip.trip_name}`)
                     .set("Cookie", `user_token=${token}`);
 
                 expect(res.status).toBe(200);

@@ -22,13 +22,13 @@ router.param("userID", (req, res, next, userID) => {
 // GET 1 user (logged in) – pl profil / user adat
 router.get("/:userID", [authMiddleware.userIsLoggedIn], userController.getUser);
 
+router.put("/location", [authMiddleware.userIsLoggedIn], userController.updateLocation);
 // UPDATE (logged in)
 router.put("/:userID", [authMiddleware.userIsLoggedIn], userController.updateUser);
 
 // DELETE (admin)
 router.delete("/:userID", [authMiddleware.userIsLoggedIn, authMiddleware.isAdmin], userController.deleteUser);
 
-router.put("/location", [authMiddleware.userIsLoggedIn], userController.updateLocation);
 router.get("/location/:userID",[authMiddleware.userIsLoggedIn],userController.getUserLocation);
 
 module.exports = router;

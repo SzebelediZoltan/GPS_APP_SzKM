@@ -62,15 +62,14 @@ exports.deleteTrip = async (req, res, next) => {
 }
 
 exports.getTripByUserAndName = async (req, res, next) => {
-    const userId = req.params?.userId || req.userID;
-    const tripName = req.params?.tripName;
+    const userId = req.params?.userId || req.userId;
+    const tripName = req.params?.tripName || req.tripName;
 
     try {
         const transaction = transactionBuilder.get(req);
         res.status(200).json(await tripService.getTripByUserAndName(userId, tripName, { transaction }));
     }
     catch (error) {
-        console.log(error)
         next(error);
     }
 }

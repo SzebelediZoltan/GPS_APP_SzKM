@@ -10,6 +10,16 @@ router.use(authMiddleware.userIsLoggedIn);
 // LISTA
 router.get("/", tripController.getTrips);
 
+router.param("tripName", (req, res, next, tripName) => {
+    req.tripName = tripName;
+    next();
+});
+
+router.param("userId", (req, res, next, userId) => {
+    req.userId = userId;
+    next();
+});
+
 // user tripjei
 router.get("/by-user/:userId", tripController.getTripsByUser);
 
