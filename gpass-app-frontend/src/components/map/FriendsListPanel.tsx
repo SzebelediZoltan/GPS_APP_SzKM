@@ -1,11 +1,11 @@
-import { useState, useMemo } from "react"
-import { Users, UserCheck, Shield, Navigation, X, MapPin } from "lucide-react"
+import { useState} from "react"
+import { Users, UserCheck, Shield, Navigation, X} from "lucide-react"
 import { useNavigation as useNavigationCtx } from "@/context/NavigationContext"
 import { useRouting } from "@/hooks/map/useRouting"
 import { useIsMobile } from "@/hooks/ui/useIsMobile"
 import { Badge } from "@/components/ui/badge"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
-import { TaggedOnlineUser } from "@/hooks/map/useMapSocket"
+import type { TaggedOnlineUser } from "@/hooks/map/useMapSocket"
 
 type Props = {
   users: TaggedOnlineUser[]
