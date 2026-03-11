@@ -15,7 +15,7 @@ export default defineConfig({
       autoCodeSplitting: true,
     }),
     viteReact(),
-    tailwindcss(),
+    tailwindcss()
   ],
   server: {
     port: 3000,
