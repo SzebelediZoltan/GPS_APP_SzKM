@@ -68,7 +68,7 @@ export function useMapSocket({
 
     const url = import.meta.env.DEV
       ? "http://localhost:4000"
-      : window.location.origin
+      : ""  // production: socket.io ugyanarra az originre csatlakozik, nginx proxyzza
 
     const socket = io(url, {
       withCredentials: true,
