@@ -15,8 +15,8 @@ import TurnByTurnPanel from "./TurnByTurnPanel"
 import SpeedDisplay from "./SpeedDisplay"
 import FriendMarkers from "./FriendMarkers"
 import FriendsListPanel from "./FriendsListPanel"
-import { useMapSocialData } from "@/hooks/map/useMapSocialData"
 import { useMapSocket } from "@/hooks/map/useMapSocket"
+import { useMapSocialData } from "@/hooks/map/useMapSocialData"
 
 type Props = {
   position: { lat: number; lng: number }
@@ -65,9 +65,11 @@ export default function MapView({ position, heading, speed }: Props) {
   useEffect(() => { positionRef.current = position }, [position])
 
   // ── Social data (barátok + klántagok) ──
-  const { friendIDs, clanMembers, isLoading: socialLoading } = useMapSocialData(
-    { userID: user?.userID ?? "", enabled: !!user }
-  )
+  const { friendIDs, clanMembers, isLoading: socialLoading } = useMapSocialData({
+    userID: user?.userID,
+    username: user?.username,
+    enabled: !!user,
+  })
 
   // ── Socket: élő pozíció megosztás + online barátok/klántagok ──
   const { onlineUsers } = useMapSocket({
@@ -186,7 +188,7 @@ export default function MapView({ position, heading, speed }: Props) {
         <FriendMarkers users={onlineUsers} currentPosition={position} />
 
         <NavigationPanel currentPosition={position} onOpenMobile={() => setMobileSheetOpen(true)} />
-        <RouteLayer/>
+        <RouteLayer />
 
         {mode !== "navigating" && (
           <LocateButton
@@ -201,19 +203,25 @@ export default function MapView({ position, heading, speed }: Props) {
 
       {mode === "navigating" && (
         <>
+          {/* Jobb alsó gombok navigálás közben: barátok + compass egymás felett */}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-1000 flex items-end justify-end px-4 pb-[calc(4rem+0.9rem)]">
-            <button
-              onClick={handleToggleHeadingLock}
-              className={`pointer-events-auto w-11 h-11 rounded-xl border shadow-md flex items-center justify-center active:scale-95 transition cursor-pointer ${
-                lockFlash
-                  ? "bg-red-500/20 border-red-500 text-red-500 animate-pulse"
-                  : headingLock
-                    ? "bg-primary border-primary text-primary-foreground"
-                    : "bg-card border-border text-foreground hover:bg-muted"
-              }`}
-            >
-              <CompassIcon className="w-5 h-5" />
-            </button>
+            <div className="pointer-events-auto flex flex-col items-end gap-2">
+              {user && (
+                <FriendsListPanel users={onlineUsers} currentPosition={position} inlineButton />
+              )}
+              <button
+                onClick={handleToggleHeadingLock}
+                className={`w-11 h-11 rounded-xl border shadow-md flex items-center justify-center active:scale-95 transition cursor-pointer ${
+                  lockFlash
+                    ? "bg-red-500/20 border-red-500 text-red-500 animate-pulse"
+                    : headingLock
+                      ? "bg-primary border-primary text-primary-foreground"
+                      : "bg-card border-border text-foreground hover:bg-muted"
+                }`}
+              >
+                <CompassIcon className="w-5 h-5" />
+              </button>
+            </div>
           </div>
           <SpeedDisplay position={position} speed={speed} />
         </>
@@ -221,8 +229,10 @@ export default function MapView({ position, heading, speed }: Props) {
 
       <NavigationPreviewPanel />
 
-      {/* Barátlista overlay panel (MapContainer-en kívül) */}
-      <FriendsListPanel users={onlineUsers} currentPosition={position} />
+      {/* Barátlista panel — idle módban (navigating módban inline a jobb alsó sarokba van integrálva) */}
+      {mode !== "navigating" && user && (
+        <FriendsListPanel users={onlineUsers} currentPosition={position} />
+      )}
 
       <NavigationMobileSheet
         open={mobileSheetOpen}

@@ -1,5 +1,5 @@
-import { useState} from "react"
-import { Users, UserCheck, Shield, Navigation, X} from "lucide-react"
+import { useState } from "react"
+import { Users, UserCheck, Shield, Navigation, X } from "lucide-react"
 import { useNavigation as useNavigationCtx } from "@/context/NavigationContext"
 import { useRouting } from "@/hooks/map/useRouting"
 import { useIsMobile } from "@/hooks/ui/useIsMobile"
@@ -10,6 +10,7 @@ import type { TaggedOnlineUser } from "@/hooks/map/useMapSocket"
 type Props = {
   users: TaggedOnlineUser[]
   currentPosition: { lat: number; lng: number } | null
+  inlineButton?: boolean  // navigating módban: csak a gombot adja vissza, pozícionálás nélkül
 }
 
 function InitialsAvatar({ name, color }: { name: string; color: string }) {
@@ -71,7 +72,7 @@ function UserRow({ user, currentPosition, onNavigate }: {
   )
 }
 
-export default function FriendsListPanel({ users, currentPosition }: Props) {
+export default function FriendsListPanel({ users, currentPosition, inlineButton = false }: Props) {
   const [open, setOpen] = useState(false)
   const isMobile = useIsMobile()
   const { setPreview } = useNavigationCtx()
@@ -96,7 +97,7 @@ export default function FriendsListPanel({ users, currentPosition }: Props) {
     >
       <Users className="w-4 h-4 text-primary" />
       {onlineCount > 0 && (
-        <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] rounded-full bg-green-500 border-2 border-background flex items-center justify-center text-[10px] font-black text-white px-1">
+        <span className="absolute -top-1.5 -right-1.5 min-w-4.5 h-4.5 rounded-full bg-green-500 border-2 border-background flex items-center justify-center text-[10px] font-black text-white px-1">
           {onlineCount}
         </span>
       )}
@@ -125,19 +126,23 @@ export default function FriendsListPanel({ users, currentPosition }: Props) {
     </div>
   )
 
-  // ── MOBIL: bottom sheet (meglévő stílus) ──
+  // ── MOBIL: bottom sheet ──
   if (isMobile) {
     return (
       <>
-        {/* Gomb: ugyanott ahol desktop-on, safe-area felett */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[999] flex items-end justify-end px-4 pb-[calc(4rem+0.9rem)]">
-          <div className="pointer-events-auto">{triggerBtn}</div>
-        </div>
+        {/* Gomb: inlineButton módban nincs saját pozícionálás (a szülő adja) */}
+        {inlineButton ? (
+          <>{triggerBtn}</>
+        ) : (
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-999 flex items-end justify-end px-4 pb-[calc(4rem+0.9rem)]">
+            <div className="pointer-events-auto">{triggerBtn}</div>
+          </div>
+        )}
 
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetContent
             side="bottom"
-            className="z-[1200] rounded-t-2xl border-t border-border/80 bg-background/95 backdrop-blur px-0 max-h-[70dvh] overflow-y-auto"
+            className="z-1200 rounded-t-2xl border-t border-border/80 bg-background/95 backdrop-blur px-0 max-h-[70dvh] overflow-y-auto"
             style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 1rem)" }}
           >
             <div className="flex justify-center pt-3 pb-2">
@@ -162,8 +167,40 @@ export default function FriendsListPanel({ users, currentPosition }: Props) {
   }
 
   // ── DESKTOP: NavigationPanel-szerű lebegő panel ──
+  if (inlineButton) {
+    // Navigating módban: a szülő (MapView) kezeli a pozícionálást
+    return (
+      <div className="flex flex-col items-end gap-2">
+        {open && (
+          <div className="w-72 rounded-xl border border-border bg-background/95 backdrop-blur shadow-xl overflow-hidden animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-2 duration-200">
+            <div className="flex items-center justify-between px-3 py-2.5 border-b border-border/60">
+              <div className="flex items-center gap-2">
+                <Users className="w-4 h-4 text-primary" />
+                <span className="text-sm font-semibold text-foreground">Online barátok</span>
+                {onlineCount > 0 && (
+                  <Badge className="rounded-full bg-green-500/20 text-green-400 border-green-500/30 text-[10px] h-4 px-1.5">
+                    {onlineCount}
+                  </Badge>
+                )}
+              </div>
+              <button onClick={() => setOpen(false)} className="w-6 h-6 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-accent transition cursor-pointer">
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <div className="max-h-72 overflow-y-auto divide-y divide-border/40">
+              {users.length === 0 ? emptyState : users.map((u) => (
+                <UserRow key={u.userID} user={u} currentPosition={currentPosition} onNavigate={handleNavigate} />
+              ))}
+            </div>
+          </div>
+        )}
+        {triggerBtn}
+      </div>
+    )
+  }
+
   return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[999] flex items-end justify-end px-4 pb-[calc(4rem+0.9rem)]">
+    <div className="pointer-events-none absolute inset-x-0 bottom-0 z-999 flex items-end justify-end px-4 pb-[calc(4rem+0.9rem)]">
       <div className="pointer-events-auto flex flex-col items-end gap-2">
 
         {/* Panel (ha nyitva) */}

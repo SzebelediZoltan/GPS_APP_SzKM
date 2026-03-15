@@ -13,17 +13,9 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MapIndexRouteImport } from './routes/map/index'
-import { Route as DevIndexRouteImport } from './routes/dev/index'
 import { Route as ClansIndexRouteImport } from './routes/clans/index'
 import { Route as ProfileSettingsRouteImport } from './routes/profile/settings'
 import { Route as ProfileFriendsRouteImport } from './routes/profile/friends'
-import { Route as DevUiPrevRouteImport } from './routes/dev/ui-prev'
-import { Route as DevSpeedPrevRouteImport } from './routes/dev/speed-prev'
-import { Route as DevSharedPrevRouteImport } from './routes/dev/shared-prev'
-import { Route as DevNavigationPrevRouteImport } from './routes/dev/navigation-prev'
-import { Route as DevMarkersPrevRouteImport } from './routes/dev/markers-prev'
-import { Route as DevFriendsPrevRouteImport } from './routes/dev/friends-prev'
-import { Route as DevFriendPrevRouteImport } from './routes/dev/friend-prev'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as ProfileUserIDIndexRouteImport } from './routes/profile/$userID/index'
@@ -49,11 +41,6 @@ const MapIndexRoute = MapIndexRouteImport.update({
   path: '/map/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DevIndexRoute = DevIndexRouteImport.update({
-  id: '/dev/',
-  path: '/dev/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ClansIndexRoute = ClansIndexRouteImport.update({
   id: '/clans/',
   path: '/clans/',
@@ -67,41 +54,6 @@ const ProfileSettingsRoute = ProfileSettingsRouteImport.update({
 const ProfileFriendsRoute = ProfileFriendsRouteImport.update({
   id: '/profile/friends',
   path: '/profile/friends',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DevUiPrevRoute = DevUiPrevRouteImport.update({
-  id: '/dev/ui-prev',
-  path: '/dev/ui-prev',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DevSpeedPrevRoute = DevSpeedPrevRouteImport.update({
-  id: '/dev/speed-prev',
-  path: '/dev/speed-prev',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DevSharedPrevRoute = DevSharedPrevRouteImport.update({
-  id: '/dev/shared-prev',
-  path: '/dev/shared-prev',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DevNavigationPrevRoute = DevNavigationPrevRouteImport.update({
-  id: '/dev/navigation-prev',
-  path: '/dev/navigation-prev',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DevMarkersPrevRoute = DevMarkersPrevRouteImport.update({
-  id: '/dev/markers-prev',
-  path: '/dev/markers-prev',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DevFriendsPrevRoute = DevFriendsPrevRouteImport.update({
-  id: '/dev/friends-prev',
-  path: '/dev/friends-prev',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DevFriendPrevRoute = DevFriendPrevRouteImport.update({
-  id: '/dev/friend-prev',
-  path: '/dev/friend-prev',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
@@ -131,17 +83,9 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
-  '/dev/friend-prev': typeof DevFriendPrevRoute
-  '/dev/friends-prev': typeof DevFriendsPrevRoute
-  '/dev/markers-prev': typeof DevMarkersPrevRoute
-  '/dev/navigation-prev': typeof DevNavigationPrevRoute
-  '/dev/shared-prev': typeof DevSharedPrevRoute
-  '/dev/speed-prev': typeof DevSpeedPrevRoute
-  '/dev/ui-prev': typeof DevUiPrevRoute
   '/profile/friends': typeof ProfileFriendsRoute
   '/profile/settings': typeof ProfileSettingsRoute
   '/clans/': typeof ClansIndexRoute
-  '/dev/': typeof DevIndexRoute
   '/map/': typeof MapIndexRoute
   '/clans/$clanId/': typeof ClansClanIdIndexRoute
   '/profile/$userID/': typeof ProfileUserIDIndexRoute
@@ -152,17 +96,9 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
-  '/dev/friend-prev': typeof DevFriendPrevRoute
-  '/dev/friends-prev': typeof DevFriendsPrevRoute
-  '/dev/markers-prev': typeof DevMarkersPrevRoute
-  '/dev/navigation-prev': typeof DevNavigationPrevRoute
-  '/dev/shared-prev': typeof DevSharedPrevRoute
-  '/dev/speed-prev': typeof DevSpeedPrevRoute
-  '/dev/ui-prev': typeof DevUiPrevRoute
   '/profile/friends': typeof ProfileFriendsRoute
   '/profile/settings': typeof ProfileSettingsRoute
   '/clans': typeof ClansIndexRoute
-  '/dev': typeof DevIndexRoute
   '/map': typeof MapIndexRoute
   '/clans/$clanId': typeof ClansClanIdIndexRoute
   '/profile/$userID': typeof ProfileUserIDIndexRoute
@@ -174,17 +110,9 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
-  '/dev/friend-prev': typeof DevFriendPrevRoute
-  '/dev/friends-prev': typeof DevFriendsPrevRoute
-  '/dev/markers-prev': typeof DevMarkersPrevRoute
-  '/dev/navigation-prev': typeof DevNavigationPrevRoute
-  '/dev/shared-prev': typeof DevSharedPrevRoute
-  '/dev/speed-prev': typeof DevSpeedPrevRoute
-  '/dev/ui-prev': typeof DevUiPrevRoute
   '/profile/friends': typeof ProfileFriendsRoute
   '/profile/settings': typeof ProfileSettingsRoute
   '/clans/': typeof ClansIndexRoute
-  '/dev/': typeof DevIndexRoute
   '/map/': typeof MapIndexRoute
   '/clans/$clanId/': typeof ClansClanIdIndexRoute
   '/profile/$userID/': typeof ProfileUserIDIndexRoute
@@ -197,17 +125,9 @@ export interface FileRouteTypes {
     | '/contact'
     | '/auth/login'
     | '/auth/register'
-    | '/dev/friend-prev'
-    | '/dev/friends-prev'
-    | '/dev/markers-prev'
-    | '/dev/navigation-prev'
-    | '/dev/shared-prev'
-    | '/dev/speed-prev'
-    | '/dev/ui-prev'
     | '/profile/friends'
     | '/profile/settings'
     | '/clans/'
-    | '/dev/'
     | '/map/'
     | '/clans/$clanId/'
     | '/profile/$userID/'
@@ -218,17 +138,9 @@ export interface FileRouteTypes {
     | '/contact'
     | '/auth/login'
     | '/auth/register'
-    | '/dev/friend-prev'
-    | '/dev/friends-prev'
-    | '/dev/markers-prev'
-    | '/dev/navigation-prev'
-    | '/dev/shared-prev'
-    | '/dev/speed-prev'
-    | '/dev/ui-prev'
     | '/profile/friends'
     | '/profile/settings'
     | '/clans'
-    | '/dev'
     | '/map'
     | '/clans/$clanId'
     | '/profile/$userID'
@@ -239,17 +151,9 @@ export interface FileRouteTypes {
     | '/contact'
     | '/auth/login'
     | '/auth/register'
-    | '/dev/friend-prev'
-    | '/dev/friends-prev'
-    | '/dev/markers-prev'
-    | '/dev/navigation-prev'
-    | '/dev/shared-prev'
-    | '/dev/speed-prev'
-    | '/dev/ui-prev'
     | '/profile/friends'
     | '/profile/settings'
     | '/clans/'
-    | '/dev/'
     | '/map/'
     | '/clans/$clanId/'
     | '/profile/$userID/'
@@ -261,17 +165,9 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
-  DevFriendPrevRoute: typeof DevFriendPrevRoute
-  DevFriendsPrevRoute: typeof DevFriendsPrevRoute
-  DevMarkersPrevRoute: typeof DevMarkersPrevRoute
-  DevNavigationPrevRoute: typeof DevNavigationPrevRoute
-  DevSharedPrevRoute: typeof DevSharedPrevRoute
-  DevSpeedPrevRoute: typeof DevSpeedPrevRoute
-  DevUiPrevRoute: typeof DevUiPrevRoute
   ProfileFriendsRoute: typeof ProfileFriendsRoute
   ProfileSettingsRoute: typeof ProfileSettingsRoute
   ClansIndexRoute: typeof ClansIndexRoute
-  DevIndexRoute: typeof DevIndexRoute
   MapIndexRoute: typeof MapIndexRoute
   ClansClanIdIndexRoute: typeof ClansClanIdIndexRoute
   ProfileUserIDIndexRoute: typeof ProfileUserIDIndexRoute
@@ -307,13 +203,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MapIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dev/': {
-      id: '/dev/'
-      path: '/dev'
-      fullPath: '/dev/'
-      preLoaderRoute: typeof DevIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/clans/': {
       id: '/clans/'
       path: '/clans'
@@ -333,55 +222,6 @@ declare module '@tanstack/react-router' {
       path: '/profile/friends'
       fullPath: '/profile/friends'
       preLoaderRoute: typeof ProfileFriendsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dev/ui-prev': {
-      id: '/dev/ui-prev'
-      path: '/dev/ui-prev'
-      fullPath: '/dev/ui-prev'
-      preLoaderRoute: typeof DevUiPrevRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dev/speed-prev': {
-      id: '/dev/speed-prev'
-      path: '/dev/speed-prev'
-      fullPath: '/dev/speed-prev'
-      preLoaderRoute: typeof DevSpeedPrevRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dev/shared-prev': {
-      id: '/dev/shared-prev'
-      path: '/dev/shared-prev'
-      fullPath: '/dev/shared-prev'
-      preLoaderRoute: typeof DevSharedPrevRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dev/navigation-prev': {
-      id: '/dev/navigation-prev'
-      path: '/dev/navigation-prev'
-      fullPath: '/dev/navigation-prev'
-      preLoaderRoute: typeof DevNavigationPrevRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dev/markers-prev': {
-      id: '/dev/markers-prev'
-      path: '/dev/markers-prev'
-      fullPath: '/dev/markers-prev'
-      preLoaderRoute: typeof DevMarkersPrevRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dev/friends-prev': {
-      id: '/dev/friends-prev'
-      path: '/dev/friends-prev'
-      fullPath: '/dev/friends-prev'
-      preLoaderRoute: typeof DevFriendsPrevRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dev/friend-prev': {
-      id: '/dev/friend-prev'
-      path: '/dev/friend-prev'
-      fullPath: '/dev/friend-prev'
-      preLoaderRoute: typeof DevFriendPrevRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/register': {
@@ -421,17 +261,9 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
-  DevFriendPrevRoute: DevFriendPrevRoute,
-  DevFriendsPrevRoute: DevFriendsPrevRoute,
-  DevMarkersPrevRoute: DevMarkersPrevRoute,
-  DevNavigationPrevRoute: DevNavigationPrevRoute,
-  DevSharedPrevRoute: DevSharedPrevRoute,
-  DevSpeedPrevRoute: DevSpeedPrevRoute,
-  DevUiPrevRoute: DevUiPrevRoute,
   ProfileFriendsRoute: ProfileFriendsRoute,
   ProfileSettingsRoute: ProfileSettingsRoute,
   ClansIndexRoute: ClansIndexRoute,
-  DevIndexRoute: DevIndexRoute,
   MapIndexRoute: MapIndexRoute,
   ClansClanIdIndexRoute: ClansClanIdIndexRoute,
   ProfileUserIDIndexRoute: ProfileUserIDIndexRoute,

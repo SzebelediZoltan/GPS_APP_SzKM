@@ -98,18 +98,6 @@ function FriendPopup({
     ? "friend"
     : "clan"
 
-  const variantLabel: Record<MarkerVariant, string> = {
-    friend: "Barát",
-    clan: "Klántag",
-    both: "Barát & Klántag",
-  }
-
-  const variantColor: Record<MarkerVariant, string> = {
-    friend: "text-blue-400",
-    clan: "text-purple-400",
-    both: "text-green-400",
-  }
-
   return (
     <div className="w-56 rounded-xl border border-border bg-card p-3.5 space-y-3">
 
@@ -122,12 +110,7 @@ function FriendPopup({
         }`}>
           {user.username.slice(0, 2).toUpperCase()}
         </div>
-        <div className="min-w-0">
-          <p className="text-sm font-semibold text-foreground truncate">{user.username}</p>
-          <p className={`text-[11px] font-medium ${variantColor[variant]}`}>
-            {variantLabel[variant]}
-          </p>
-        </div>
+        <p className="text-sm font-semibold text-foreground truncate">{user.username}</p>
       </div>
 
       {/* Kapcsolat tagek */}
