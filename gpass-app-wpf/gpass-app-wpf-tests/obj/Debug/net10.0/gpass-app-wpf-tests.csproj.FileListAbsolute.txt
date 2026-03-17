@@ -1,0 +1,6 @@
+C:\Users\kissd\Suli\13\GPS_APP_SzKM\gpass-app-wpf\gpass-app-wpf-tests\obj\Debug\net10.0\gpass-app-wpf-tests.csproj.AssemblyReference.cache
+C:\Users\kissd\Suli\13\GPS_APP_SzKM\gpass-app-wpf\gpass-app-wpf-tests\obj\Debug\net10.0\gpass-app-wpf-tests.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\kissd\Suli\13\GPS_APP_SzKM\gpass-app-wpf\gpass-app-wpf-tests\obj\Debug\net10.0\gpass-app-wpf-tests.AssemblyInfoInputs.cache
+C:\Users\kissd\Suli\13\GPS_APP_SzKM\gpass-app-wpf\gpass-app-wpf-tests\obj\Debug\net10.0\gpass-app-wpf-tests.AssemblyInfo.cs
+C:\Users\kissd\Suli\13\GPS_APP_SzKM\gpass-app-wpf\gpass-app-wpf-tests\obj\Debug\net10.0\gpass-app-wpf-tests.csproj.CoreCompileInputs.cache
+C:\Users\kissd\Suli\13\GPS_APP_SzKM\gpass-app-wpf\gpass-app-wpf-tests\obj\Debug\net10.0\gpass-app-wpf-tests.sourcelink.json

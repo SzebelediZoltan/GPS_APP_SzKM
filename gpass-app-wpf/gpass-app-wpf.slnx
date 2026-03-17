@@ -2,5 +2,6 @@
   <Project Path="gpass-app-setup/gpass-app-setup.vdproj" Type="Installer">
     <Build />
   </Project>
+  <Project Path="gpass-app-wpf-tests/gpass-app-wpf-tests.csproj" Id="2943f090-8071-4a15-8b9d-fc81d9ee3a00" />
   <Project Path="gpass-app-wpf/gpass-app-wpf.csproj" />
 </Solution>
