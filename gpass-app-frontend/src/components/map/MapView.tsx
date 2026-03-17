@@ -3,7 +3,7 @@ import L from "leaflet"
 import "leaflet-rotate"
 import { User, MapPin, Compass as CompassIcon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
-import { useEffect, useState, useRef, useCallback } from "react"
+import { useEffect, useState, useRef, useCallback, useMemo } from "react"
 import { useAuth } from "@/hooks/useAuth"
 import { useNavigation } from "@/context/NavigationContext"
 import MapController from "./MapController"
@@ -14,6 +14,10 @@ import RouteLayer from "./RouteLayer"
 import TurnByTurnPanel from "./TurnByTurnPanel"
 import SpeedDisplay from "./SpeedDisplay"
 import AIPOISearchButton, { POIMarkers, SearchRadiusCircle } from "./AIPOISearch"
+import FriendMarkers from "./FriendMarkers"
+import FriendsListPanel from "./FriendsListPanel"
+import { useMapSocket } from "@/hooks/map/useMapSocket"
+import { useMapSocialData } from "@/hooks/map/useMapSocialData"
 import type { POIResult } from "@/hooks/map/useAIPOISearch"
 
 type Props = {
@@ -66,6 +70,29 @@ export default function MapView({ position, heading, speed }: Props) {
   const mapRef = useRef<L.Map | null>(null)
   useEffect(() => { positionRef.current = position }, [position])
 
+  // ── Social data (barátok + klántagok) ──
+  const { friendIDs, clanMembers, isLoading: socialLoading } = useMapSocialData({
+    userID: user?.userID,
+    username: user?.username,
+    enabled: !!user,
+  })
+
+  // ── Socket: élő pozíció megosztás + online barátok/klántagok ──
+  const { onlineUsers } = useMapSocket({
+    enabled: !!user && !socialLoading,
+    position,
+    friendIDs,
+    clanMembers,
+  })
+
+  // ── User ikon memoizálva ──
+  const coneAngle = useMemo(
+    () => heading !== null ? (headingLock ? 0 : Math.round(heading / 5) * 5) : null,
+    [heading, headingLock]
+  )
+
+  const userIcon = useMemo(() => createUserIcon(coneAngle), [coneAngle])
+
   const centerOnUser = useCallback(() => {
     mapRef.current?.flyTo([positionRef.current.lat, positionRef.current.lng], 17, { duration: 0.8 })
   }, [])
@@ -111,7 +138,6 @@ export default function MapView({ position, heading, speed }: Props) {
   }, [])
 
   const bounds = L.latLngBounds(L.latLng(-85, -180), L.latLng(85, 180))
-  const coneAngle = heading !== null ? (headingLock ? 0 : heading) : null
 
   return (
     <div style={{ height: "calc(100dvh - env(safe-area-inset-top, 0px))", width: "100%", position: "relative" }}>
@@ -136,7 +162,7 @@ export default function MapView({ position, heading, speed }: Props) {
         />
 
         {/* AI POI Search Button */}
-        <AIPOISearchButton 
+        <AIPOISearchButton
           onSelectPOIs={(pois) => { setPOIMarkers(pois); setActivePOI(null); if (pois.length === 0) setSearchCenter(null) }}
           mapRef={mapRef}
           userPosition={position}
@@ -151,12 +177,10 @@ export default function MapView({ position, heading, speed }: Props) {
           position={position}
           heading={heading}
           headingLock={headingLock}
-          onLockedInteraction={() => {
-            flashLock()
-          }}
+          onLockedInteraction={() => { flashLock() }}
         />
 
-        <Marker icon={createUserIcon(coneAngle)} position={[position.lat, position.lng]}>
+        <Marker icon={userIcon} position={[position.lat, position.lng]}>
           <Popup closeButton={false} className="custom-popup">
             <div className="w-60 rounded-xl border border-border bg-card p-4 space-y-3">
               <div className="flex items-center gap-2">
@@ -192,6 +216,9 @@ export default function MapView({ position, heading, speed }: Props) {
           </>
         )}
 
+        {/* Barát markerek */}
+        {user && <FriendMarkers users={onlineUsers} />}
+
         <NavigationPanel currentPosition={position} onOpenMobile={() => setMobileSheetOpen(true)} />
         <RouteLayer />
         {mode !== "navigating" && (
@@ -207,25 +234,37 @@ export default function MapView({ position, heading, speed }: Props) {
 
       {mode === "navigating" && (
         <>
+          {/* Jobb alsó gombok navigálás közben: barátok + compass egymás felett */}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-1000 flex items-end justify-end px-4 pb-[calc(4rem+0.9rem)]">
-            <button
-              onClick={handleToggleHeadingLock}
-              className={`pointer-events-auto w-11 h-11 rounded-xl border shadow-md flex items-center justify-center active:scale-95 transition cursor-pointer ${
-                lockFlash
-                  ? "bg-red-500/20 border-red-500 text-red-500 animate-pulse"
-                  : headingLock
-                    ? "bg-primary border-primary text-primary-foreground"
-                    : "bg-card border-border text-foreground hover:bg-muted"
-              }`}
-            >
-              <CompassIcon className="w-5 h-5" />
-            </button>
+            <div className="pointer-events-auto flex flex-col items-end gap-2">
+              {user && (
+                <FriendsListPanel users={onlineUsers} currentPosition={position} inlineButton />
+              )}
+              <button
+                onClick={handleToggleHeadingLock}
+                className={`w-11 h-11 rounded-xl border shadow-md flex items-center justify-center active:scale-95 transition cursor-pointer ${
+                  lockFlash
+                    ? "bg-red-500/20 border-red-500 text-red-500 animate-pulse"
+                    : headingLock
+                      ? "bg-primary border-primary text-primary-foreground"
+                      : "bg-card border-border text-foreground hover:bg-muted"
+                }`}
+              >
+                <CompassIcon className="w-5 h-5" />
+              </button>
+            </div>
           </div>
           <SpeedDisplay position={position} speed={speed} />
         </>
       )}
 
       <NavigationPreviewPanel />
+
+      {/* Barátlista panel — idle módban */}
+      {mode !== "navigating" && user && (
+        <FriendsListPanel users={onlineUsers} currentPosition={position} />
+      )}
+
       <NavigationMobileSheet
         open={mobileSheetOpen}
         onOpenChange={setMobileSheetOpen}

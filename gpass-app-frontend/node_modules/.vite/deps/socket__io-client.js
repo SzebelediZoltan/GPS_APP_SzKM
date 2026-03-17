@@ -2511,12 +2511,13 @@ var Encoder = class {
 var Decoder = class _Decoder extends Emitter {
   /**
    * Decoder constructor
-   *
-   * @param {function} reviver - custom reviver to pass down to JSON.stringify
    */
-  constructor(reviver) {
+  constructor(opts) {
     super();
-    this.reviver = reviver;
+    this.opts = Object.assign({
+      reviver: void 0,
+      maxAttachments: 10
+    }, typeof opts === "function" ? { reviver: opts } : opts);
   }
   /**
    * Decodes an encoded packet string into packet JSON.
@@ -2576,7 +2577,13 @@ var Decoder = class _Decoder extends Emitter {
       if (buf != Number(buf) || str.charAt(i) !== "-") {
         throw new Error("Illegal attachments");
       }
-      p.attachments = Number(buf);
+      const n = Number(buf);
+      if (!isInteger(n) || n < 0) {
+        throw new Error("Illegal attachments");
+      } else if (n > this.opts.maxAttachments) {
+        throw new Error("too many attachments");
+      }
+      p.attachments = n;
     }
     if ("/" === str.charAt(i + 1)) {
       const start = i + 1;
@@ -2618,7 +2625,7 @@ var Decoder = class _Decoder extends Emitter {
   }
   tryParse(str) {
     try {
-      return JSON.parse(str, this.reviver);
+      return JSON.parse(str, this.opts.reviver);
     } catch (e) {
       return false;
     }
