@@ -9,14 +9,12 @@ import {
   Flag,
   Copy,
   Car,
-  Sparkles
 } from "lucide-react"
 
 export type Feature = {
   icon: React.ReactNode
   title: string
   desc: string
-  badge?: string
 }
 
 export type DeliveryItem = {
@@ -38,9 +36,9 @@ export const FEATURES: Feature[] = [
     desc: "Válassz gyors, kényelmes vagy biztonságosabb útvonalak között egy mozdulattal.",
   },
   {
-    icon: <Sparkles className="h-5 w-5" />,
-    title: "AI asszisztens",
-    desc: "Kérdezd meg menetközben az útvonalról, forgalomról — az AI azonnal válaszol.",
+    icon: <Smartphone className="h-5 w-5" />,
+    title: "Mobilra tervezve",
+    desc: "Ujjbarát kezelés, gyors panelnyitás és áttekinthető térképélmény.",
   },
   {
     icon: <Users className="h-5 w-5" />,
@@ -56,11 +54,6 @@ export const FEATURES: Feature[] = [
     icon: <ShieldAlert className="h-5 w-5" />,
     title: "Globális markerek",
     desc: "Jelöld a rendőrt, útlezárást vagy veszélyt, hogy mások is időben lássák.",
-  },
-  {
-    icon: <Smartphone className="h-5 w-5" />,
-    title: "Mobilra tervezve",
-    desc: "Ujjbarát kezelés, gyors panelnyitás és áttekinthető térképélmény.",
   },
 ]
 
