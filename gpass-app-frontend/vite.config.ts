@@ -15,7 +15,7 @@ export default defineConfig({
       autoCodeSplitting: true,
     }),
     viteReact(),
-    tailwindcss()
+    tailwindcss(),
   ],
   server: {
     port: 3000,
@@ -24,7 +24,25 @@ export default defineConfig({
         target: "http://localhost:4000",
         changeOrigin: false
       }
-    }
+    },
+    // Optimalizálás
+    middlewareMode: false,
+    preTransformRequests: ['node_modules/.vite/deps'],
+  },
+  optimizeDeps: {
+    // Fontosabb függőségek előre betöltése
+    include: [
+      'react',
+      'react-dom',
+      '@tanstack/react-router',
+      '@tanstack/react-query',
+      'axios',
+      'tailwindcss',
+      'sonner',
+      'lucide-react',
+    ],
+    // Google Generative AI kimarad az optimizálásból
+    exclude: ['@google/generative-ai'],
   },
   resolve: {
     alias: {
@@ -33,5 +51,8 @@ export default defineConfig({
   },
   build: {
     chunkSizeWarningLimit: 2000,
+    // Build optimalizálás
+    minify: 'terser',
+    sourcemap: false,
   }
 })

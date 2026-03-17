@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<!-- <script src="https://cdn.jsdelivr.net/npm/isbot@5.1.6-rc.1"></script>
+		<script>
+			// isbot is now global
+			console.log(isbot(navigator.userAgent));
+		</script> -->
+	</head>
+	<body>
+
+		<script type="module">
+			import { isbot } from "https://cdn.jsdelivr.net/npm/isbot@5.1.6-rc.1/+esm";
+			isbot(navigator.userAgent)
+		</script>
+
+		<script>
+			// console.log(isbot);
+		</script>
+	</body>
+</html>
