@@ -36,8 +36,6 @@ function initMapSocket(httpServer, allowedOrigins) {
   io.on("connection", (socket) => {
     const { userID, username } = socket.user
 
-    console.log(`[socket] csatlakozott: ${username} (${userID})`)
-
     socket.join("map-room")
 
     // Felvesszük az online map-be pozíció nélkül is — így látható lesz a snapshot-ban

@@ -16,7 +16,7 @@
 
 ## A projektről
 
-A GPASS egy modern, full-stack GPS alkalmazás prototípus. Célunk bemutatni egy valós navigációs rendszer alapjait: pozíció alapú térképes megjelenítés, útvonaltervezés, közösségi funkciók (barátok, klánok), valamint marker- és trip-kezelés.
+A GPASS egy modern, full-stack GPS alkalmazás prototípus. Célunk bemutatni egy valós navigációs rendszer alapjait: pozíció alapú térképes megjelenítés, útvonaltervezés, közösségi funkciók (barátok, klánok), AI asszisztens, valamint marker- és trip-kezelés.
 
 ---
 
@@ -24,12 +24,30 @@ A GPASS egy modern, full-stack GPS alkalmazás prototípus. Célunk bemutatni eg
 
 - Bejelentkezés, regisztráció, kijelentkezés (cookie alapú auth)
 - Térkép oldal Leaflet alapon, valós pozícióval
-- Útvonaltervezés (OSRM), alternatív útvonalak
-- Barátok, klánok, profil oldalak
-- Globális markerek lerakása (veszély, ellenőrzés stb.)
+- Útvonaltervezés (OSRM), alternatív útvonalak, turn-by-turn navigáció
+- Barátok és klánok valós idejű követése a térképen (Socket.io)
+- Globális markerek lerakása (rendőr, baleset, útlezárás stb.)
 - Trip rögzítés és kezelés
+- **AI asszisztens** — menetközben kérdezheted az útvonalról, forgalomról
+- Profil beállítások (név, email, jelszó, státusz, térkép preferenciák)
 - Dark/light téma, mobil + desktop reszponzív UI
 - Admin panel (WPF) felhasználók és tartalmak kezeléséhez
+
+---
+
+## AI asszisztens
+
+A GPASS beépített AI asszisztenssel rendelkezik, amely a térkép oldalon érhető el.
+
+**Mire képes:**
+- Útvonallal kapcsolatos kérdések megválaszolása menetközben
+- Forgalmi helyzet értékelése
+- Navigációs tanácsok adása
+
+**Bekapcsolás / kikapcsolás:**  
+Profil → Beállítások → Térkép → *AI asszisztens engedélyezése* kapcsoló
+
+**Fejlesztő:** Kiss Dominik
 
 ---
 
@@ -38,7 +56,7 @@ A GPASS egy modern, full-stack GPS alkalmazás prototípus. Célunk bemutatni eg
 | Réteg | Technológia |
 |---|---|
 | Frontend | React 19 + TypeScript, Vite, TanStack Router/Query, Tailwind CSS 4, shadcn/ui, Leaflet |
-| Backend | Node.js + Express, Sequelize + MySQL, JWT + cookie auth |
+| Backend | Node.js + Express, Sequelize + MySQL, JWT + cookie auth, Socket.io |
 | Admin | WPF (.NET) |
 | API docs | Swagger — `/api-docs`, `/api/openapi.json` |
 | Tesztek | Jest + Supertest |
@@ -93,7 +111,7 @@ npm install
 npm start
 ```
 
-Szükséges: XAMPP fusson (Apache + MySQL), `gpass_db` adatbázis létezzen.
+Szükséges: XAMPP fusson (Apache + MySQL), `gpass_db` adatbázis létezzen.  
 Backend alapértelmezett portja: **8000**
 
 Környezeti változók (`.env` fájl a backend mappában):
@@ -132,7 +150,7 @@ Frontend dev szerver: **http://localhost:3000**
 
 ### Admin panel (WPF)
 
-**1. lehetőség — Visual Studio:**
+**1. lehetőség — Visual Studio:**  
 Nyisd meg a `.sln` fájlt a `gpass-app-wpf` mappából, majd futtasd.
 
 **2. lehetőség — Telepítő:**
