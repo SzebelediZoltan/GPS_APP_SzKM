@@ -1,0 +1,71 @@
+import { createFileRoute } from "@tanstack/react-router"
+import { useAuth } from "@/hooks/useAuth"
+import { useClans } from "@/hooks/useClans"
+import NotLoggedIn from "@/components/NotLoggedIn"
+import LoadingPage from "@/components/LoadingPage"
+import ServerErrorPage from "@/components/ServerErrorPage"
+import { Button } from "@/components/ui/button"
+
+export const Route = createFileRoute("/profile/$userID/")({
+  component: ClanDetail,
+})
+
+function ClanDetail() {
+  const { user } = useAuth()
+  const { clanId } = Route.useParams()
+
+  const {
+    clanQuery,
+    clanMembersQuery,
+    membershipsQuery,
+    joinClan,
+    leaveClan,
+  } = useClans(user?.userID, Number(clanId))
+
+  if (!user) return <NotLoggedIn />
+  if (clanQuery.isLoading) return <LoadingPage />
+  if (clanQuery.isError) return <ServerErrorPage />
+
+  const clan = clanQuery.data
+  const members = clanMembersQuery.data ?? []
+  const memberships = membershipsQuery.data ?? []
+
+  const isMember = memberships.some(
+    (m) => m.clan_id === Number(clanId)
+  )
+
+  const isLeader = clan.leader_id === user.userID
+
+  return (
+    <main className="p-8 space-y-6">
+      <h1 className="text-3xl font-bold">{clan?.name}</h1>
+      <p>{clan?.description ?? "Nincs leírás"}</p>
+
+      {isLeader ? (
+        <Button variant="destructive">
+          Klán törlése
+        </Button>
+      ) : isMember ? (
+        <Button onClick={() => leaveClan(Number(clanId))}>
+          Kilépés
+        </Button>
+      ) : (
+        <Button onClick={() => joinClan(Number(clanId))}>
+          Csatlakozás
+        </Button>
+      )}
+
+      <div>
+        <h2 className="text-xl font-semibold">Tagok</h2>
+        {members.length === 0 && (
+          <p className="text-muted-foreground">
+            Még nincs tag.
+          </p>
+        )}
+        {members.map((m) => (
+          <div key={m.user_id}>{m.user?.username}</div>
+        ))}
+      </div>
+    </main>
+  )
+}
