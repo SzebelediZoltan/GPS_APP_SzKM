@@ -31,6 +31,15 @@ body {
   margin-top: -1px;
 }
 
+.map-marker-popup-inner {
+  background: #f7f7f8;
+}
+
+.dark .map-marker-popup-inner {
+  background: #1e2230;
+}
+
+
 code {
   font-family:
     source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;

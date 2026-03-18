@@ -23,22 +23,34 @@ type SubDef = { id: POISubCategory; label: string }
 type CatDef = { id: POIMainCategory; label: string; icon: typeof Fuel; subs?: SubDef[] }
 
 const CATEGORIES: CatDef[] = [
-  { id: 'fuel', label: 'Benzinkút', icon: Fuel,
-    subs: [{ id: 'fuel_station', label: 'Benzinkút' }, { id: 'ev_charger', label: 'Töltőállomás' }] },
-  { id: 'atm', label: 'ATM / Bank', icon: CreditCard,
-    subs: [{ id: 'atm_otp', label: 'OTP' }, { id: 'atm_kh', label: 'K&H' }, { id: null, label: 'Egyéb' }] },
+  { id: 'fuel', label: 'Üzemanyag', icon: Fuel, subs: [
+    { id: 'fuel_station', label: 'Töltőállomás' },
+    { id: 'ev_charger', label: 'Elektromos töltő' },
+  ]},
+  { id: 'atm', label: 'ATM', icon: CreditCard, subs: [
+    { id: 'atm_otp', label: 'OTP' },
+    { id: 'atm_kh', label: 'K&H' },
+    { id: 'atm_other', label: 'Egyéb' },
+  ]},
   { id: 'pharmacy', label: 'Gyógyszertár', icon: Pill },
-  { id: 'restaurant', label: 'Étterem', icon: UtensilsCrossed,
-    subs: [{ id: 'fast_food', label: 'Gyorsétterem' }, { id: 'confectionery', label: 'Cukrászda' }, { id: 'sit_down', label: 'Rendes étterem' }] },
-  { id: 'shop', label: 'Bolt', icon: ShoppingCart,
-    subs: [{ id: 'grocery', label: 'Élelmiszer' }, { id: 'drugstore', label: 'Drogéria' }, { id: 'home_garden', label: 'Otthon & kert' }, { id: null, label: 'Egyéb' }] },
+  { id: 'restaurant', label: 'Étterem', icon: UtensilsCrossed, subs: [
+    { id: 'fast_food', label: 'Gyorsétterem' },
+    { id: 'confectionery', label: 'Cukrászda' },
+    { id: 'sit_down', label: 'Étterem' },
+  ]},
+  { id: 'shop', label: 'Bolt', icon: ShoppingCart, subs: [
+    { id: 'grocery', label: 'Élelmiszer' },
+    { id: 'drugstore', label: 'Drogéria' },
+    { id: 'home_garden', label: 'Ház & kert' },
+    { id: 'shop_other', label: 'Egyéb' },
+  ]},
   { id: 'entertainment', label: 'Szórakozás', icon: Music2 },
   { id: 'attraction', label: 'Látnivaló', icon: Landmark },
   { id: 'accommodation', label: 'Szállás', icon: Hotel },
   { id: 'post', label: 'Posta', icon: Mail },
 ]
 
-// ─── Autocomplete ─────────────────────────────────────────────────────────
+// ─── Autocomplete hook ────────────────────────────────────────────────────
 
 function useAutocomplete() {
   const [query, setQuery] = useState('')
@@ -49,42 +61,15 @@ function useAutocomplete() {
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current)
     if (query.trim().length < 2) { setSuggestions([]); return }
-    debounceRef.current = setTimeout(async () => setSuggestions(await search(query)), 400)
+    debounceRef.current = setTimeout(async () => {
+      const res = await search(query)
+      setSuggestions(res)
+    }, 400)
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
   }, [query, search])
 
-  return { query, setQuery, suggestions, searching, reset: () => { setQuery(''); setSuggestions([]) } }
-}
-
-// ─── Keresési kör a térképen (react-leaflet) ──────────────────────────────
-
-export function SearchRadiusCircle({ center, radiusKm }: {
-  center: { lat: number; lng: number }
-  radiusKm: number
-}) {
-  const map = useMap()
-  useEffect(() => {
-    // Igazítjuk a nézetet hogy a teljes kör látható legyen
-    const radiusM = radiusKm * 1000
-    const bounds = L.latLng(center.lat, center.lng).toBounds(radiusM * 2.4)
-    // Extra bottom padding a menü felett: mobil ~420px panel magasság
-    const isMobile = window.innerWidth < 768
-    map.flyToBounds(bounds, { duration: 0.8, paddingTopLeft: [20, 20], paddingBottomRight: [20, isMobile ? 440 : 20] })
-  }, [center.lat, center.lng, radiusKm])
-
-  return (
-    <Circle
-      center={[center.lat, center.lng]}
-      radius={radiusKm * 1000}
-      pathOptions={{
-        color: 'var(--color-primary, #3b82f6)',
-        fillColor: 'var(--color-primary, #3b82f6)',
-        fillOpacity: 0.08,
-        weight: 2,
-        dashArray: '6 4',
-      }}
-    />
-  )
+  const reset = useCallback(() => { setQuery(''); setSuggestions([]) }, [])
+  return { query, setQuery, suggestions, searching, reset }
 }
 
 // ─── Csúszka ──────────────────────────────────────────────────────────────
@@ -112,39 +97,24 @@ function DistanceSlider({ value, onChange, disabled }: {
 // ─── Összecsukható szekció ─────────────────────────────────────────────────
 
 function CollapsibleSection({ label, badge, children, defaultOpen = true }: {
-  label: string
-  badge?: string
-  children: React.ReactNode
-  defaultOpen?: boolean
+  label: string; badge?: string; children: React.ReactNode; defaultOpen?: boolean
 }) {
   const [open, setOpen] = useState(defaultOpen)
-
   return (
     <div className="space-y-0">
-      <button
-        type="button"
-        onClick={() => setOpen(v => !v)}
-        className="w-full flex items-center justify-between py-1.5 group"
-      >
+      <button type="button" onClick={() => setOpen(v => !v)}
+        className="w-full flex items-center justify-between py-1.5 group">
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
-            {label}
-          </span>
+          <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">{label}</span>
           {badge && (
             <span className="text-[10px] font-semibold text-primary bg-primary/10 border border-primary/20 px-1.5 py-0.5 rounded-full leading-none">
               {badge}
             </span>
           )}
         </div>
-        <span className={`transition-transform duration-200 text-muted-foreground group-hover:text-foreground ${open ? 'rotate-0' : '-rotate-90'}`}>
-          <ChevronDown className="w-3.5 h-3.5" />
-        </span>
+        <ChevronDown className={`w-3.5 h-3.5 text-muted-foreground transition-transform duration-200 ${open ? '' : '-rotate-90'}`} />
       </button>
-      <div
-        className={`overflow-hidden transition-all duration-200 ease-in-out ${
-          open ? 'max-h-96 opacity-100 pt-1.5' : 'max-h-0 opacity-0'
-        }`}
-      >
+      <div className={`overflow-hidden transition-all duration-200 ease-in-out ${open ? 'max-h-96 opacity-100 pt-1.5' : 'max-h-0 opacity-0'}`}>
         {children}
       </div>
     </div>
@@ -193,20 +163,20 @@ function POIDetailModal({ poi, idx, onClose, onRoute }: {
         onClick={e => e.stopPropagation()}>
         <div className="p-5 space-y-4">
           <div className="flex items-start gap-3">
-            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-bold flex-shrink-0">{idx + 1}</div>
+            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-bold shrink-0">{idx + 1}</div>
             <div className="flex-1 min-w-0">
               <h3 className="font-bold text-base text-foreground leading-snug">{poi.name}</h3>
               {poi.brand && poi.brand !== poi.name && <p className="text-xs text-muted-foreground">{poi.brand}</p>}
               {poi.address && <p className="text-xs text-muted-foreground mt-0.5">{poi.address}</p>}
             </div>
-            <button onClick={onClose} className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0">
+            <button onClick={onClose} className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0">
               <X className="w-4 h-4" />
             </button>
           </div>
           {poi.description && <p className="text-sm text-foreground/80 leading-relaxed">{poi.description}</p>}
           <div className="space-y-2">
             <div className="flex items-start gap-2 rounded-lg bg-muted/40 px-3 py-2.5">
-              <Clock className="w-3.5 h-3.5 text-muted-foreground mt-0.5 flex-shrink-0" />
+              <Clock className="w-3.5 h-3.5 text-muted-foreground mt-0.5 shrink-0" />
               <div>
                 <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide mb-0.5">Nyitvatartás</p>
                 <p className="text-sm text-foreground">
@@ -216,7 +186,7 @@ function POIDetailModal({ poi, idx, onClose, onRoute }: {
             </div>
             {poi.phone && (
               <div className="flex items-center gap-2 rounded-lg bg-muted/40 px-3 py-2.5">
-                <Phone className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+                <Phone className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                 <div>
                   <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide mb-0.5">Telefon</p>
                   <p className="text-sm text-foreground">{poi.phone}</p>
@@ -235,7 +205,7 @@ function POIDetailModal({ poi, idx, onClose, onRoute }: {
   )
 }
 
-// ─── POI kártya a listában ────────────────────────────────────────────────
+// ─── POI kártya ───────────────────────────────────────────────────────────
 
 function POICard({ poi, idx, onFlyTo, onShowDetail, onRoute }: {
   poi: POIResult; idx: number
@@ -244,7 +214,7 @@ function POICard({ poi, idx, onFlyTo, onShowDetail, onRoute }: {
   return (
     <div className="flex items-start gap-2.5 px-3 py-2.5 hover:bg-muted/40 transition-colors border-b border-border/40 last:border-0 group">
       <button onClick={onFlyTo}
-        className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-[11px] font-bold flex-shrink-0 mt-0.5 hover:scale-110 transition-transform">
+        className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-[11px] font-bold shrink-0 mt-0.5 hover:scale-110 transition-transform">
         {idx + 1}
       </button>
       <button onClick={onShowDetail} className="flex-1 min-w-0 text-left">
@@ -256,12 +226,8 @@ function POICard({ poi, idx, onFlyTo, onShowDetail, onRoute }: {
           {poi.openingHours ? (poi.openingHours === '24/7' ? 'Éjjel-nappal' : poi.openingHours) : 'Nem tudni'}
         </span>
       </button>
-      {/* Útvonal gomb – jól látható */}
-      <button
-        onClick={onRoute}
-        title="Útvonaltervezés"
-        className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-primary/10 hover:bg-primary hover:text-primary-foreground text-primary border border-primary/30 hover:border-primary text-[11px] font-semibold transition-all mt-0.5"
-      >
+      <button onClick={onRoute}
+        className="shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-primary/10 hover:bg-primary hover:text-primary-foreground text-primary border border-primary/30 hover:border-primary text-[11px] font-semibold transition-all mt-0.5">
         <Route className="w-3.5 h-3.5" />
         <span className="hidden sm:inline">Útvonal</span>
       </button>
@@ -269,7 +235,7 @@ function POICard({ poi, idx, onFlyTo, onShowDetail, onRoute }: {
   )
 }
 
-// ─── Jobb alsó overlay lista ──────────────────────────────────────────────
+// ─── Eredmény lista overlay (jobb alsó sarok) ─────────────────────────────
 
 function POIListOverlay({ pois, mapRef, userPosition, onClear }: {
   pois: POIResult[]
@@ -339,9 +305,9 @@ function POIListOverlay({ pois, mapRef, userPosition, onClear }: {
   )
 }
 
-// ─── Marker (térkép) ──────────────────────────────────────────────────────
+// ─── Térkép markerek ──────────────────────────────────────────────────────
 
-function POIMarkerItem({ poi, idx, isActive, userPosition, onRoute }: {
+function POIMarkerItem({ poi, idx, isActive, onRoute }: {
   poi: POIResult; idx: number; isActive: boolean
   userPosition: { lat: number; lng: number }
   onRoute: (poi: POIResult) => void
@@ -349,7 +315,10 @@ function POIMarkerItem({ poi, idx, isActive, userPosition, onRoute }: {
   const map = useMap()
   const icon = L.divIcon({
     className: 'custom-poi-icon',
-    html: `<div style="width:32px;height:32px;background:var(--color-primary,#3b82f6);border:${isActive ? '3px solid white;box-shadow:0 0 0 2px var(--color-primary,#3b82f6),0 2px 12px rgba(0,0,0,0.35)' : '2.5px solid white;box-shadow:0 2px 12px rgba(0,0,0,0.25)'};border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;cursor:pointer;">${idx + 1}</div>`,
+    html: `<div style="width:32px;height:32px;background:var(--color-primary,#3b82f6);border:${isActive
+      ? '3px solid white;box-shadow:0 0 0 2px var(--color-primary,#3b82f6),0 2px 12px rgba(0,0,0,0.35)'
+      : '2.5px solid white;box-shadow:0 2px 12px rgba(0,0,0,0.25)'
+    };border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;cursor:pointer;">${idx + 1}</div>`,
     iconSize: [32, 32], iconAnchor: [16, 16],
   })
 
@@ -359,7 +328,7 @@ function POIMarkerItem({ poi, idx, isActive, userPosition, onRoute }: {
       <Popup closeButton={false} className="custom-popup">
         <div className="w-64 rounded-xl border border-border bg-card p-4 space-y-3">
           <div className="flex items-start gap-2.5">
-            <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-[11px] font-bold flex-shrink-0 mt-0.5">{idx + 1}</div>
+            <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-[11px] font-bold mt-0.5">{idx + 1}</div>
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-sm text-foreground">{poi.name}</p>
               {poi.brand && poi.brand !== poi.name && <p className="text-[11px] text-muted-foreground">{poi.brand}</p>}
@@ -372,7 +341,6 @@ function POIMarkerItem({ poi, idx, isActive, userPosition, onRoute }: {
             </div>
           </div>
           {poi.phone && <p className="text-xs text-muted-foreground flex items-center gap-1"><Phone className="w-3 h-3" />{poi.phone}</p>}
-          {/* Útvonal gomb – jól látható, kiemelve */}
           <button onClick={() => onRoute(poi)}
             className="w-full flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground py-2.5 text-sm font-semibold hover:bg-primary/90 active:scale-[0.98] transition-all shadow-sm">
             <Route className="w-4 h-4" />Útvonaltervezés
@@ -410,6 +378,26 @@ export function POIMarkers({ pois, userPosition, activePOI }: {
   )
 }
 
+// ─── Keresési sugár kör ───────────────────────────────────────────────────
+
+export function SearchRadiusCircle({ center, radiusKm }: {
+  center: { lat: number; lng: number }; radiusKm: number
+}) {
+  return (
+    <Circle
+      center={[center.lat, center.lng]}
+      radius={radiusKm * 1000}
+      pathOptions={{
+        color: 'var(--color-primary, #3b82f6)',
+        fillColor: 'var(--color-primary, #3b82f6)',
+        fillOpacity: 0.08,
+        weight: 2,
+        dashArray: '6 4',
+      }}
+    />
+  )
+}
+
 // ─── Főkomponens ──────────────────────────────────────────────────────────
 
 interface AIPOISearchButtonProps {
@@ -421,26 +409,26 @@ interface AIPOISearchButtonProps {
   searchRadius: number
   onSearchRadiusChange: (r: number) => void
   navigationActive?: boolean
+  hasLockButton?: boolean  // ha van compass lock gomb, az AI gomb lejjebb kerül
 }
 
 export function AIPOISearchButton({
-  onSelectPOIs, mapRef, userPosition,
-  searchCenter, onSearchCenterChange, searchRadius, onSearchRadiusChange,
+  onSelectPOIs, mapRef, userPosition, onSearchCenterChange, onSearchRadiusChange,
   navigationActive = false,
+  hasLockButton = false,
 }: AIPOISearchButtonProps) {
   const [open, setOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const { query, setQuery, suggestions, searching: acSearching, reset: acReset } = useAutocomplete()
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [nearMe, setNearMe] = useState(false)
-  const [overlayPOIs, setOverlayPOIs] = useState<POIResult[]>([])
+  const [overlayPois, setOverlayPois] = useState<POIResult[]>([])
 
   const {
     step, selectedCity, filters, results, loading, error,
     searchCity, selectCity, setFilters, searchPOIs, reset,
   } = useAIPOISearch()
 
-  // Csúszka változáskor frissítjük a kör sugarát a térképen
   const handleDistanceChange = (v: number) => {
     setFilters({ maxDistance: v })
     onSearchRadiusChange(v)
@@ -455,7 +443,6 @@ export function AIPOISearchButton({
     setNearMe(false)
     selectCity({ name, lat, lng })
     onSearchCenterChange({ lat, lng })
-    // Ugrás a városhoz + kör megjelenítése
     mapRef?.current?.flyTo([lat, lng], 12, { duration: 0.8 })
   }
 
@@ -468,55 +455,40 @@ export function AIPOISearchButton({
     mapRef?.current?.flyTo([userPosition.lat, userPosition.lng], 13, { duration: 0.8 })
   }
 
-  const handleCityMode = () => {
-    setNearMe(false)
-    selectCity(null)
-    onSearchCenterChange(null)
-    acReset()
-    setTimeout(() => inputRef.current?.focus(), 50)
-  }
-
   const handleClose = () => {
-    setOpen(false); reset(); acReset(); setShowSuggestions(false)
-    setNearMe(false); onSearchCenterChange(null)
+    setOpen(false)
+    reset()
+    acReset()
+    setShowSuggestions(false)
+    setNearMe(false)
+    onSearchCenterChange(null)
   }
 
-  const [pendingSearch, setPendingSearch] = useState(false)
-
-  const handleSearchClick = () => {
+  // Keresés gomb: ha van város → POI keresés, ha csak query → város feloldás majd POI keresés
+  const handleSearchClick = async () => {
     if (!filters.mainCategory) { toast.error('Válassz kategóriát!'); return }
-    if (nearMe) { searchPOIs(); return }
-    if (selectedCity) { searchPOIs(); return }
+    if (nearMe || selectedCity) { searchPOIs(); return }
     if (query.trim().length >= 2) {
-      setPendingSearch(true)
-      searchCity(query.trim())
+      await searchCity(query.trim())
+      searchPOIs()
       return
     }
     toast.error('Add meg a várost!')
   }
 
-  // Ha város feloldódott és van függő keresés → POI keresés indul
-  useEffect(() => {
-    if (pendingSearch && selectedCity && step === 'idle' && !error) {
-      setPendingSearch(false)
-      searchPOIs()
-    }
-  }, [selectedCity, pendingSearch, step, error])
-
-  // Overlay eltűnik ha navigáció/útvonaltervezés aktív
+  // Navigáció esetén eredmények eltüntetése
   useEffect(() => {
     if (navigationActive) {
-      setOverlayPOIs([])
+      onSelectPOIs([], '')
+      setOverlayPois([])
     }
   }, [navigationActive])
 
-  // Város megtalálása után azonnal keres
-  // Keresés csak a gomb lenyomására indul — nincs auto-search
-
+  // Keresés befejezésekor eredmények átadása a MapView-nak
   useEffect(() => {
     if (step === 'complete' && results.length > 0) {
-      onSelectPOIs(results, selectedCity?.name || '')
-      setOverlayPOIs(results)
+      onSelectPOIs(results, selectedCity?.name ?? '')
+      setOverlayPois(results)
       setOpen(false)
       toast.success(`${results.length} hely megtalálva!`)
     }
@@ -528,6 +500,7 @@ export function AIPOISearchButton({
 
   const canSearch = !!filters.mainCategory && (nearMe || !!selectedCity || query.trim().length >= 2)
   const activeCat = CATEGORIES.find(c => c.id === filters.mainCategory)
+  const isLoading = step === 'city-search' || step === 'overpass-search' || step === 'ai-rank'
 
   const panel = (
     <>
@@ -535,63 +508,42 @@ export function AIPOISearchButton({
         className={`transition-opacity duration-200 ${open ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
         onClick={handleClose} />
 
-      {/* Mobil: alulról csúszik fel. Desktop: jobb felső sarok */}
       <div
         style={{ position: 'fixed', zIndex: 9999 }}
         className={[
-          // desktop
-          'md:top-[4.5rem] md:right-4 md:bottom-auto md:left-auto md:w-96',
-          // mobile: full-width bottom sheet
+          'md:top-18 md:right-4 md:bottom-auto md:left-auto md:w-96',
           'max-md:bottom-0 max-md:left-0 max-md:right-0 max-md:w-full',
           'transition-all duration-300 ease-out',
-          open
-            ? 'opacity-100 translate-y-0'
-            : 'opacity-0 translate-y-4 md:-translate-y-2 pointer-events-none',
+          open ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 md:-translate-y-2 pointer-events-none',
         ].join(' ')}
       >
         <div className="md:rounded-xl rounded-t-2xl border border-border bg-card shadow-xl overflow-hidden">
-          {/* Drag handle mobil nézetben */}
           <div className="md:hidden flex justify-center pt-2.5 pb-1 bg-card">
             <div className="w-9 h-1 rounded-full bg-border" />
           </div>
 
-          {/* Loading állapot – panelben */}
-          {(step === 'city-search' || step === 'overpass-search' || step === 'ai-rank') ? (
-            <div className="p-4">
-              <div className="flex items-center gap-2 mb-1">
-                <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <Sparkles className="w-3.5 h-3.5 text-primary" />
-                </div>
-                <span className="text-sm font-semibold text-foreground">AI Helykereső</span>
-              </div>
-              <PanelLoader step={step} />
-            </div>
+          {isLoading ? (
+            <PanelLoader step={step} />
           ) : (
-            <div className="p-4 space-y-4">
-
-              {/* Header */}
+            <div className="p-4 space-y-4 max-h-[80dvh] overflow-y-auto">
+              {/* Fejléc */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Sparkles className="w-3.5 h-3.5 text-primary" />
-                  </div>
+                  <Sparkles className="w-4 h-4 text-primary" />
                   <span className="text-sm font-semibold text-foreground">AI Helykereső</span>
                 </div>
                 <button onClick={handleClose}
-                  className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
-                  <X className="w-3.5 h-3.5" />
+                  className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer">
+                  <X className="w-4 h-4" />
                 </button>
               </div>
 
-              {/* Helyszín */}
-              <div className="space-y-2">
-                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">Helyszín</p>
+              {/* Hol keressen */}
+              <CollapsibleSection label="Hol keressen?">
                 <div className="flex gap-2">
-                  <button onClick={nearMe ? handleCityMode : handleNearMe}
-                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-medium transition-all flex-shrink-0 ${
-                      nearMe
-                        ? 'bg-primary border-primary text-primary-foreground'
-                        : 'bg-muted/40 border-border text-muted-foreground hover:border-primary/50 hover:text-foreground'
+                  <button onClick={nearMe ? () => {} : handleNearMe}
+                    className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition-all shrink-0 cursor-pointer ${
+                      nearMe ? 'bg-primary border-primary text-primary-foreground' : 'bg-muted/40 border-border text-muted-foreground hover:border-primary/50 hover:text-foreground'
                     }`}>
                     <Navigation className="w-3.5 h-3.5" />
                     {nearMe ? 'Közelemben ✓' : 'Közelemben'}
@@ -599,7 +551,12 @@ export function AIPOISearchButton({
                   <div className="relative flex-1">
                     <Input ref={inputRef}
                       value={nearMe ? '' : query}
-                      onChange={e => { setNearMe(false); setQuery(e.target.value); setShowSuggestions(true); if (selectedCity) { selectCity(null); onSearchCenterChange(null) } }}
+                      onChange={e => {
+                        setNearMe(false)
+                        setQuery(e.target.value)
+                        setShowSuggestions(true)
+                        if (selectedCity) { selectCity(null); onSearchCenterChange(null) }
+                      }}
                       onFocus={() => { if (!nearMe) setShowSuggestions(true) }}
                       placeholder={nearMe ? 'Vagy írj várost...' : 'Város neve...'}
                       className="h-9 text-sm pr-7 bg-muted/40"
@@ -609,7 +566,7 @@ export function AIPOISearchButton({
                   </div>
                 </div>
                 {showSuggestions && suggestions.length > 0 && !selectedCity && !nearMe && (
-                  <div className="rounded-lg border border-border bg-card shadow-lg overflow-hidden">
+                  <div className="rounded-lg border border-border bg-card shadow-lg overflow-hidden mt-1.5">
                     {suggestions.map(s => (
                       <button key={s.place_id} onMouseDown={() => handleSuggestionSelect(s)}
                         className="w-full flex items-start gap-2 px-3 py-2 text-left text-xs hover:bg-muted transition border-b border-border/40 last:border-0">
@@ -619,44 +576,36 @@ export function AIPOISearchButton({
                     ))}
                   </div>
                 )}
-              </div>
+              </CollapsibleSection>
 
-              {/* Kategóriák – összecsukható */}
-              <CollapsibleSection
-                label="Kategória"
-                badge={activeCat ? activeCat.label : undefined}
-              >
+              {/* Kategóriák */}
+              <CollapsibleSection label="Kategória" badge={activeCat?.label}>
                 <div className="grid grid-cols-3 gap-1.5">
                   {CATEGORIES.map(({ id, label, icon: Icon }) => (
-                    <button key={id} onClick={() => {
-                      if (filters.mainCategory === id) {
-                        setFilters({ mainCategory: null, subCategory: null })
-                      } else {
-                        setFilters({ mainCategory: id, subCategory: null })
-                      }
-                    }}
-                      className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-2 text-xs font-medium transition-all ${
+                    <button key={id} onClick={() => setFilters(
+                      filters.mainCategory === id
+                        ? { mainCategory: null, subCategory: null }
+                        : { mainCategory: id, subCategory: null }
+                    )}
+                      className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${
                         filters.mainCategory === id
                           ? 'border-primary bg-primary/10 text-primary'
                           : 'border-border hover:bg-muted text-muted-foreground hover:text-foreground'
                       }`}>
-                      <Icon className="w-3.5 h-3.5 flex-shrink-0" />
+                      <Icon className="w-3.5 h-3.5 shrink-0" />
                       <span className="truncate">{label}</span>
                     </button>
                   ))}
                 </div>
               </CollapsibleSection>
 
-              {/* Alkategóriák – összecsukható, csak ha van */}
+              {/* Alkategóriák */}
               {activeCat?.subs && (
-                <CollapsibleSection
-                  label="Típus"
-                  badge={activeCat.subs.find(s => s.id === filters.subCategory)?.label}
-                >
+                <CollapsibleSection label="Típus" badge={activeCat.subs.find(s => s.id === filters.subCategory)?.label}>
                   <div className="flex flex-wrap gap-1.5">
                     {activeCat.subs.map(sub => (
                       <button key={String(sub.id)} onClick={() => setFilters({ subCategory: sub.id })}
-                        className={`px-3 py-1.5 rounded-full border text-xs font-medium transition-all ${
+                        className={`px-3 py-1.5 rounded-full border text-xs font-medium transition-all cursor-pointer ${
                           filters.subCategory === sub.id
                             ? 'bg-primary border-primary text-primary-foreground'
                             : 'border-border text-muted-foreground hover:border-primary/50 hover:text-foreground'
@@ -668,18 +617,15 @@ export function AIPOISearchButton({
                 </CollapsibleSection>
               )}
 
-              {/* Keresési sugár – összecsukható */}
-              <CollapsibleSection
-                label="Keresési sugár"
-                badge={`${filters.maxDistance} km`}
-              >
+              {/* Keresési sugár */}
+              <CollapsibleSection label="Keresési sugár" badge={`${filters.maxDistance} km`}>
                 <DistanceSlider value={filters.maxDistance} onChange={handleDistanceChange} />
               </CollapsibleSection>
 
               {/* Hiba */}
               {error && (
                 <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2.5 flex gap-2 items-start">
-                  <AlertCircle className="w-3.5 h-3.5 text-destructive flex-shrink-0 mt-0.5" />
+                  <AlertCircle className="w-3.5 h-3.5 text-destructive shrink-0 mt-0.5" />
                   <p className="text-xs text-destructive leading-snug">{error.message}</p>
                 </div>
               )}
@@ -695,87 +641,36 @@ export function AIPOISearchButton({
                   50%       { box-shadow: 0 0 28px 6px rgba(56,189,248,0.45), 0 2px 12px rgba(0,0,0,0.5); }
                 }
                 .srch-btn {
-                  position: relative;
-                  width: 100%;
-                  height: 48px;
-                  border-radius: 12px;
-                  border: 1px solid rgba(56,189,248,0.35);
-                  background: linear-gradient(135deg,
-                    rgba(14,26,46,0.95) 0%,
-                    rgba(15,35,60,0.95) 50%,
-                    rgba(10,20,40,0.95) 100%
-                  );
-                  color: #e0f2fe;
-                  font-size: 0.875rem;
-                  font-weight: 700;
-                  letter-spacing: 0.08em;
-                  text-transform: uppercase;
-                  cursor: pointer;
-                  overflow: hidden;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  gap: 8px;
-                  transition: border-color 0.2s, transform 0.15s;
+                  position: relative; overflow: hidden;
+                  width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
+                  padding: 10px 20px; border-radius: 10px; border: none; cursor: pointer;
+                  background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+                  color: white; font-size: 14px; font-weight: 600; letter-spacing: 0.01em;
+                  transition: opacity 0.2s, transform 0.1s;
                   animation: glow-pulse 3s ease-in-out infinite;
                 }
-                .srch-btn:disabled {
-                  opacity: 0.35;
-                  cursor: not-allowed;
-                  animation: none;
-                  border-color: rgba(100,120,140,0.2);
-                  color: rgba(200,220,240,0.4);
-                  background: rgba(20,30,45,0.6);
-                }
-                .srch-btn:not(:disabled):hover {
-                  border-color: rgba(56,189,248,0.7);
-                  transform: translateY(-1px);
-                }
-                .srch-btn:not(:disabled):active {
-                  transform: scale(0.97);
-                }
-                /* Sweep light */
+                .srch-btn:disabled { opacity: 0.45; cursor: not-allowed; animation: none; box-shadow: none; }
+                .srch-btn:not(:disabled):hover { opacity: 0.92; transform: translateY(-1px); }
+                .srch-btn:not(:disabled):active { transform: translateY(0); }
                 .srch-btn::before {
                   content: '';
-                  position: absolute;
-                  top: 0; bottom: 0;
-                  width: 40%;
-                  background: linear-gradient(
-                    90deg,
-                    transparent 0%,
-                    rgba(186,230,253,0.12) 40%,
-                    rgba(255,255,255,0.18) 50%,
-                    rgba(186,230,253,0.12) 60%,
-                    transparent 100%
-                  );
+                  position: absolute; top: 0; bottom: 0; width: 40%;
+                  background: linear-gradient(90deg, transparent 0%, rgba(186,230,253,0.12) 40%, rgba(255,255,255,0.18) 50%, rgba(186,230,253,0.12) 60%, transparent 100%);
                   transform: translateX(-110%) skewX(-12deg);
                   animation: sweep 3.5s ease-in-out infinite;
                   pointer-events: none;
                 }
                 .srch-btn:disabled::before { display: none; }
-                /* Top edge highlight */
                 .srch-btn::after {
                   content: '';
-                  position: absolute;
-                  top: 0; left: 10%; right: 10%;
-                  height: 1px;
-                  background: linear-gradient(90deg,
-                    transparent,
-                    rgba(186,230,253,0.6) 30%,
-                    rgba(255,255,255,0.9) 50%,
-                    rgba(186,230,253,0.6) 70%,
-                    transparent
-                  );
+                  position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+                  background: linear-gradient(90deg, transparent, rgba(186,230,253,0.6) 30%, rgba(255,255,255,0.9) 50%, rgba(186,230,253,0.6) 70%, transparent);
                   pointer-events: none;
                 }
                 .srch-btn:disabled::after { display: none; }
               `}</style>
-              <button
-                onClick={handleSearchClick}
-                disabled={!canSearch}
-                className="srch-btn"
-              >
-                <Sparkles className="w-4 h-4 flex-shrink-0 relative z-10" style={{ color: canSearch ? '#7dd3fc' : 'inherit' }} />
+              <button onClick={handleSearchClick} disabled={!canSearch || loading} className="srch-btn">
+                <Sparkles className="w-4 h-4 shrink-0 relative z-10" style={{ color: canSearch ? '#7dd3fc' : 'inherit' }} />
                 <span className="relative z-10">Keresés</span>
               </button>
             </div>
@@ -788,26 +683,28 @@ export function AIPOISearchButton({
   return (
     <>
       <div className="leaflet-top leaflet-right pointer-events-none" style={{ top: 0 }}>
-        <div className="m-4 mt-[4.5rem] flex flex-col gap-2 pointer-events-auto">
-          <button onClick={() => {
-              if (open) {
-                handleClose()
-              } else {
-                // Alaphelyzet nyitáskor
-                reset(); acReset(); setShowSuggestions(false); setNearMe(false)
-                setOpen(true)
-              }
+        <div className={`m-4 flex flex-col gap-2 pointer-events-auto ${hasLockButton ? 'mt-30' : 'mt-18'}`}>
+          <button
+            onClick={() => {
+              if (open) { handleClose() }
+              else { reset(); acReset(); setShowSuggestions(false); setNearMe(false); setOpen(true) }
             }}
             className={`w-11 h-11 rounded-xl border shadow-md flex items-center justify-center active:scale-95 transition cursor-pointer ${
               open ? 'bg-primary border-primary' : 'bg-card border-border hover:bg-muted'
-            }`} title="AI Helykereső">
+            }`}
+            title="AI Helykereső"
+          >
             <Sparkles className={`w-5 h-5 ${open ? 'text-primary-foreground' : 'text-primary'}`} />
           </button>
         </div>
       </div>
 
-      <POIListOverlay pois={overlayPOIs} mapRef={mapRef} userPosition={userPosition}
-        onClear={() => { setOverlayPOIs([]); onSelectPOIs([], '') }} />
+      <POIListOverlay
+        pois={overlayPois}
+        mapRef={mapRef}
+        userPosition={userPosition}
+        onClear={() => { setOverlayPois([]); onSelectPOIs([], '') }}
+      />
 
       {createPortal(panel, document.body)}
     </>

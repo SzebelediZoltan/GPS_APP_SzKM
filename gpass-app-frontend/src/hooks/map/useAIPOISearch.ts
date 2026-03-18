@@ -342,11 +342,11 @@ Válaszolj KIZÁRÓLAG JSON formátumban:
             lng: poi.lng,
             category: filters.mainCategory!,
             subCategory: filters.subCategory,
-            description: r.description,
+            description: r.description ?? undefined,
             openingHours: r.openingHours || poi.tags['opening_hours'],
             phone: poi.tags['phone'] || poi.tags['contact:phone'],
             brand: poi.tags['brand'] || poi.tags['operator'],
-          } satisfies POIResult
+          } as POIResult
         }).filter((p): p is POIResult => p !== null)
       } else {
         finalPOIs = candidates.slice(0, 5).map((poi: any) => ({

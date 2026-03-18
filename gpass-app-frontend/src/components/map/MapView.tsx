@@ -1,7 +1,7 @@
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet"
 import L from "leaflet"
 import "leaflet-rotate"
-import { User, MapPin, Compass as CompassIcon } from "lucide-react"
+import { User, MapPin, Compass as CompassIcon, EyeOff } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { useEffect, useState, useRef, useCallback, useMemo } from "react"
 import { useAuth } from "@/hooks/useAuth"
@@ -16,9 +16,16 @@ import SpeedDisplay from "./SpeedDisplay"
 import AIPOISearchButton, { POIMarkers, SearchRadiusCircle } from "./AIPOISearch"
 import FriendMarkers from "./FriendMarkers"
 import FriendsListPanel from "./FriendsListPanel"
+import MarkerLayer, { BBoxWatcher } from "./MarkerLayer"
+import MarkerPlacementSheet from "./MarkerPlacementSheet"
+import NearbyMarkerBanner from "./NearbyMarkerBanner"
 import { useMapSocket } from "@/hooks/map/useMapSocket"
 import { useMapSocialData } from "@/hooks/map/useMapSocialData"
+import { useMarkers } from "@/hooks/map/useMarkers"
+import { useNearbyMarker } from "@/hooks/map/useNearbyMarker"
 import type { POIResult } from "@/hooks/map/useAIPOISearch"
+import type { BBox, MarkerType } from "@/hooks/map/useMarkers"
+import { toast } from "sonner"
 
 type Props = {
   position: { lat: number; lng: number }
@@ -53,6 +60,39 @@ function createUserIcon(coneAngle: number | null): L.DivIcon {
   })
 }
 
+// ── Longpress figyelő (MapContainer-en belül) ──
+function LongPressHandler({
+  enabled,
+  onLongPress,
+}: {
+  enabled: boolean
+  onLongPress: (latlng: { lat: number; lng: number }) => void
+}) {
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const movedRef = useRef(false)
+
+  useMapEvents({
+    mousedown: (e) => {
+      if (!enabled) return
+      movedRef.current = false
+      timerRef.current = setTimeout(() => {
+        if (!movedRef.current) onLongPress({ lat: e.latlng.lat, lng: e.latlng.lng })
+      }, 600)
+    },
+    mousemove: () => { movedRef.current = true },
+    mouseup: () => { if (timerRef.current) clearTimeout(timerRef.current) },
+
+    // Mobil touch
+    contextmenu: (e) => {
+      if (!enabled) return
+      e.originalEvent.preventDefault()
+      onLongPress({ lat: e.latlng.lat, lng: e.latlng.lng })
+    },
+  })
+
+  return null
+}
+
 export default function MapView({ position, heading, speed }: Props) {
   const { user } = useAuth()
   const { mode, registerCenterOnUser } = useNavigation()
@@ -66,45 +106,75 @@ export default function MapView({ position, heading, speed }: Props) {
   const [searchRadius, setSearchRadius] = useState(5)
   const [activePOI, setActivePOI] = useState<POIResult | null>(null)
 
+  // ── Marker lerakás állapot ──
+  const [placementSheetOpen, setPlacementSheetOpen] = useState(false)
+  const [pendingLatLng, setPendingLatLng] = useState<{ lat: number; lng: number } | null>(null)
+  const [markerBBox, setMarkerBBox] = useState<BBox | null>(null)
+
   const positionRef = useRef(position)
   const mapRef = useRef<L.Map | null>(null)
   useEffect(() => { positionRef.current = position }, [position])
 
-  // ── Social data (barátok + klántagok) ──
+  // ── Social data ──
   const { friendIDs, clanMembers, isLoading: socialLoading } = useMapSocialData({
     userID: user?.userID,
     username: user?.username,
     enabled: !!user,
   })
 
-  // ── Socket: élő pozíció megosztás + online barátok/klántagok ──
+  // ── Socket ──
+  // Beállítások közvetlen localStorage olvasással
+  const mapSettings = useMemo(() => {
+    try { return JSON.parse(localStorage.getItem("gpass_map_settings") ?? "{}") } catch { return {} }
+  }, [])
+  const shareLocation = useMemo(() => {
+    try {
+      const p = JSON.parse(localStorage.getItem("gpass_privacy_settings") ?? "{}")
+      return p.shareLocation !== false
+    } catch { return true }
+  }, [])
+
+  const visibleUsers: string = mapSettings.visibleUsers ?? "all"
+
+  const visibleFriendIDs = useMemo(() => {
+    if (visibleUsers === "none" || visibleUsers === "clan") return new Set<string>()
+    return friendIDs
+  }, [friendIDs, visibleUsers])
+
+  const visibleClanMembers = useMemo(() => {
+    if (visibleUsers === "none" || visibleUsers === "friends") return []
+    return clanMembers
+  }, [clanMembers, visibleUsers])
+
   const { onlineUsers } = useMapSocket({
-    enabled: !!user && !socialLoading,
+    enabled: !!user && !socialLoading && shareLocation,
     position,
-    friendIDs,
-    clanMembers,
+    friendIDs: visibleFriendIDs,
+    clanMembers: visibleClanMembers,
   })
 
-  // ── User ikon memoizálva ──
+  // ── Markerek ──
+  const { markers, placeMarker, isPlacing } = useMarkers(!!user, markerBBox)
+
+  // ── Közelség detektor ──
+  const nearbyMarker = useNearbyMarker(position, markers)
+
+  // ── User ikon ──
   const coneAngle = useMemo(
     () => heading !== null ? (headingLock ? 0 : Math.round(heading / 5) * 5) : null,
     [heading, headingLock]
   )
-
   const userIcon = useMemo(() => createUserIcon(coneAngle), [coneAngle])
 
   const centerOnUser = useCallback(() => {
     mapRef.current?.flyTo([positionRef.current.lat, positionRef.current.lng], 17, { duration: 0.8 })
   }, [])
 
-  useEffect(() => {
-    registerCenterOnUser(centerOnUser)
-  }, [centerOnUser, registerCenterOnUser])
+  useEffect(() => { registerCenterOnUser(centerOnUser) }, [centerOnUser, registerCenterOnUser])
 
   useEffect(() => {
     if (mode === "navigating") setHeadingLock(true)
     else if (mode === "idle") setHeadingLock(false)
-    // POI markerek és kör eltűnnek amikor útvonal tervezés/navigáció van
     if (mode === "preview" || mode === "navigating") {
       setPOIMarkers([])
       setSearchCenter(null)
@@ -137,6 +207,29 @@ export default function MapView({ position, heading, speed }: Props) {
     return () => obs.disconnect()
   }, [])
 
+  // ── Longpress → marker lerakás ──
+  const handleLongPress = useCallback((latlng: { lat: number; lng: number }) => {
+    if (!user) {
+      toast.error("Bejelentkezés szükséges a jelzés lerakásához.")
+      return
+    }
+    setPendingLatLng(latlng)
+    setPlacementSheetOpen(true)
+  }, [user])
+
+  const handleMarkerConfirm = useCallback((type: MarkerType) => {
+    if (!pendingLatLng || !user) return
+    placeMarker(
+      { creator_id: user.userID, marker_type: type, lat: pendingLatLng.lat, lng: pendingLatLng.lng },
+      {
+        onSuccess: () => toast.success("Jelzés sikeresen lerakva!"),
+        onError: () => toast.error("Nem sikerült lerakni a jelzést."),
+      }
+    )
+    setPlacementSheetOpen(false)
+    setPendingLatLng(null)
+  }, [pendingLatLng, user, placeMarker])
+
   const bounds = L.latLngBounds(L.latLng(-85, -180), L.latLng(85, 180))
 
   return (
@@ -161,8 +254,17 @@ export default function MapView({ position, heading, speed }: Props) {
           }
         />
 
-        {/* AI POI Search Button */}
-        <AIPOISearchButton
+        {/* Bbox figyelő — markerek lekéréséhez */}
+        <BBoxWatcher onBBoxChange={setMarkerBBox} />
+
+        {/* Longpress figyelő — csak idle módban */}
+        <LongPressHandler
+          enabled={mode === "idle"}
+          onLongPress={handleLongPress}
+        />
+
+        {/* AI POI Search — aiEnabled beállítás alapján, pozíció a lock gomb meglététől függ */}
+        {(mapSettings.aiEnabled !== false) && <AIPOISearchButton
           onSelectPOIs={(pois) => { setPOIMarkers(pois); setActivePOI(null); if (pois.length === 0) setSearchCenter(null) }}
           mapRef={mapRef}
           userPosition={position}
@@ -171,23 +273,33 @@ export default function MapView({ position, heading, speed }: Props) {
           searchRadius={searchRadius}
           onSearchRadiusChange={setSearchRadius}
           navigationActive={mode !== "idle"}
+          hasLockButton={heading !== null}
         />
+        }
 
         <MapController
           position={position}
           heading={heading}
           headingLock={headingLock}
-          onLockedInteraction={() => { flashLock() }}
+          onLockedInteraction={flashLock}
         />
 
+        {/* Saját marker */}
         <Marker icon={userIcon} position={[position.lat, position.lng]}>
           <Popup closeButton={false} className="custom-popup">
             <div className="w-60 rounded-xl border border-border bg-card p-4 space-y-3">
-              <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium text-muted-foreground">Itt vagy te</span>
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-medium text-muted-foreground">Itt vagy te</span>
+                </div>
+                {!shareLocation && (
+                  <div className="flex items-center gap-1 text-muted-foreground" title="Mások nem látnak a térképen">
+                    <EyeOff className="w-3.5 h-3.5" />
+                  </div>
+                )}
               </div>
-              {!!user && (
+              {user && (
                 <>
                   <div className="flex items-center gap-2 text-sm">
                     <User className="w-4 h-4" />
@@ -206,7 +318,12 @@ export default function MapView({ position, heading, speed }: Props) {
           </Popup>
         </Marker>
 
-        {/* AI POI Markers és kör – csak idle módban */}
+        {/* Közösségi markerek — showMarkers beállítás alapján */}
+        {(mapSettings.showMarkers !== false) && (
+          <MarkerLayer markers={markers} userID={user?.userID} bbox={markerBBox} />
+        )}
+
+        {/* AI POI Markers — csak idle módban */}
         {mode === "idle" && (
           <>
             <POIMarkers pois={poiMarkers} userPosition={position} activePOI={activePOI} />
@@ -217,7 +334,7 @@ export default function MapView({ position, heading, speed }: Props) {
         )}
 
         {/* Barát markerek */}
-        {user && <FriendMarkers users={onlineUsers} />}
+        {user && <FriendMarkers users={onlineUsers} currentPosition={position} />}
 
         <NavigationPanel currentPosition={position} onOpenMobile={() => setMobileSheetOpen(true)} />
         <RouteLayer />
@@ -234,7 +351,6 @@ export default function MapView({ position, heading, speed }: Props) {
 
       {mode === "navigating" && (
         <>
-          {/* Jobb alsó gombok navigálás közben: barátok + compass egymás felett */}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-1000 flex items-end justify-end px-4 pb-[calc(4rem+0.9rem)]">
             <div className="pointer-events-auto flex flex-col items-end gap-2">
               {user && (
@@ -254,16 +370,34 @@ export default function MapView({ position, heading, speed }: Props) {
               </button>
             </div>
           </div>
-          <SpeedDisplay position={position} speed={speed} />
+          {(mapSettings.showSpeedLimit !== false) && <SpeedDisplay position={position} speed={speed} />}
         </>
       )}
 
       <NavigationPreviewPanel />
 
-      {/* Barátlista panel — idle módban */}
+
+
       {mode !== "navigating" && user && (
         <FriendsListPanel users={onlineUsers} currentPosition={position} />
       )}
+
+      {/* Közelben lévő marker banner — csak ha markerek látszanak */}
+      <div className="pointer-events-none absolute inset-0 z-1050">
+        <NearbyMarkerBanner
+          marker={(mapSettings.showMarkers !== false) ? nearbyMarker : null}
+          userID={user?.userID}
+          bbox={markerBBox}
+        />
+      </div>
+
+      {/* Marker lerakás sheet */}
+      <MarkerPlacementSheet
+        open={placementSheetOpen}
+        onOpenChange={setPlacementSheetOpen}
+        onConfirm={handleMarkerConfirm}
+        isPlacing={isPlacing}
+      />
 
       <NavigationMobileSheet
         open={mobileSheetOpen}

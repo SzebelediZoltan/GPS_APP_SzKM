@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Route, Clock, MapPin, ChevronDown, X, Navigation, Zap, ArrowRight, Smartphone, BookmarkPlus } from "lucide-react"
+import { Route, Clock, MapPin, ChevronDown, X, Navigation, Zap, ArrowRight, Smartphone } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useNavigation } from "@/context/NavigationContext"
@@ -23,6 +23,7 @@ export default function NavigationPreviewPanel() {
         <div className="h-1 bg-linear-to-r from-primary/60 via-primary to-primary/60" />
 
         <div className="p-4 space-y-3">
+          {/* Fejléc */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-primary/15 flex items-center justify-center">
@@ -41,6 +42,7 @@ export default function NavigationPreviewPanel() {
             </button>
           </div>
 
+          {/* Távolság + idő */}
           <div className="grid grid-cols-2 gap-2">
             <div className="rounded-xl border border-border/50 bg-muted/40 px-3 py-2.5 flex items-center gap-2.5">
               <div className="w-7 h-7 rounded-lg bg-blue-500/15 flex items-center justify-center shrink-0">
@@ -48,36 +50,32 @@ export default function NavigationPreviewPanel() {
               </div>
               <div>
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wide font-semibold">Távolság</p>
-                <p className="text-base font-black leading-none text-foreground">
-                  {km} <span className="text-xs font-semibold text-muted-foreground">km</span>
-                </p>
+                <p className="text-base font-black leading-none text-foreground">{km} <span className="text-xs font-semibold text-muted-foreground">km</span></p>
               </div>
             </div>
             <div className="rounded-xl border border-border/50 bg-muted/40 px-3 py-2.5 flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-lg bg-amber-500/15 flex items-center justify-center shrink-0">
-                <Clock className="w-3.5 h-3.5 text-amber-400" />
+              <div className="w-7 h-7 rounded-lg bg-emerald-500/15 flex items-center justify-center shrink-0">
+                <Clock className="w-3.5 h-3.5 text-emerald-400" />
               </div>
               <div>
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wide font-semibold">Idő</p>
-                <p className="text-base font-black leading-none text-foreground">
-                  {minutes} <span className="text-xs font-semibold text-muted-foreground">perc</span>
-                </p>
+                <p className="text-base font-black leading-none text-foreground">{minutes} <span className="text-xs font-semibold text-muted-foreground">perc</span></p>
               </div>
             </div>
           </div>
 
+          {/* Alternatív útvonalak */}
           {routes.length > 1 && (
             <div>
               <button
-                onClick={() => setAltOpen(!altOpen)}
-                className="w-full flex items-center justify-between rounded-xl border border-border/50 bg-muted/30 hover:bg-accent/50 px-3 py-2 transition-colors cursor-pointer"
+                onClick={() => setAltOpen(v => !v)}
+                className="w-full flex items-center justify-between text-xs text-muted-foreground hover:text-foreground transition-colors py-1 cursor-pointer"
               >
-                <span className="text-muted-foreground text-xs">Alternatív útvonalak ({routes.length - 1})</span>
-                <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${altOpen ? "rotate-180" : ""}`} />
+                <span>Alternatív útvonalak</span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${altOpen ? "rotate-180" : ""}`} />
               </button>
-
               {altOpen && (
-                <div className="mt-2 space-y-1.5 animate-in fade-in slide-in-from-top-1 duration-150">
+                <div className="space-y-1.5 mt-1.5">
                   {routes.map((r, index) => {
                     const isActive = index === selectedRouteIndex
                     const isFastest = r.duration === fastestDuration
@@ -85,7 +83,7 @@ export default function NavigationPreviewPanel() {
                       <button
                         key={index}
                         onClick={() => selectRoute(index)}
-                        className={`w-full text-left rounded-xl border px-3 py-2.5 flex items-center justify-between transition-all cursor-pointer ${
+                        className={`w-full flex items-center justify-between rounded-xl border px-3 py-2 text-left transition-all cursor-pointer ${
                           isActive ? "border-primary/50 bg-primary/10" : "border-border/40 bg-muted/20 hover:bg-accent/40"
                         }`}
                       >
@@ -113,6 +111,7 @@ export default function NavigationPreviewPanel() {
             </div>
           )}
 
+          {/* Desktop info */}
           {!isMobile && (
             <div className="rounded-xl border border-border/50 bg-muted/30 px-3 py-2.5 flex items-center gap-2.5">
               <Smartphone className="w-4 h-4 shrink-0 text-muted-foreground" />
@@ -120,20 +119,23 @@ export default function NavigationPreviewPanel() {
             </div>
           )}
 
+          {/* Gombok */}
           <div className="flex gap-2 pt-1">
-            <Button variant="outline" className="flex-1 rounded-xl border-border/60 font-semibold cursor-pointer" onClick={cancelPreview}>
+            <Button
+              variant="outline"
+              className="flex-1 rounded-xl border-border/60 font-semibold cursor-pointer"
+              onClick={cancelPreview}
+            >
               Mégse
             </Button>
-            {isMobile ? (
-              <Button className="flex-1 rounded-xl cursor-pointer font-semibold shadow-lg shadow-primary/20" onClick={startNavigation}>
+            {isMobile && (
+              <Button
+                className="flex-1 rounded-xl cursor-pointer font-semibold shadow-lg shadow-primary/20"
+                onClick={startNavigation}
+              >
                 <Navigation className="w-4 h-4 mr-2" />
                 Indulás
                 <ArrowRight className="w-3.5 h-3.5 ml-1.5 opacity-70" />
-              </Button>
-            ) : (
-              <Button variant="secondary" className="flex-1 rounded-xl cursor-pointer font-semibold" onClick={() => {}}>
-                <BookmarkPlus className="w-4 h-4 mr-2" />
-                Mentés
               </Button>
             )}
           </div>
