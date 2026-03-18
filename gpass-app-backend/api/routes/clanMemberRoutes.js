@@ -3,15 +3,17 @@ const router = express.Router();
 
 const clanMemberController = require("../controllers/clanMemberController");
 const authMiddleware = require("../middlewares/authMiddleware");
+const validate = require("../middlewares/validate");
+const rules = require("../middlewares/validationRules");
 
 // minden klántagság művelet logged in
 router.use(authMiddleware.userIsLoggedIn);
 
-// LISTA (admin jellegű lehet, de nálad lehet simán engedett)
+// LISTA
 router.get("/", authMiddleware.userIsLoggedIn, clanMemberController.getMembers);
 
 // ADD (logged in)
-router.post("/", clanMemberController.addMember);
+router.post("/", validate(rules.addMember), clanMemberController.addMember);
 
 // lekérések
 router.get("/by-clan/:clanId", clanMemberController.getMembersByClan);

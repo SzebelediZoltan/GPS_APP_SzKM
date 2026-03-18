@@ -28,8 +28,6 @@ const friendWithRoutes = require("./api/routes/friendWithRoutes");
 const clanRoutes = require("./api/routes/clanRoutes");
 const clanMemberRoutes = require("./api/routes/clanMemberRoutes");
 const markerRoutes = require("./api/routes/markerRoutes");
-const tripRoutes = require("./api/routes/tripRoutes");
-const tripPointRoutes = require("./api/routes/tripPointRoutes");
 const authRoutes = require("./api/routes/authRoutes");
 const errorHandler = require("./api/middlewares/errorHandler");
 
@@ -65,8 +63,7 @@ api.use("/friends-with", friendWithRoutes);
 api.use("/clans", clanRoutes);
 api.use("/clan-members", clanMemberRoutes);
 api.use("/markers", markerRoutes);
-api.use("/trips", tripRoutes);
-api.use("/trip-points", tripPointRoutes);
+
 
 api.use(errorHandler.notFound);
 app.use(errorHandler.showError);

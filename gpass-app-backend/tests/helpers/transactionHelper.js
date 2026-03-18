@@ -1,10 +1,11 @@
 /**
  * Transaction setup/teardown helper for tests
- * Kezeli a Sequelize transaction-t a teszt során
+ * Kezeli a Sequelize tranzakciót a tesztek között, hogy az adatok ne szennyezzék egymást.
  */
 
 /**
- * Beállítja a transaction-t és regisztrálja az app-ban
+ * Létrehoz egy új tranzakciót és regisztrálja az app-ban,
+ * hogy a teszten belüli összes adatbázis-művelet ugyanabba a tranzakcióba essen.
  * @param {Express.Application} app - Express alkalmazás
  * @param {Sequelize} db - Sequelize database instance
  * @returns {Promise<void>}
@@ -15,7 +16,8 @@ const transactionSetup = async (app, db) => {
 };
 
 /**
- * Felszággitja és karbantartja a transaction-t
+ * Visszagörget és eltávolítja a tranzakciót a teszt lefutása után,
+ * így az adatbázis mindig tiszta állapotból indul a következő teszthez.
  * @param {Express.Application} app - Express alkalmazás
  * @returns {Promise<void>}
  */

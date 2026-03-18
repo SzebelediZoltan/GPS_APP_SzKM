@@ -5,6 +5,8 @@ const router = express.Router()
 
 const contactController = require("../controllers/contactController")
 const authMiddleware = require("../middlewares/authMiddleware")
+const validate = require("../middlewares/validate")
+const rules = require("../middlewares/validationRules")
 
 /* ================= RATE LIMIT ================= */
 
@@ -40,6 +42,7 @@ router.post(
   "/",
   authMiddleware.attachUserIfExists,
   dynamicContactLimiter,
+  validate(rules.sendContact),
   contactController.sendContactMessage
 )
 
