@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Windows;
 using gpass_app_wpf.Converters;
 
-namespace gpass_app_wpf_tests.Converters;
+namespace gpass_app_wpf_tests.tests.Converters;
 
 [TestFixture]
 [Apartment(ApartmentState.STA)]

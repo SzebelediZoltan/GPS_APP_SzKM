@@ -1,6 +1,6 @@
 using gpass_app_wpf.ViewModels;
 
-namespace gpass_app_wpf_tests.ViewModels;
+namespace gpass_app_wpf_tests.tests.ViewModels;
 
 [TestFixture]
 [Apartment(ApartmentState.STA)]

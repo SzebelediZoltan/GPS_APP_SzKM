@@ -1,7 +1,7 @@
 using System.Globalization;
 using gpass_app_wpf.Converters;
 
-namespace gpass_app_wpf_tests.Converters;
+namespace gpass_app_wpf_tests.tests.Converters;
 
 [TestFixture]
 public class IsoDateConverterTests

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("gpass-app-wpf-tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b3306095dc7c266a9371415d9b78d6a3820ca39b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4231a266624b2ab7f2d341b4e6594bcfbbe4ac46")]
 [assembly: System.Reflection.AssemblyProductAttribute("gpass-app-wpf-tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("gpass-app-wpf-tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
