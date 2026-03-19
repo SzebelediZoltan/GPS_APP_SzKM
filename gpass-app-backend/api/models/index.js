@@ -8,8 +8,6 @@ module.exports = (sequelize) =>
 
     const FriendWith = require("./FriendWith")(sequelize);
 
-    const Trip = require("./Trip")(sequelize);
-    const TripPoint = require("./TripPoint")(sequelize);
 
     // =========================
     // USER <-> MARKER
@@ -135,39 +133,7 @@ module.exports = (sequelize) =>
         constraints: false,
     });
 
-    // =========================
-    // TRIPS: USER -> TRIP -> TRIP_POINTS
-    // =========================
-    User.hasMany(Trip,
-    {
-        foreignKey: "user_id",
-        as: "trips",
-        constraints: false,
-    });
-
-    Trip.belongsTo(User,
-    {
-        foreignKey: "user_id",
-        as: "user",
-        constraints: false,
-    });
-
-    Trip.hasMany(TripPoint,
-    {
-        foreignKey: "trip_id",
-        as: "points",
-        constraints: false,
-
-        onDelete: "CASCADE",
-        hooks: true,
-    });
-
-    TripPoint.belongsTo(Trip,
-    {
-        foreignKey: "trip_id",
-        as: "trip",
-        constraints: false,
-    });
+    
 
     return { 
         User, 
@@ -175,7 +141,5 @@ module.exports = (sequelize) =>
         Clan, 
         ClanMember, 
         FriendWith, 
-        Trip, 
-        TripPoint 
     };
 }
