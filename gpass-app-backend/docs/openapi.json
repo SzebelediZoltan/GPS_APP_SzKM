@@ -45,14 +45,6 @@
       "description": "Térképes markerek"
     },
     {
-      "name": "trips",
-      "description": "Utak (Trip)"
-    },
-    {
-      "name": "trip-points",
-      "description": "Útpontok (TripPoint)"
-    },
-    {
       "name": "contact",
       "description": "Kapcsolatfelvételi üzenet küldése"
     }
@@ -301,12 +293,6 @@
             "description": "Helyzet koordináták",
             "content": {
               "application/json": { "schema": { "$ref": "#/components/schemas/UserLocation" } }
-            }
-          },
-          "400": {
-            "description": "Hiba",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
             }
           },
           "401": {
@@ -973,7 +959,8 @@
       },
       "put": {
         "tags": ["markers"],
-        "summary": "Marker módosítása",
+        "summary": "Marker módosítása (score megerősítés / szerkesztés)",
+        "description": "Ha a score -2 alá csökken, a marker automatikusan törlésre kerül a backenden.",
         "security": [{ "cookieAuth": [] }],
         "parameters": [
           {
@@ -991,7 +978,7 @@
         },
         "responses": {
           "200": {
-            "description": "Frissítve",
+            "description": "Frissítve (vagy 'Marker deleted' string ha törölve lett)",
             "content": {
               "application/json": { "schema": { "$ref": "#/components/schemas/Marker" } }
             }
@@ -1005,291 +992,6 @@
         "parameters": [
           {
             "name": "markerID",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "integer" }
-          }
-        ],
-        "responses": {
-          "200": { "description": "Törölve" }
-        }
-      }
-    },
-    "/trips": {
-      "get": {
-        "tags": ["trips"],
-        "summary": "Trip-ek listázása",
-        "security": [{ "cookieAuth": [] }],
-        "responses": {
-          "200": {
-            "description": "Lista",
-            "content": {
-              "application/json": {
-                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Trip" } }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": ["trips"],
-        "summary": "Trip létrehozása",
-        "security": [{ "cookieAuth": [] }],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": { "schema": { "$ref": "#/components/schemas/TripCreate" } }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Létrehozva",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/Trip" } }
-            }
-          }
-        }
-      }
-    },
-    "/trips/by-user/{userId}": {
-      "get": {
-        "tags": ["trips"],
-        "summary": "Trip-ek user szerint",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "integer" }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Lista",
-            "content": {
-              "application/json": {
-                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Trip" } }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/trips/by-user/{userId}/number/{tripID}": {
-      "get": {
-        "tags": ["trips"],
-        "summary": "Trip lekérése user + trip_name alapján",
-        "description": "A tripID paraméter a trip_name értékét jelöli (pl. 'napi_tura_1').",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "integer" }
-          },
-          {
-            "name": "tripID",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "string" },
-            "description": "A trip neve (trip_name)"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Trip",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/Trip" } }
-            }
-          }
-        }
-      }
-    },
-    "/trips/{tripID}": {
-      "get": {
-        "tags": ["trips"],
-        "summary": "Egy trip lekérése",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [
-          {
-            "name": "tripID",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "integer" }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Trip",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/Trip" } }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": ["trips"],
-        "summary": "Trip módosítása",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [
-          {
-            "name": "tripID",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "integer" }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": { "schema": { "$ref": "#/components/schemas/TripUpdate" } }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Frissítve",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/Trip" } }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": ["trips"],
-        "summary": "Trip törlése (admin)",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [
-          {
-            "name": "tripID",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "integer" }
-          }
-        ],
-        "responses": {
-          "200": { "description": "Törölve" }
-        }
-      }
-    },
-    "/trip-points": {
-      "get": {
-        "tags": ["trip-points"],
-        "summary": "TripPointok listázása",
-        "security": [{ "cookieAuth": [] }],
-        "responses": {
-          "200": {
-            "description": "Lista",
-            "content": {
-              "application/json": {
-                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/TripPoint" } }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": ["trip-points"],
-        "summary": "TripPoint létrehozása",
-        "security": [{ "cookieAuth": [] }],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": { "schema": { "$ref": "#/components/schemas/TripPointCreate" } }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Létrehozva",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/TripPoint" } }
-            }
-          }
-        }
-      }
-    },
-    "/trip-points/by-trip/{tripId}": {
-      "get": {
-        "tags": ["trip-points"],
-        "summary": "Trip pontjai trip_id szerint",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [
-          {
-            "name": "tripId",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "integer" }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Lista",
-            "content": {
-              "application/json": {
-                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/TripPoint" } }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/trip-points/{pointID}": {
-      "get": {
-        "tags": ["trip-points"],
-        "summary": "Egy TripPoint lekérése",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [
-          {
-            "name": "pointID",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "integer" }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "TripPoint",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/TripPoint" } }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": ["trip-points"],
-        "summary": "TripPoint módosítása",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [
-          {
-            "name": "pointID",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "integer" }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": { "schema": { "$ref": "#/components/schemas/TripPointUpdate" } }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Frissítve",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/TripPoint" } }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": ["trip-points"],
-        "summary": "TripPoint törlése (admin)",
-        "security": [{ "cookieAuth": [] }],
-        "parameters": [
-          {
-            "name": "pointID",
             "in": "path",
             "required": true,
             "schema": { "type": "integer" }
@@ -1377,7 +1079,7 @@
       "AuthUser": {
         "type": "object",
         "properties": {
-          "ID": { "type": "integer" },
+          "userID": { "type": "integer" },
           "username": { "type": "string" },
           "email": { "type": "string" },
           "isAdmin": { "type": "boolean" }
@@ -1437,7 +1139,15 @@
           "name": { "type": "string" },
           "description": { "type": "string", "nullable": true },
           "leader_id": { "type": "integer" },
-          "created_at": { "type": "string", "format": "date-time" }
+          "member_count": { "type": "integer", "description": "Tagok száma (leader nélkül)" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "leader": {
+            "type": "object",
+            "properties": {
+              "username": { "type": "string" },
+              "isAdmin": { "type": "boolean" }
+            }
+          }
         },
         "required": ["id", "name", "leader_id", "created_at"]
       },
@@ -1463,7 +1173,14 @@
         "properties": {
           "clan_id": { "type": "integer" },
           "user_id": { "type": "integer" },
-          "joined_at": { "type": "string", "format": "date-time" }
+          "joined_at": { "type": "string", "format": "date-time" },
+          "user": {
+            "type": "object",
+            "properties": {
+              "username": { "type": "string" },
+              "isAdmin": { "type": "boolean" }
+            }
+          }
         },
         "required": ["clan_id", "user_id", "joined_at"]
       },
@@ -1485,7 +1202,23 @@
             "type": "string",
             "enum": ["sent", "accepted"]
           },
-          "created_at": { "type": "string", "format": "date-time" }
+          "created_at": { "type": "string", "format": "date-time" },
+          "sender": {
+            "type": "object",
+            "properties": {
+              "ID": { "type": "integer" },
+              "username": { "type": "string" },
+              "isAdmin": { "type": "boolean" }
+            }
+          },
+          "receiver": {
+            "type": "object",
+            "properties": {
+              "ID": { "type": "integer" },
+              "username": { "type": "string" },
+              "isAdmin": { "type": "boolean" }
+            }
+          }
         },
         "required": ["id", "sender_id", "receiver_id", "status", "created_at"]
       },
@@ -1515,7 +1248,10 @@
             "type": "string",
             "enum": ["danger", "police", "accident", "traffic", "roadblock", "speedtrap", "other"]
           },
-          "score": { "type": "integer" },
+          "score": {
+            "type": "integer",
+            "description": "Közösségi megerősítések száma. Ha -2 alá csökken, a marker automatikusan törlődik."
+          },
           "lat": { "type": "number" },
           "lng": { "type": "number" },
           "created_at": { "type": "string", "format": "date-time" }
@@ -1545,59 +1281,6 @@
           "score": { "type": "integer" },
           "lat": { "type": "number" },
           "lng": { "type": "number" }
-        }
-      },
-      "Trip": {
-        "type": "object",
-        "properties": {
-          "id": { "type": "integer" },
-          "user_id": { "type": "integer" },
-          "trip_name": { "type": "string" },
-          "created_at": { "type": "string", "format": "date-time" }
-        },
-        "required": ["id", "user_id", "trip_name", "created_at"]
-      },
-      "TripCreate": {
-        "type": "object",
-        "properties": {
-          "user_id": { "type": "integer" },
-          "trip_name": { "type": "string" }
-        },
-        "required": ["user_id", "trip_name"]
-      },
-      "TripUpdate": {
-        "type": "object",
-        "properties": {
-          "user_id": { "type": "integer" },
-          "trip_name": { "type": "string" }
-        }
-      },
-      "TripPoint": {
-        "type": "object",
-        "properties": {
-          "id": { "type": "integer" },
-          "trip_id": { "type": "integer" },
-          "lat": { "type": "number" },
-          "lng": { "type": "number" },
-          "recorded_at": { "type": "string", "format": "date-time" }
-        },
-        "required": ["id", "trip_id", "lat", "lng", "recorded_at"]
-      },
-      "TripPointCreate": {
-        "type": "object",
-        "properties": {
-          "trip_id": { "type": "integer" },
-          "lat": { "type": "number" },
-          "lng": { "type": "number" }
-        },
-        "required": ["trip_id", "lat", "lng"]
-      },
-      "TripPointUpdate": {
-        "type": "object",
-        "properties": {
-          "lat": { "type": "number" },
-          "lng": { "type": "number" },
-          "recorded_at": { "type": "string", "format": "date-time" }
         }
       },
       "ContactRequest": {
