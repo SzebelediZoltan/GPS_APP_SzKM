@@ -61,7 +61,7 @@ class MarkerRepository {
                 });
             
             if ((await this.Marker.scope("public").findByPk(markerId, { transaction: options.transaction })).dataValues.score === -2) {
-                await this.Marker.destroy(markerId, { transaction: options.transaction })
+                await this.Marker.destroy({ where: { id: markerId }, transaction: options.transaction })
             }
 
             return (await this.Marker.scope("public").findByPk(markerId, { transaction: options.transaction })) || "Marker deleted";
