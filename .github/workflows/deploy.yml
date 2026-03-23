@@ -1,16 +1,20 @@
 name: Build and Push to GHCR
+
 on:
   push:
     branches: [ "main" ]
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
@@ -18,16 +22,18 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # BACKEND - Fixen kisbetűs névvel
       - name: Build and push Backend
         uses: docker/build-push-action@v5
         with:
           context: ./gpass-app-backend
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/gpass-backend:latest
+          tags: ghcr.io/szebeledizoltan/gpass-backend:latest
 
+      # FRONTEND - Fixen kisbetűs névvel
       - name: Build and push Frontend
         uses: docker/build-push-action@v5
         with:
           context: ./gpass-app-frontend
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/gpass-frontend:latest
+          tags: ghcr.io/szebeledizoltan/gpass-frontend:latest
