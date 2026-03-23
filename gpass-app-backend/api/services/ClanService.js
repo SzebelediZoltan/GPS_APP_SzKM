@@ -32,9 +32,9 @@ class ClanService {
 
         if (nameTaken) throw new BadRequestError("Ez a klán név már foglalt.", { data: data.name });
 
-        const UserExists = await this.userRepository.getUser(data.leader_id, options)
+        const userExists = await this.userRepository.getUser(data.leader_id, options)
 
-        if (!UserExists) throw new BadRequestError("Nincs ilyen felhasználó a megadott ID-val.", { data: data.leader_id })
+        if (!userExists) throw new BadRequestError("Nincs ilyen felhasználó a megadott ID-val.", { data: data.leader_id })
 
         return await this.clanRepository.createClan(data, options);
     }

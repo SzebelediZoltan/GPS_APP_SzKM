@@ -1,11 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, Flag, Copy, AlertTriangle, Route } from "lucide-react"
+import { Users, Flag, AlertTriangle, ShieldAlert, Sparkles } from "lucide-react"
 
 const highlights = [
   { icon: <Flag className="h-4 w-4 text-amber-400" />, text: "Globális markerrel egyből jelezheted a rendőri ellenőrzést." },
   { icon: <AlertTriangle className="h-4 w-4 text-red-400" />, text: "Baleset, lezárás vagy hiba? Egy koppintás, és mindenki látja." },
-  { icon: <Route className="h-4 w-4 text-primary" />, text: "Indíts saját tripet, mentsd el, majd oszd meg bárkivel." },
-  { icon: <Copy className="h-4 w-4 text-emerald-400" />, text: "Mások tripjeit lemásolhatod, és ugyanazon az útvonalon haladhatsz." },
+  { icon: <ShieldAlert className="h-4 w-4 text-primary" />, text: "Rendőri ellenőrzést, útlezárást, veszélyt jelezz valós időben." },
+  { icon: <Sparkles className="h-4 w-4 text-emerald-400" />, text: "Az AI asszisztens segít megtalálni a legközelebbi benzinkutat, éttermet vagy ATM-et." },
 ]
 
 export default function BentoSection() {
@@ -92,7 +92,7 @@ export default function BentoSection() {
             {[
               { num: "01", text: "Új útvonal két lépéssel: célpont, majd indulhatsz." },
               { num: "02", text: "A közösség valós időben segíti egymást marker jelzésekkel." },
-              { num: "03", text: "Saját és másolt tripjeid bármikor újraindíthatod." },
+              { num: "03", text: "AI asszisztens segít megtalálni a legjobb helyeket az utadon." },
             ].map((item) => (
               <div
                 key={item.num}

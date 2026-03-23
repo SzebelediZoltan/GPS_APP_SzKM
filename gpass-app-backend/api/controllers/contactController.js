@@ -106,12 +106,8 @@ exports.sendContactMessage = async (req, res, next) => {
   try {
     const { name, email, message } = req.body
 
-    if (!name || !email || !message) {
-      return res.status(400).json({
-        message: "Minden mező kötelező.",
-      })
-    }
-
+    // Az env változók meglétét induláskor kellene ellenőrizni, nem kérésenként.
+    // Ha hiányoznak, az első valódi küldési kísérletig nem derül ki a hiba.
     if (!process.env.MAIL_USER || !process.env.MAIL_PASS) {
       throw new Error("Email környezeti változók hiányoznak.")
     }
@@ -124,7 +120,8 @@ exports.sendContactMessage = async (req, res, next) => {
       },
     })
 
-    // SMTP kapcsolat ellenőrzés (profi move)
+    // Ellenőrizzük, hogy az SMTP szerver elérhető-e, mielőtt a kérés sikeres választ kapna.
+    // Így a felhasználó azonnal értesül, ha az email küldés nem lehetséges.
     await transporter.verify()
 
     await transporter.sendMail({

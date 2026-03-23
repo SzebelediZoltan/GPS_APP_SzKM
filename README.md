@@ -16,7 +16,7 @@
 
 ## A projektről
 
-A GPASS egy modern, full-stack GPS alkalmazás prototípus. Célunk bemutatni egy valós navigációs rendszer alapjait: pozíció alapú térképes megjelenítés, útvonaltervezés, közösségi funkciók (barátok, klánok), AI asszisztens, valamint marker- és trip-kezelés.
+A GPASS egy modern, full-stack GPS alkalmazás prototípus. Célunk bemutatni egy valós navigációs rendszer alapjait: pozíció alapú térképes megjelenítés, útvonaltervezés, közösségi funkciók (barátok, klánok), AI asszisztens, valamint marker-kezelés.
 
 ---
 
@@ -26,9 +26,9 @@ A GPASS egy modern, full-stack GPS alkalmazás prototípus. Célunk bemutatni eg
 - Térkép oldal Leaflet alapon, valós pozícióval
 - Útvonaltervezés (OSRM), alternatív útvonalak, turn-by-turn navigáció
 - Barátok és klánok valós idejű követése a térképen (Socket.io)
-- Globális markerek lerakása (rendőr, baleset, útlezárás stb.)
-- Trip rögzítés és kezelés
-- **AI asszisztens** — menetközben kérdezheted az útvonalról, forgalomról
+- Globális markerek lerakása (rendőr, baleset, útlezárás stb.) közösségi megerősítéssel
+- Sebességkorlátozás valós idejű megjelenítése (OpenStreetMap / Overpass API)
+- **AI asszisztens** — menetközben kérdezheted az útvonalról, forgalomról, és megkeresheted a közelben lévő helyeket (benzinkút, étterem, ATM stb.)
 - Profil beállítások (név, email, jelszó, státusz, térkép preferenciák)
 - Dark/light téma, mobil + desktop reszponzív UI
 - Admin panel (WPF) felhasználók és tartalmak kezeléséhez
@@ -43,6 +43,7 @@ A GPASS beépített AI asszisztenssel rendelkezik, amely a térkép oldalon érh
 - Útvonallal kapcsolatos kérdések megválaszolása menetközben
 - Forgalmi helyzet értékelése
 - Navigációs tanácsok adása
+- Közeli helyek keresése kategória és távolság alapján (benzinkút, étterem, ATM, gyógyszertár, szállás stb.) — Gemini + OpenStreetMap/Overpass API kombináció
 
 **Bekapcsolás / kikapcsolás:**  
 Profil → Beállítások → Térkép → *AI asszisztens engedélyezése* kapcsoló
@@ -112,7 +113,7 @@ npm start
 ```
 
 Szükséges: XAMPP fusson (Apache + MySQL), `gpass_db` adatbázis létezzen.  
-Backend alapértelmezett portja: **8000**
+Backend alapértelmezett portja: **4000**
 
 Környezeti változók (`.env` fájl a backend mappában):
 
@@ -177,8 +178,8 @@ npm run test:coverage
 
 A backend futása közben elérhető:
 
-- Swagger UI: `http://localhost:8000/api-docs`
-- OpenAPI JSON: `http://localhost:8000/api/openapi.json`
+- Swagger UI: `http://localhost:4000/api-docs`
+- OpenAPI JSON: `http://localhost:4000/api/openapi.json`
 
 ---
 

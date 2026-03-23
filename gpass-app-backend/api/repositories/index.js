@@ -3,8 +3,6 @@ const FriendWithRepository = require("./FriendWithRepository");
 const ClanRepository = require("./ClanRepository");
 const ClanMemberRepository = require("./ClanMemberRepository");
 const MarkerRepository = require("./MarkerRepository");
-const TripRepository = require("./TripRepository");
-const TripPointRepository = require("./TripPointRepository");
 
 module.exports = (db) =>
 {
@@ -13,8 +11,7 @@ module.exports = (db) =>
     const clanRepository = new ClanRepository(db);
     const clanMemberRepository = new ClanMemberRepository(db);
     const markerRepository = new MarkerRepository(db);
-    const tripRepository = new TripRepository(db);
-    const tripPointRepository = new TripPointRepository(db);
+
 
     return {
         userRepository,
@@ -22,7 +19,5 @@ module.exports = (db) =>
         clanRepository,
         clanMemberRepository,
         markerRepository,
-        tripRepository,
-        tripPointRepository
     };
 }

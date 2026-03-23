@@ -85,7 +85,7 @@ exports.searchUsers = async (req, res, next) => {
     }
 }
 
-exports.updateLocation = async (req, res) => {
+exports.updateLocation = async (req, res, next) => {
     const { latitude, longitude } = req.body;
     const userID = req.user.userID;
 
@@ -94,11 +94,11 @@ exports.updateLocation = async (req, res) => {
         res.status(200).json(await userService.updateUserLocation(userID, latitude, longitude, { transaction }));
     }
     catch (error) {
-        res.status(400).json({ message: error.message });
+        next(error);
     }
 };
 
-exports.getUserLocation = async (req, res) => {
+exports.getUserLocation = async (req, res, next) => {
     const userID = req.userID;
 
     try {
@@ -106,6 +106,6 @@ exports.getUserLocation = async (req, res) => {
         res.status(200).json(await userService.getUserLocation(userID, { transaction }));
     }
     catch (error) {
-        res.status(400).json({ message: error.message });
+        next(error);
     }
 };

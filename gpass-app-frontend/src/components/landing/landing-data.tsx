@@ -7,7 +7,6 @@ import {
   Smartphone,
   MapPinned,
   Flag,
-  Copy,
   Car,
   Sparkles
 } from "lucide-react"
@@ -41,6 +40,7 @@ export const FEATURES: Feature[] = [
     icon: <Sparkles className="h-5 w-5" />,
     title: "AI asszisztens",
     desc: "Kérdezd meg menetközben az útvonalról, forgalomról — az AI azonnal válaszol.",
+    badge: "AI",
   },
   {
     icon: <Users className="h-5 w-5" />,
@@ -72,15 +72,15 @@ export const DELIVERY: DeliveryItem[] = [
     state: "Popular",
   },
   {
-    icon: <Copy className="h-4 w-4" />,
-    title: "Trip másolás",
-    desc: "Ments el egy utat, oszd meg, és bárki egy érintéssel követheti ugyanazt a nyomvonalat.",
-    state: "New",
-  },
-  {
     icon: <Car className="h-4 w-4" />,
     title: "Klán konvoj mód",
     desc: "Tökéletes választás közös autózásra: egy csapat, egy cél, egy látképi rálátás.",
     state: "Hot",
+  },
+  {
+    icon: <Sparkles className="h-4 w-4" />,
+    title: "AI helykereső",
+    desc: "Keress benzinkutat, éttermet vagy ATM-et a közeledben — az AI rangsorolja a legjobb találatokat.",
+    state: "New",
   },
 ]

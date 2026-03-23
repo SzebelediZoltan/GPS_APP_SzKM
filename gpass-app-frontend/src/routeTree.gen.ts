@@ -8,8 +8,6 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createFileRoute } from '@tanstack/react-router'
-
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AboutRouteImport } from './routes/about'
@@ -23,13 +21,6 @@ import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as ProfileUserIDIndexRouteImport } from './routes/profile/$userID/index'
 import { Route as ClansClanIdIndexRouteImport } from './routes/clans/$clanId/index'
 
-const AiChatLazyRouteImport = createFileRoute('/ai-chat')()
-
-const AiChatLazyRoute = AiChatLazyRouteImport.update({
-  id: '/ai-chat',
-  path: '/ai-chat',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/ai-chat.lazy').then((d) => d.Route))
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
@@ -90,7 +81,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
-  '/ai-chat': typeof AiChatLazyRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/profile/friends': typeof ProfileFriendsRoute
@@ -104,7 +94,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
-  '/ai-chat': typeof AiChatLazyRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/profile/friends': typeof ProfileFriendsRoute
@@ -119,7 +108,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
-  '/ai-chat': typeof AiChatLazyRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/profile/friends': typeof ProfileFriendsRoute
@@ -135,7 +123,6 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/contact'
-    | '/ai-chat'
     | '/auth/login'
     | '/auth/register'
     | '/profile/friends'
@@ -149,7 +136,6 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/contact'
-    | '/ai-chat'
     | '/auth/login'
     | '/auth/register'
     | '/profile/friends'
@@ -163,7 +149,6 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/contact'
-    | '/ai-chat'
     | '/auth/login'
     | '/auth/register'
     | '/profile/friends'
@@ -178,7 +163,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   ContactRoute: typeof ContactRoute
-  AiChatLazyRoute: typeof AiChatLazyRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
   ProfileFriendsRoute: typeof ProfileFriendsRoute
@@ -191,13 +175,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/ai-chat': {
-      id: '/ai-chat'
-      path: '/ai-chat'
-      fullPath: '/ai-chat'
-      preLoaderRoute: typeof AiChatLazyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/contact': {
       id: '/contact'
       path: '/contact'
@@ -282,7 +259,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   ContactRoute: ContactRoute,
-  AiChatLazyRoute: AiChatLazyRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
   ProfileFriendsRoute: ProfileFriendsRoute,

@@ -7,10 +7,10 @@ import {
   MapPinned,
   ShieldAlert,
   Users,
-  Copy,
   RouteIcon,
   Zap,
   ArrowRight,
+  Sparkles,
 } from "lucide-react"
 
 export const Route = createFileRoute("/about")({
@@ -34,14 +34,14 @@ const features = [
     desc: "Rendőri ellenőrzés, lezárás, baleset — egy koppintás, és mindenki látja.",
   },
   {
-    icon: <Copy className="h-5 w-5" />,
-    title: "Trip másolás",
-    desc: "Mentsd el az útvonalad, oszd meg, és bárki követheti ugyanazt a nyomvonalat.",
+    icon: <Sparkles className="h-5 w-5" />,
+    title: "AI asszisztens",
+    desc: "Kérdezz az útvonalról, keress benzinkutat, éttermet vagy ATM-et menetközben.",
   },
   {
     icon: <RouteIcon className="h-5 w-5" />,
     title: "Alternatív útvonalak",
-    desc: "Válassz a leggyorsabb, legrövidebb vagy legkényelmesebbútvonal között.",
+    desc: "Válassz a leggyorsabb, legrövidebb vagy legkényelmesebb útvonal között.",
   },
   {
     icon: <Zap className="h-5 w-5" />,
@@ -171,7 +171,7 @@ function AboutPage() {
                   A navigációs appok ma már nagyon jók — de mindegyik egyedül használja az embert. Nincs közösség, nincs valós idejű együttműködés, nincs lehetőség arra, hogy <span className="text-foreground font-medium">együtt legyünk az úton</span>.
                 </p>
                 <p>
-                  A GPASS ezt akarja megoldani. Egy olyan platform, ahol a barátaid helyzete látható, a közösség jelzi a veszélyeket, és az útvonalakat meg lehet osztani — mindenki profitál a többiek tudásából.
+                  A GPASS ezt akarja megoldani. Egy olyan platform, ahol a barátaid helyzete látható, a közösség jelzi a veszélyeket, és az AI asszisztens segít a legjobb döntések meghozatalában — mindenki profitál a többiek tudásából.
                 </p>
               </div>
             </div>
@@ -186,7 +186,7 @@ function AboutPage() {
                   { icon: <Compass className="h-6 w-6 text-primary" />, label: "Navigáció" },
                   { icon: <Users className="h-6 w-6 text-primary" />, label: "Közösség" },
                   { icon: <ShieldAlert className="h-6 w-6 text-amber-400" />, label: "Biztonság" },
-                  { icon: <Zap className="h-6 w-6 text-emerald-400" />, label: "Sebesség" },
+                  { icon: <Sparkles className="h-6 w-6 text-emerald-400" />, label: "AI" },
                 ].map((item) => (
                   <div
                     key={item.label}

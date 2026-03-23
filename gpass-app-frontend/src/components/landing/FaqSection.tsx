@@ -8,19 +8,23 @@ import {
 const faqs = [
   {
     q: "Hogyan segít a GPASS a mindennapokban?",
-    a: "Gyorsan mutat útvonalat, választhatsz alternatívát, és menet közben is tiszta marad a kép.",
+    a: "Gyorsan mutat útvonalat, választhatsz alternatívát, és menet közben is tiszta marad a kép. Az AI asszisztens segít megtalálni a közelben lévő helyeket.",
   },
   {
     q: "Mi az a globális marker?",
-    a: "Egy közösségi jelzés a térképen, amivel jelezheted például a rendőri ellenőrzést vagy útlezárást.",
-  },
-  {
-    q: "Hogyan működik a trip mentés és másolás?",
-    a: "Elmented a saját utadat, megosztod, mások pedig egy koppintással ugyanazt az útvonalat követhetik.",
+    a: "Egy közösségi jelzés a térképen, amivel jelezheted például a rendőri ellenőrzést, útlezárást vagy balesetet — mindenki azonnal látja.",
   },
   {
     q: "Miben különleges a klán rendszer?",
-    a: "A klanod tagjaival egy térképen maradtok, és könnyebb együtt utazni vagy találkozni.",
+    a: "A klánod tagjaival egy térképen maradtok, és könnyebb együtt utazni vagy találkozni. Klán konvoj módban az egész csapatot nyomon követheted.",
+  },
+  {
+    q: "Mit tud az AI asszisztens?",
+    a: "Menetközben kérdezheted az útvonalról, forgalomról, és megkeresheti a közelben lévő benzinkutakat, éttermeket, ATM-eket — Gemini alapú intelligens keresővel.",
+  },
+  {
+    q: "Hogyan működik a sebességkorlátozás megjelenítése?",
+    a: "A térkép automatikusan lekéri az aktuális út sebességkorlátozását az OpenStreetMap adatbázisból, és valós időben mutatja a kijelzőn — piros háttérrel jelzi, ha túlléped.",
   },
 ]
 

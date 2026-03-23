@@ -3,13 +3,15 @@ const router = express.Router();
 
 const friendWithController = require("../controllers/friendWithController");
 const authMiddleware = require("../middlewares/authMiddleware");
+const validate = require("../middlewares/validate");
+const rules = require("../middlewares/validationRules");
 
 // minden friend művelet logged in
 router.use(authMiddleware.userIsLoggedIn);
 
 // CRUD
 router.get("/", authMiddleware.isAdmin, friendWithController.getAll);
-router.post("/", friendWithController.create);
+router.post("/", validate(rules.createFriend), friendWithController.create);
 
 // PARAM
 router.param("id", (req, res, next, id) => {
@@ -18,7 +20,7 @@ router.param("id", (req, res, next, id) => {
 });
 
 router.get("/:id", [authMiddleware.isAdmin], friendWithController.getById);
-router.put("/:id", friendWithController.update);
+router.put("/:id", validate(rules.updateFriend), friendWithController.update);
 router.delete("/:id", friendWithController.delete);
 
 // saját listák

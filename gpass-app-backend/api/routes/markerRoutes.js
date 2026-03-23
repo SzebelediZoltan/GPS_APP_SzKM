@@ -3,11 +3,14 @@ const router = express.Router();
 
 const markerController = require("../controllers/markerController");
 const authMiddleware = require("../middlewares/authMiddleware");
+const validate = require("../middlewares/validate");
+const rules = require("../middlewares/validationRules");
 
-// LISTA (logged in)
+// LISTA (admin)
 router.get("/", [authMiddleware.userIsLoggedIn, authMiddleware.isAdmin], markerController.getMarkers);
+
 // CREATE (logged in)
-router.post("/", [authMiddleware.userIsLoggedIn], markerController.createMarker);
+router.post("/", [authMiddleware.userIsLoggedIn, ...validate(rules.createMarker)], markerController.createMarker);
 
 // BOX (query) (logged in)
 router.get("/box", [authMiddleware.userIsLoggedIn], markerController.getMarkersInBox);
@@ -24,9 +27,9 @@ router.param("markerID", (req, res, next, markerID) => {
 
 // CRUD 1
 router.get("/:markerID", [authMiddleware.userIsLoggedIn], markerController.getMarker);
-router.put("/:markerID", [authMiddleware.userIsLoggedIn], markerController.updateMarker);
+router.put("/:markerID", [authMiddleware.userIsLoggedIn, ...validate(rules.updateMarker)], markerController.updateMarker);
 
-// DELETE (admin) – ha nálad csak creator törölhet, azt majd service-ben
+// DELETE (admin)
 router.delete("/:markerID", [authMiddleware.userIsLoggedIn, authMiddleware.isAdmin], markerController.deleteMarker);
 
 module.exports = router;
