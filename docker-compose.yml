@@ -2,39 +2,37 @@ version: "3.9"
 
 services:
   frontend:
-    build:
-      context: ./gpass-app-frontend
+    image: ghcr.io/szebeledizoltan/gpass-frontend:latest
     container_name: vite-frontend
     restart: always
-    ports:
-      - "80"
-    networks:
-      - proxy
-  
-  nginx-proxy-manager:
-    image: jc21/nginx-proxy-manager
-    container_name: nginx-proxy-manager
-    ports:
-      - "80:80"
-      - "81:81"
-      - "443:443"
-    volumes:
-      - "/home/tech/files/docker/volumes/nginx-proxy-manager/data:/data"
-      - "/home/tech/files/docker/volumes/nginx-proxy-manager/letencrypt:/etc/letsencrypt"
-    restart: unless-stopped
+    # Itt nem kell port, mert az NPM majd eléri a belső hálózaton
     networks:
       - proxy
 
   backend:
-    build: ./gpass-app-backend
+    image: ghcr.io/szebeledizoltan/gpass-backend:latest
     container_name: gpass-backend
     restart: always
     env_file:
-      - ./gpass-app-backend/.env
+      - .env  # Ezt a fájlt kézzel hozd létre a VPS-en a titkokkal!
     expose:
       - "4000"
     depends_on:
       - mysql
+    networks:
+      - proxy
+
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: nginx-proxy-manager
+    restart: unless-stopped
+    ports:
+      - "80:80"   # HTTP
+      - "81:81"   # Ide lépsz be a böngészőben (Admin felület)
+      - "443:443" # HTTPS
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
     networks:
       - proxy
 
