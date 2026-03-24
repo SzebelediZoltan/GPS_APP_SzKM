@@ -10,6 +10,11 @@ RUN npm install
 # teljes forrás
 COPY . .
 
+# ... a Dockerfile eleje ...
+ARG VITE_GEMINI_API_KEY
+ENV VITE_GEMINI_API_KEY=$VITE_GEMINI_API_KEY
+# Ezután jöhet az npm run build
+
 # Vite build
 RUN npm run build
 

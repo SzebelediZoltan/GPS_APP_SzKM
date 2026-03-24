@@ -37,3 +37,5 @@ jobs:
           context: ./gpass-app-frontend
           push: true
           tags: ghcr.io/szebeledizoltan/gpass-frontend:latest
+          build-args: |
+            VITE_GEMINI_API_KEY=${{ secrets.VITE_GEMINI_API_KEY }}
