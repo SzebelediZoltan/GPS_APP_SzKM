@@ -95,12 +95,6 @@ public class UserDetailViewModelTests
 
     // ── HasSelectedTrip / HasSelectedMarker ───────────────────────────────────
 
-    [Test]
-    public void HasSelectedTrip_FalseByDefault()
-    {
-        var vm = new UserDetailViewModel(MakeUser());
-        Assert.That(vm.HasSelectedTrip, Is.False);
-    }
 
     [Test]
     public void HasSelectedMarker_FalseByDefault()
@@ -116,34 +110,6 @@ public class UserDetailViewModelTests
         Assert.That(vm.HasSelectedFriend, Is.False);
     }
 
-    // ── SelectedTrip setter – EditTripName prefill ────────────────────────────
-
-    [Test]
-    public void SelectedTrip_PreFillsEditTripName_UsingTripName()
-    {
-        var vm = new UserDetailViewModel(MakeUser());
-        var trip = new Trip { id = 1, trip_name = "NyáriTúra", name = null };
-        vm.SelectedTrip = trip;
-        Assert.That(vm.EditTripName, Is.EqualTo("NyáriTúra"));
-    }
-
-    [Test]
-    public void SelectedTrip_PreFillsEditTripName_UsingNameFallback()
-    {
-        var vm = new UserDetailViewModel(MakeUser());
-        var trip = new Trip { id = 1, trip_name = null, name = "NameFallback" };
-        vm.SelectedTrip = trip;
-        Assert.That(vm.EditTripName, Is.EqualTo("NameFallback"));
-    }
-
-    [Test]
-    public void SelectedTrip_ClearsTripEditError()
-    {
-        var vm = new UserDetailViewModel(MakeUser());
-        vm.TripEditError = "Régi hiba";
-        vm.SelectedTrip = new Trip { id = 1, trip_name = "x" };
-        Assert.That(vm.TripEditError, Is.Null);
-    }
 
     // ── SelectedMarker setter – EditMarkerType/Score prefill ──────────────────
 
@@ -157,36 +123,6 @@ public class UserDetailViewModelTests
         Assert.That(vm.EditMarkerScore, Is.EqualTo("10"));
     }
 
-    // ── Trip névvalidáció (EditTripName setter) ────────────────────────────────
-
-    [Test]
-    public void TripEditError_SetWhenNameEmpty()
-    {
-        var vm = new UserDetailViewModel(MakeUser());
-        vm.SelectedTrip = new Trip { id = 1, trip_name = "start" };
-        vm.EditTripName = "";
-        Assert.That(vm.HasTripEditError, Is.True);
-    }
-
-    [Test]
-    public void TripEditError_SetWhenNameHasSpecialChars()
-    {
-        var vm = new UserDetailViewModel(MakeUser());
-        vm.SelectedTrip = new Trip { id = 1, trip_name = "start" };
-        vm.EditTripName = "rossz!@#"; // csak betű és szám engedélyezett
-        Assert.That(vm.HasTripEditError, Is.True);
-    }
-
-    [TestCase("AlphaTrip")]
-    [TestCase("trip123")]
-    [TestCase("A")]
-    public void TripEditError_ClearedForValidNames(string validName)
-    {
-        var vm = new UserDetailViewModel(MakeUser());
-        vm.SelectedTrip = new Trip { id = 1, trip_name = "start" };
-        vm.EditTripName = validName;
-        Assert.That(vm.HasTripEditError, Is.False);
-    }
 
     // ── Marker validáció (EditMarkerType/Score setter) ────────────────────────
 
@@ -251,20 +187,6 @@ public class UserDetailViewModelTests
 
     // ── Command CanExecute ────────────────────────────────────────────────────
 
-    [Test]
-    public void DeleteTripCommand_CannotExecute_WhenNoTripSelected()
-    {
-        var vm = new UserDetailViewModel(MakeUser());
-        Assert.That(vm.DeleteTripCommand.CanExecute(null), Is.False);
-    }
-
-    [Test]
-    public void DeleteTripCommand_CanExecute_WhenTripSelected()
-    {
-        var vm = new UserDetailViewModel(MakeUser());
-        vm.SelectedTrip = new Trip { id = 1, trip_name = "t" };
-        Assert.That(vm.DeleteTripCommand.CanExecute(null), Is.True);
-    }
 
     [Test]
     public void DeleteMarkerCommand_CannotExecute_WhenNoMarkerSelected()

@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\kissd\\Suli\\13\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\gpass-app-wpf.csproj": {}
+    "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\gpass-app-wpf.csproj": {}
   },
   "projects": {
-    "C:\\Users\\kissd\\Suli\\13\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\gpass-app-wpf.csproj": {
+    "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\gpass-app-wpf.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\kissd\\Suli\\13\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\gpass-app-wpf.csproj",
+        "projectUniqueName": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\gpass-app-wpf.csproj",
         "projectName": "gpass-app-wpf",
-        "projectPath": "C:\\Users\\kissd\\Suli\\13\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\gpass-app-wpf.csproj",
-        "packagesPath": "C:\\Users\\kissd\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\kissd\\Suli\\13\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\obj\\",
+        "projectPath": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\gpass-app-wpf.csproj",
+        "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
+        "outputPath": "C:\\_Study\\GPS_APP_SzKM\\gpass-app-wpf\\gpass-app-wpf\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\kissd\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],

@@ -18,34 +18,15 @@ namespace gpass_app_wpf.ViewModels
         public string Title    => $"{_user.username} – részletek";
         public string UserInfo => $"#{_user.ID}  •  {_user.email}  •  {(_user.isAdmin ? "Admin" : "Felhasználó")}";
 
-        public ObservableCollection<Trip>       Trips      { get; } = new();
         public ObservableCollection<Marker>     Markers    { get; } = new();
         public ObservableCollection<FriendWith> Friends    { get; } = new();
         public ObservableCollection<ClanMember> Clans      { get; } = new();
-        public ObservableCollection<TripPoint>  TripPoints { get; } = new();
 
         // Kijelölések szerkesztéshez
-        private Trip       _selectedTrip;
         private Marker     _selectedMarker;
         private FriendWith _selectedFriend;
 
-        public Trip SelectedTrip
-        {
-            get => _selectedTrip;
-            set
-            {
-                _selectedTrip = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(HasSelectedTrip));
-                if (value != null)
-                {
-                    EditTripName   = value.trip_name ?? value.name ?? "";
-                    TripEditError  = null;
-                    TripEditResult = null;
-                }
-            }
-        }
-        public bool HasSelectedTrip => _selectedTrip != null;
+        
         public Marker SelectedMarker
         {
             get => _selectedMarker;
@@ -71,44 +52,13 @@ namespace gpass_app_wpf.ViewModels
         public bool HasSelectedFriend => _selectedFriend != null;
 
         // Parancsok
-        public RelayCommand DeleteTripCommand    { get; }
-        public RelayCommand EditTripCommand      { get; }
+
         public RelayCommand DismissErrorsCommand { get; }
         public RelayCommand DeleteMarkerCommand  { get; }
         public RelayCommand EditMarkerCommand    { get; }
         public RelayCommand ToggleFriendCommand  { get; }
         public RelayCommand DeleteFriendCommand  { get; }
 
-        // ── Trip névszerkesztés ───────────────────────────────────────────────
-        private string _editTripName;
-        public string EditTripName
-        {
-            get => _editTripName;
-            set { _editTripName = value; OnPropertyChanged(); ValidateTripEdit(); }
-        }
-
-        private string _tripEditError;
-        public string TripEditError
-        {
-            get => _tripEditError;
-            set { _tripEditError = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasTripEditError)); }
-        }
-        public bool HasTripEditError => !string.IsNullOrEmpty(_tripEditError);
-
-        private string _tripEditResult;
-        public string TripEditResult
-        {
-            get => _tripEditResult;
-            set { _tripEditResult = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasTripEditResult)); }
-        }
-        public bool HasTripEditResult => !string.IsNullOrEmpty(_tripEditResult);
-
-        private bool _tripSaving;
-        public bool TripSaving
-        {
-            get => _tripSaving;
-            set { _tripSaving = value; OnPropertyChanged(); }
-        }
 
         // ── Marker szerkesztés ────────────────────────────────────────────────
         private string _editMarkerType;
@@ -171,8 +121,6 @@ namespace gpass_app_wpf.ViewModels
             _user = user;
             _api  = SessionService.Api;
 
-            DeleteTripCommand    = new RelayCommand(async _ => await DeleteTrip(),   _ => SelectedTrip != null);
-            EditTripCommand      = new RelayCommand(async _ => await EditTrip(),     _ => SelectedTrip != null && !TripSaving && !HasTripEditError);
             DismissErrorsCommand = new RelayCommand(_ => Errors = null);
             EditMarkerCommand   = new RelayCommand(async _ => await EditMarker(),   _ => SelectedMarker != null && !MarkerSaving && !HasMarkerEditError);
             DeleteMarkerCommand = new RelayCommand(async _ => await DeleteMarker(), _ => SelectedMarker != null);
@@ -186,23 +134,8 @@ namespace gpass_app_wpf.ViewModels
         {
             Loading = true;
             Errors = null;
-            await Task.WhenAll(LoadTrips(), LoadMarkers(), LoadFriends(), LoadClans());
-            await LoadTripPoints();
+            await Task.WhenAll( LoadMarkers(), LoadFriends(), LoadClans());
             Loading = false;
-        }
-
-        private async Task LoadTrips()
-        {
-            try
-            {
-                var list = await _api.GetAsync<List<Trip>>($"trips/by-user/{_user.ID}");
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    Trips.Clear();
-                    foreach (var t in list) Trips.Add(t);
-                });
-            }
-            catch (Exception ex) { AppendError("Tripek", ex.Message); }
         }
 
         private async Task LoadMarkers()
@@ -281,82 +214,13 @@ namespace gpass_app_wpf.ViewModels
             catch (Exception ex) { AppendError("Clánok", ex.Message); }
         }
 
-        private async Task LoadTripPoints()
-        {
-            try
-            {
-                var allPoints = new List<TripPoint>();
-                foreach (var trip in Trips)
-                {
-                    var points = await _api.GetAsync<List<TripPoint>>($"trip-points/by-trip/{trip.id}");
-                    allPoints.AddRange(points);
-                }
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    TripPoints.Clear();
-                    foreach (var p in allPoints) TripPoints.Add(p);
-                });
-            }
-            catch (Exception ex) { AppendError("Trip pontok", ex.Message); }
-        }
 
-        // ── TRIP DELETE ───────────────────────────────────────────────────────
-        private async Task DeleteTrip()
-        {
-            if (SelectedTrip == null) return;
-            if (!WindowHelper.ShowConfirm(
-                $"Biztosan törlöd a(z) \"{SelectedTrip.DisplayName}\" tripet?",
-                "Trip törlése", isDanger: true)) return;
-            try
-            {
-                await _api.DeleteAsync($"trips/{SelectedTrip.id}");
-                await LoadTrips();
-                await LoadTripPoints();
-            }
-            catch (Exception ex) { AppendError("Trip törlés", ex.Message); }
-        }
 
         // ── MARKER VALIDATE ──────────────────────────────────────────────────
         public static readonly string[] AllowedMarkerTypes =
         {
             "danger", "police", "accident", "traffic", "roadblock", "speedtrap", "other"
         };
-
-        private void ValidateTripEdit()
-        {
-            if (string.IsNullOrWhiteSpace(EditTripName))
-                TripEditError = "A trip neve nem lehet üres!";
-            else if (EditTripName.Trim().Length < 1)
-                TripEditError = "Legalább 1 karakter szükséges!";
-            else if (!System.Text.RegularExpressions.Regex.IsMatch(EditTripName.Trim(), @"^[A-Za-z0-9]+$"))
-                TripEditError = "Csak betű és szám megengedett!";
-            else
-                TripEditError = null;
-        }
-
-        private async Task EditTrip()
-        {
-            if (SelectedTrip == null) return;
-            if (HasTripEditError) return;
-
-            TripSaving    = true;
-            TripEditResult = null;
-            try
-            {
-                await _api.PutAsync<Trip>($"trips/{SelectedTrip.id}", new
-                {
-                    trip_name = EditTripName.Trim()
-                });
-                SelectedTrip.trip_name = EditTripName.Trim();
-                TripEditResult = "✔ Sikeresen mentve!";
-                await LoadTrips();
-            }
-            catch (Exception ex)
-            {
-                TripEditResult = $"⚠ {ex.Message}";
-            }
-            finally { TripSaving = false; }
-        }
 
         private void ValidateMarkerEdit()
         {

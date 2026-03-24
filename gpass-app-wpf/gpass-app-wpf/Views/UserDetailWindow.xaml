@@ -60,110 +60,7 @@
 
         <TabControl>
 
-            <!-- TRIPEK -->
-            <TabItem Header="🗺 Tripek">
-
-                <DockPanel>
-
-                    <Border DockPanel.Dock="Bottom"
-                            Background="{DynamicResource ToolbarBackground}"
-                            Padding="8,6"
-                            BorderBrush="{DynamicResource SurfaceBorderBrush}"
-                            BorderThickness="0,1,0,0">
-
-                        <StackPanel>
-
-                            <Grid Visibility="{Binding HasSelectedTrip, Converter={StaticResource BoolToVisibility}}">
-
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="200"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="8"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock Grid.Column="0"
-                                           Text="Név:"
-                                           VerticalAlignment="Center"
-                                           Foreground="{DynamicResource SecondaryText}"
-                                           Margin="0,0,6,0"/>
-
-                                <TextBox Grid.Column="1"
-                                         Text="{Binding EditTripName, UpdateSourceTrigger=PropertyChanged}"/>
-
-                                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding TripEditError}"
-                                               FontSize="11" Margin="10,0,0,0"
-                                               Foreground="#FC8181"
-                                               Visibility="{Binding HasTripEditError, Converter={StaticResource BoolToVisibility}}"/>
-                                    <TextBlock Text="{Binding TripEditResult}"
-                                               FontSize="11" Margin="10,0,0,0"
-                                               Foreground="{DynamicResource Accent}"
-                                               Visibility="{Binding HasTripEditResult, Converter={StaticResource BoolToVisibility}}"/>
-                                </StackPanel>
-
-                                <Button Grid.Column="3"
-                                        Padding="12,5"
-                                        Background="{DynamicResource Accent}"
-                                        Foreground="White"
-                                        Command="{Binding EditTripCommand}">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="⏳ "
-                                                   Visibility="{Binding TripSaving, Converter={StaticResource BoolToVisibility}}"/>
-                                        <TextBlock Text="✎  Mentés"/>
-                                    </StackPanel>
-                                </Button>
-
-                                <Button Grid.Column="5"
-                                        Padding="12,5"
-                                        Background="{DynamicResource Accent}"
-                                        Foreground="White"
-                                        Command="{Binding DeleteTripCommand}">
-                                    <TextBlock Text="✕  Törlés"/>
-                                </Button>
-
-                            </Grid>
-
-                            <TextBlock Text="Jelölj ki egy tripet a szerkesztéshez vagy törléshez."
-                                       Foreground="{DynamicResource MutedText}"
-                                       FontStyle="Italic"
-                                       FontSize="12"
-                                       Visibility="{Binding HasSelectedTrip, Converter={StaticResource InverseBool}}"/>
-
-                        </StackPanel>
-
-                    </Border>
-
-                    <DataGrid ItemsSource="{Binding Trips}"
-                              SelectedItem="{Binding SelectedTrip}"
-                              AutoGenerateColumns="False"
-                              IsReadOnly="True"
-                              CanUserAddRows="False"
-                              HeadersVisibility="Column">
-
-                        <DataGrid.Columns>
-
-                            <DataGridTextColumn Header="ID"
-                                                Binding="{Binding id}"
-                                                Width="60"/>
-
-                            <DataGridTextColumn Header="Név"
-                                                Binding="{Binding DisplayName}"
-                                                Width="*"/>
-
-                            <DataGridTextColumn Header="Létrehozva"
-                                                Binding="{Binding created_at, Converter={StaticResource IsoDate}}"
-                                                Width="*"/>
-
-                        </DataGrid.Columns>
-
-                    </DataGrid>
-
-                </DockPanel>
-
-            </TabItem>
+            
 
 
             <!-- MARKEREK -->
@@ -400,42 +297,7 @@
                 </DataGrid>
 
             </TabItem>
-            <TabItem Header="📌 Trip pontok">
-
-                <DataGrid ItemsSource="{Binding TripPoints}"
-              AutoGenerateColumns="False"
-              IsReadOnly="True"
-              CanUserAddRows="False"
-              HeadersVisibility="Column">
-
-                    <DataGrid.Columns>
-
-                        <DataGridTextColumn Header="ID"
-                                Binding="{Binding id}"
-                                Width="55"/>
-
-                        <DataGridTextColumn Header="Trip ID"
-                                Binding="{Binding trip_id}"
-                                Width="75"/>
-
-                        <DataGridTextColumn Header="Lat"
-                                Binding="{Binding lat}"
-                                Width="110"/>
-
-                        <DataGridTextColumn Header="Lng"
-                                Binding="{Binding lng}"
-                                Width="110"/>
-
-                        <DataGridTextColumn Header="Rögzítve"
-                                Binding="{Binding recorded_at, Converter={StaticResource IsoDate}}"
-                                Width="*"/>
-
-                    </DataGrid.Columns>
-
-                </DataGrid>
-
-            </TabItem>
-
+            
 
 
         </TabControl>
