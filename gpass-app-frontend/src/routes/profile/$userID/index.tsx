@@ -467,12 +467,6 @@ function RouteComponent() {
                 </CardHeader>
 
                 <CardContent className="grid gap-3 sm:grid-cols-2">
-                  {userClans.length === 0 && (
-                    <div className="text-sm text-muted-foreground py-6">
-                      Nem csatlakozott még klánba
-                    </div>
-                  )}
-
                   {userClans.map((clan) => (
                     <Link
                       key={clan.id}
