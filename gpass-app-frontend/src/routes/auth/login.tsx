@@ -39,7 +39,6 @@ export const Route = createFileRoute("/auth/login")({
 const LoginSchema = z.object({
   userID: z
     .string()
-    .min(8, "A felhasználónév legalább 8 karakter.")
     .nonempty("A felhasználónév kötelező."),
   password: z
     .string()

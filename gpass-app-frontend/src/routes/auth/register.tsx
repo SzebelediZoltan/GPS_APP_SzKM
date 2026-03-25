@@ -37,7 +37,6 @@ export const Route = createFileRoute("/auth/register")({
 const RegisterSchema = z.object({
     username: z
         .string()
-        .min(8, "A felhasználónév legalább 8 karakter.")
         .nonempty("A felhasználónév kötelező."),
     email: z
         .email("Érvényes email címet adj meg.")
