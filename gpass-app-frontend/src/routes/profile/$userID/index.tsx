@@ -402,7 +402,6 @@ function RouteComponent() {
                 <Separator />
 
                 <div className="grid grid-cols-3 gap-3">
-                  <StatBox icon={<MapPin className="h-4 w-4" />} label="Tripek" value="0" />
                   <StatBox icon={<Users className="h-4 w-4" />} label="Barátok" value={"" + friends.filter((e) => e.status === "accepted").length} />
                   <StatBox icon={<Flag className="h-4 w-4" />} label="Klánok" value={"" + totalClanCount} />
                 </div>
