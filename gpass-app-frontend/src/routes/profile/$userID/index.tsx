@@ -8,7 +8,6 @@ import {
   Pencil,
   UserX,
   UserCheck,
-  MapPin,
   Users,
   Flag,
   Crown,
